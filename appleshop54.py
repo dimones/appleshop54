@@ -9,7 +9,7 @@ def hello_world():
 
 @app.route('/f32d73dc8d1d.html')
 def f32d73dc8d1d():
-    return render_template('ya.html')
+    return 'a1a24e65907a'
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=80, debug=True)
