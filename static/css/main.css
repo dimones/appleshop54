@@ -1,20 +1,51 @@
-/*
- * Author: Carlos Alvarez
- * URL: http://Alvarez.is
- *
- * Project Name: SHIELD - Free Bootstrap 3 Theme
- * Version: 1.0
- * Date: 02-11-2013
- * URL: http://blacktie.co/
- */
-
 
 /* ==========================================================================
    Base Styles and Bootstrap Modifications
    ========================================================================== */
+.product_image{
+	background-image: url(/static/img/products/apple_phones.png);
+	background-size: cover;
+	background-repeat: no-repeat;
+	width: 200px;
+	height: 200px;
+	margin-top: 40px;
+	margin-left: auto;
+	margin-right: auto;
 
-
-
+}
+.product_container{
+	padding-right: 0 !important;
+}
+.appleshop_product_jumb{
+	border-style: solid;
+	border-width: 1px;
+	border-color: lightgray;
+	background-color: white;
+	width: 100%;
+	height: 170px;
+}
+.appleshop_product_jumb .label{
+	font-size: 25px;
+	text-transform: uppercase;
+}
+.appleshop_product_jumb #test{
+	opacity: 1;
+}
+.appleshop_product_jumb_big{
+	height: 360px;
+}
+.appleshop_btn{
+	background: linear-gradient(to top, #0371ca, #3a9be8);
+	color: white;
+	border: 0;
+	border-radius: 0;
+	font-size: 14px;
+}
+.appleshop_btn_call {
+	background-image: -moz-linear-gradient( 90deg, rgb(2,113,202) 0%, rgb(58,155,232) 100%);
+	background-image: -webkit-linear-gradient( 90deg, rgb(2,113,202) 0%, rgb(58,155,232) 100%);
+	background-image: -ms-linear-gradient( 90deg, rgb(2,113,202) 0%, rgb(58,155,232) 100%);
+	width: 181px;  height: 54px; }
 .back{
 	 background-size: cover; background-position: center;
 }
@@ -44,6 +75,7 @@ input,
 select,
 textarea {
     color: #222;
+	font-family: 'Roboto', sans-serif;
 }
 
 body {
@@ -109,9 +141,9 @@ body {
 }
 
 body {
-    font-family: "Lato";
+	font-family: 'Roboto', sans-serif;
     font-weight: 300;
-    font-size: 16px;
+    font-size: 14px;
     color: #555;
 
     -webkit-font-smoothing: antialiased;
@@ -184,7 +216,8 @@ a img {
 
 /* Titles */
 h1, h2, h3, h4, h5, h6 {
-    font-family: "Raleway";
+
+	font-family: 'Roboto', sans-serif;
     font-weight: 300;
     color: #333;
 }
