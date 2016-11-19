@@ -2,6 +2,36 @@
 /* ==========================================================================
    Base Styles and Bootstrap Modifications
    ========================================================================== */
+
+.phone_icon{
+    <!--display: inline-block;-->
+    width: 25px;
+    height: 25px;
+/*            float: left;*/
+}
+.phone_icon img{
+    max-width:100%;
+    max-height:100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.phone_text{
+    margin-left: 5px;
+	font-style: normal;
+	font-weight: bold;
+    <!--margin-top: 5px;-->
+/*            display:inline;*/
+}
+.product_small_img{
+	width: 130px;
+	height: 130px;
+}
+.product_small_img img{
+    max-width:100%;
+    max-height:100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
 .product_image{
 	background-image: url(/static/img/products/apple_phones.png);
 	background-size: cover;
@@ -24,8 +54,10 @@
 	width: 100%;
 	height: 170px;
 }
-.appleshop_product_jumb .label{
-	font-size: 25px;
+.appleshop_product_jumb label{
+	font-size: 16px;
+	font-weight: bold;
+	color: black;
 	text-transform: uppercase;
 }
 .appleshop_product_jumb #test{

@@ -1,6 +1,8 @@
 from flask import *
 
 app = Flask(__name__)
+from flask_admin import Admin
+admin = Admin(app, name='appleshop54', template_mode='bootstrap3')
 
 
 @app.route('/')

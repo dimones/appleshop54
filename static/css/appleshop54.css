@@ -1,0 +1,41 @@
+/* ICONS */
+.product_icon_parent{
+    min-height: 100%;
+    min-height: 100%;
+    min-width: 60%;
+}
+.product_icon{
+    /*min-width: 100%;*/
+    min-height: 170px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.icon_apple_phones{
+    background-image: url("/static/img/products/apple_phones.png");
+}
+.icon_tablet{
+    width: 200px;
+    margin-left: 20px;
+    background-image: url("/static/img/products/tablet.png");
+}
+.icon_watches{
+    margin: auto;
+    width: 109px;
+    background-image: url("/static/img/products/smart_watches.png");
+}
+.icon_covers{
+    background-image: url("/static/img/products/covers.png");
+}
+.icon_others{
+    background-image: url("/static/img/products/other.png");
+}
+.icon_fitness{
+    background-image: url("/static/img/products/fitness.png");
+}
+.icon_sec{
+    background-image: url("/static/img/products/secure.png");
+}
+.icon_accessioniers{
+    background-image: url("/static/img/products/accessioners.png");
+}
