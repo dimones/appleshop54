@@ -25,17 +25,32 @@
     background-image: url("/static/img/products/smart_watches.png");
 }
 .icon_covers{
+    margin: 15px auto 0;
+    width: 109px;
+    min-height: 140px;
     background-image: url("/static/img/products/covers.png");
 }
 .icon_others{
+    margin: 10px auto 0;
+    width: 109px;
+    min-height: 150px;
     background-image: url("/static/img/products/other.png");
 }
 .icon_fitness{
+    margin: 10px auto 0;
+    width: 170px;
+    min-height: 150px;
     background-image: url("/static/img/products/fitness.png");
 }
 .icon_sec{
+    margin: 15px auto 0;
+    width: 109px;
+    min-height: 140px;
     background-image: url("/static/img/products/secure.png");
 }
 .icon_accessioniers{
+    margin: 15px auto 0;
+    width: 109px;
+    min-height: 140px;
     background-image: url("/static/img/products/accessioners.png");
 }
