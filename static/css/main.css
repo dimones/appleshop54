@@ -340,7 +340,7 @@ a {
 
 a:hover,
 a:focus {
-    color: #c0392b;
+    color: white;
     text-decoration: none;
     outline: 0;
 }
