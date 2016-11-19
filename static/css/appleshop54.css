@@ -156,20 +156,54 @@ transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
 }
 
 input:hover{
-  border: 2px solid rgba(52, 152, 219, 1);
-  box-shadow: 1px 1px 3px 1px rgba(52, 152, 219, 0.2) inset;
-  -webkit-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
--moz-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
--o-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+    border: 2px solid rgba(52, 152, 219, 1);
+    box-shadow: 1px 1px 3px 1px rgba(52, 152, 219, 0.2) inset;
+    -webkit-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+    -moz-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+    -o-transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
+    transition: all 200ms cubic-bezier(0.42, 0, 0.58, 1);
 }
 
 input:focus{
-  border: 2px solid rgba(52, 152, 219, 1);
-  box-shadow: 0px 0px 0px 0px rgba(52, 152, 219, 1);
-  background-color: rgba(255,255,255, 0.5);
-  -webkit-transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
--moz-transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
--o-transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
-transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
+    border: 2px solid rgba(52, 152, 219, 1);
+    box-shadow: 0px 0px 0px 0px rgba(52, 152, 219, 1);
+    background-color: rgba(255,255,255, 0.5);
+    -webkit-transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
+    -moz-transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
+    -o-transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
+    transition: all 100ms cubic-bezier(0.42, 0, 0.58, 1);
+}
+/* менюха */
+.appleshop_menu_item{
+    border-radius: 0 !important;
+    border-bottom: 1px solid #d9d9d9;
+    height: 62px;
+    color: black;
+    font-weight: 700;
+}
+a.list-group-item.appleshop_menu_item{
+    /*border: 0;*/
+    border-top: 1px solid #d9d9d9;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #d9d9d9;
+}
+div.apple_shop_item_text{
+    margin-top: 10px;
+}
+a.list-group-item.appleshop_menu_item:hover{
+	background: linear-gradient(to top, #0371ca, #3a9be8);
+
+}
+/* для страницы контактов */
+.appleshop_contacts_info{
+    height: 145px;
+    width: calc(100% - 26px);
+    margin-left: 13px;
+    background: white;
+}
+.appleshop_contacts_map{
+    height: 335px;
+    margin-left: 13px;
+    width: calc(100% - 26px);
 }

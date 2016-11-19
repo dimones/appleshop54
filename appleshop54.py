@@ -6,8 +6,13 @@ admin = Admin(app, name='appleshop54', template_mode='bootstrap3')
 
 
 @app.route('/')
-def hello_world():
-    return render_template('index.html')
+def main():
+    return render_template('index.html',body=render_template('main.html'))
+
+@app.route('/contacts')
+def contacts():
+    return render_template('index.html',body=render_template('page.html'))
+
 
 @app.route('/f32d73dc8d1d.html')
 def f32d73dc8d1d():
