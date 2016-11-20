@@ -42,6 +42,7 @@ def admin():
                            "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr")
             connection.close()
             data = cursor.fetchall()
+            print(data)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
