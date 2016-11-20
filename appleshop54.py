@@ -27,9 +27,96 @@ def get_conn_1():
 def main():
     return render_template('index.html',body=render_template('main.html'))
 
-@app.route('/contacts')
+@app.route('/контакты')
 def contacts():
     return render_template('index.html',body=render_template('page.html',body=render_template('contacts.html')))
+
+def cat(_id):
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.type_product=%s" % _id)
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return data
+
+@app.route('/каталог/телефоны-apple')
+def catalog_apple():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(1)),name='ТЕЛЕФОНЫ APPLE',name_top='Телефоны Apple')))
+@app.route('/каталог/планшеты')
+def catalog_tablets():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(2)),name='ПЛАНШЕТЫ',name_top='Планшеты')))
+@app.route('/каталог/smart-часы')
+def catalog_smart_watches():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(3)),name='SMART ЧАСЫ',name_top='Smart часы')))
+@app.route('/каталог/чехлы')
+def catalog_covers():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(4)),name='ЧЕХЛЫ',name_top='Чехлы')))
+@app.route('/каталог/фитнес-браслеты')
+def catalog_fitness():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(5)),name='ФИТНЕС БРАСЛЕТЫ',name_top='Фитнес браслеты')))
+@app.route('/каталог/защитные-пленки')
+def catalog_sec():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(6)),name='ЗАЩИТНЫЕ ПЛЕНКИ',name_top='Защитные пленки')))
+@app.route('/каталог/другие-устройства')
+def catalog_others():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(7)),name='ДРУГИЕ УСТРОЙСТВА',name_top='Другие устройства')))
+@app.route('/каталог/аксессуары')
+def catalog_access():
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=cat(8)),name='АКСЕССУАРЫ',name_top='Аксессуары')))
+@app.route('/каталог')
+def catalog():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr")
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+                                                                                                products=render_template(
+                                                                                                    'products.html',
+                                                                                                    products=data),
+                                                                                                name='КАТАЛОГ ПРОДУКЦИИ',
+                                                                                                name_top='Все')))
+
+
 
 @app.route('/ad')
 def admin():

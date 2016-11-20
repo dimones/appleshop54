@@ -1,0 +1,32 @@
+<div class="row">
+    <ol class="breadcrumb" style="background: #f1f1f1;">
+      <li><a href="/">Главная</a></li>
+      <li> <a href="/каталог">Продукция</a></li>
+      <li class="active" id="nameCatalogBreadcumb">{{ name_top }}</li>
+    </ol>
+    <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;" id="nameCatalogPart">{{ name }}</h3>
+</div>
+<div class="row" id="products">
+    {{ products | safe }}
+</div>
+<div class="row">
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li>
+          <a href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li><a href="#">3</a></li>
+        <li><a href="#">4</a></li>
+        <li><a href="#">5</a></li>
+        <li>
+          <a href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+</div>
