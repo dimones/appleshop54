@@ -3,7 +3,7 @@
         <br>
         <div class="row">
             <div class="col-lg-3">
-                <div class="list-group" style="width: 270px; margin-top:10px; min-height:700px;">
+                <div class="list-group" style="width: 270px; margin-top:10px; min-height:800px;">
                   <a href="#" class="list-group-item disabled appleshop_menu_item" style="background-color: black;">
                     <div class="apple_shop_item_text" style="color:white;">КАТАЛОГ ПРОДУКЦИИ</div>
                   </a>
@@ -18,35 +18,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="row">
-                    <ol class="breadcrumb" style="background: #f1f1f1;">
-                      <li><a href="/">Главная</a></li>
-                      <li class="active">Контакты</li>
-                    </ol>
-                    <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;">КОНТАКТЫ</h3>
-                </div>
-                <div class="row">
-                    <div class="appleshop_contacts_info" style=""></div>
-                </div>
-                <br>
-                <div class="row">
-                    <div id="map" class="appleshop_contacts_map"></div>
-                </div>
+                {{ body | safe}}
             </div>
         </div>
     </div>
-
 </div>
-<script src="http://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
-<script type="text/javascript">
-    var map;
-
-    DG.then(function () {
-        map = DG.map('map', {
-            center: [55.022846, 82.912348],
-            zoom: 16
-        });
-
-        DG.marker([55.022846, 82.912348]).addTo(map).bindPopup('APPLESHOP54<br>Время работы:<br>08:00-20:00');
-    });
-</script>

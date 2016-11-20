@@ -1,0 +1,48 @@
+<div class="row">
+    <ol class="breadcrumb" style="background: #f1f1f1;">
+      <li><a href="/">Главная</a></li>
+      <li class="active">Контакты</li>
+    </ol>
+    <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;">КОНТАКТЫ</h3>
+</div>
+<div class="row">
+    <div class="appleshop_contacts_info">
+        <div class="row" style="margin-left: 13px;">
+            <div class="col-lg-3">
+                <div class="row" style="margin: auto; margin-top: 50px; margin-left: 30px;">
+                    <div class="row"><label>Консультация:</label></div>
+                    <div class="row"><label>8 (961) 123-45-67</label></div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                 <div class="row" style="margin: auto; margin-top: 50px; margin-left: 30px;">
+                    <div class="row"><label>Адрес:</label></div>
+                    <div class="row"><label>г.Новосибирск, ул.Коммунистическая 9</label></div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                 <div class="row" style="margin: auto; margin-top: 50px; margin-left: 30px;">
+                    <div class="row"><label>E-mail:</label></div>
+                    <div class="row"><label>Primernaja_pochta@mail.ru</label></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div id="map" class="appleshop_contacts_map"></div>
+</div>
+<script src="http://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
+<script type="text/javascript">
+    var map;
+
+    DG.then(function () {
+        map = DG.map('map', {
+            center: [55.022846, 82.912348],
+            zoom: 16
+        });
+
+        DG.marker([55.022846, 82.912348]).addTo(map).bindPopup('APPLESHOP54<br>Время работы:<br>08:00-20:00');
+    });
+</script>
