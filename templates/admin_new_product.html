@@ -57,6 +57,13 @@
   </div><!-- /.container-fluid -->
 </nav>
     <div class="container">
+        <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Добавление товара</h2>
+        <h3 id="productId">ID продукта: -</h3>
+        <div class="form-group">
+          <label for="typeProduct">Выбор типа продукта :</label>
+          <select class="form-control" id="typeProduct">
+          </select>
+        </div>
         <div class="input-group">
           <span class="input-group-addon" id="basic-addon1">Название</span>
           <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1">
@@ -75,11 +82,11 @@
 
         <form id="upload-file" method="post" enctype="multipart/form-data">
             <fieldset>
-                <label for="file">Select a file</label>
+                <label for="file">Выберите файл для загрузки</label>
                 <input name="file" type="file">
             </fieldset>
             <fieldset>
-                <button id="upload-file-btn" type="button">Upload</button>
+                <button id="upload-file-btn" type="button" class="btn btn-default btn-info">Загрузить</button>
             </fieldset>
         </form>
         <div class="row" id="imagesProduct">
@@ -87,7 +94,7 @@
         </div>
         <div class="row" id="tableSpecs">
             <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Характеристики продукта</h2>
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal">
               <div class="form-group">
                 <label for="inputType" class="col-lg-1 control-label">Название</label>
                 <div class="col-lg-3">
@@ -104,35 +111,47 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
+                        <th>Название</th>
+                        <th>Значение</th>
+                        <th>Удалить</th>
                     </tr>
                 </thead>
                 <tbody id="specsBody">
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-                <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                </tr>
-                <tr>
-                    <th scope="row">3</th>
-                    <td>Larry</td>
-                    <td>the Bird</td>
-                    <td>@twitter</td>
-                </tr>
+
                 </tbody>
             </table>
         </div>
     </div>
     <script>
+        Array.prototype.remove = function(from, to) {
+          var rest = this.slice((to || from) + 1 || this.length);
+          this.length = from < 0 ? this.length + from : from;
+          return this.push.apply(this, rest);
+        };
+        var specs = new Array();
+        var imageIDs = new Array();
+        var typeProd = 1;
+        $( "#typeProduct" ).change(function(data) {
+            typeProd = $( "#typeProduct" ).val();
+        });
+        function removeSpec(removeI){
+            specs.remove(removeI);
+            updateSpecsTable();
+        }
+        function addSpec(){
+            specs.push({'specName':$("#inputSpecsName").val(), 'specValue': $("#inputSpecsValue").val()});
+            updateSpecsTable();
+        }
+        function updateSpecsTable(){
+            var html = "";
+            for(var i = 0;i < specs.length; i++){
+                html += "<tr> <td> " + i.toString() + "</td>";
+                html += "<td>" + specs[i].specName + "</td>";
+                html += "<td>" + specs[i].specValue + "</td>";
+                html += '<td><a class="btn btn-danger" onclick="removeSpec(' + i.toString() + ')">Удалить</a></td></tr>';
+            }
+            $("#specsBody").html(html);
+        }
         function setMain(image_id){
             $.get('/ad/img/setMain?image_id='+image_id.toString())
             .done(function (data) {
@@ -157,7 +176,9 @@
                 data = JSON.parse(data);
                 console.log(data);
                 var html = "";
+                imageIDs = new Array();
                 for(var i = 0; i< data.length; i++){
+                    imageIDs.push(data[i].id);
                     console.log(data[i].is_main == true?'btn-success' : '');
                     html += '<div class="col-xs-6 col-md-3"> <div class="thumbnail">';
                     html += '<img src="'+ data[i].image +'" alt="..." id="img1" imageId='+ data[i].id +'>';
@@ -175,8 +196,36 @@
 
             });
         }
+        function loadTypes(){
+            $.get("/ad/product/get_types")
+            .done(function(data){
+                data = JSON.parse(data);
+                console.log(data);
+                var html = "";
+                for(var i = 0; i < data.length; i++){
+                    html += '<option value="' + data[i].id +'">' + data[i].type_name + '</option>';
+                }
+                $("#typeProduct").html(html);
+            })
+            .fail(function(data){
+                alert(data);
+            });
+        }
+        function loadProductID(){
+            $.get('/ad/product/next')
+            .done(function(data){
+                data = JSON.parse(data);
+                console.log(data);
+                $("#productId").text('ID продукта: ' + data.productId.toString());
+            })
+            .fail(function(data){
+                alert(data);
+            });
+        }
         $(window).load(function () {
             loadAllImages();
+            loadProductID();
+            loadTypes();
         });
         /*<div class="col-xs-6 col-md-3">
                 <a href="#" class="thumbnail">

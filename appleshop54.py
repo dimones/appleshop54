@@ -16,7 +16,13 @@ def get_conn():
                              password='jmXQF97J',
                              db='appleshop54',
                              charset='utf8')
-
+def get_conn_1():
+    return pymysql.connect(host='127.0.0.1',
+                             user='root',
+                             password='jmXQF97J',
+                             db='appleshop54',
+                             charset='utf8',
+                             cursorclass=pymysql.cursors.DictCursor)
 @app.route('/')
 def main():
     return render_template('index.html',body=render_template('main.html'))
@@ -66,6 +72,46 @@ def upload_file():
                 return json.dumps({'succeed': False, "error": str(e)})
             # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return 'good'
+
+@app.route('/ad/product/get_types', methods=['GET'])
+def product_getTypes():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT id,type_name FROM type_products")
+
+            connection.close()
+            return json.dumps(cursor.fetchall(),ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/product/add', methods=['GET'])
+def product_add():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO products()")
+
+            connection.close()
+            return json.dumps({'productId': cursor.fetchone()[0]})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/product/next', methods=['GET'])
+def product_next():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT AUTO_INCREMENT FROM information_schema. tables WHERE table_name = 'products' AND table_schema = DATABASE();")
+
+            connection.close()
+            return json.dumps({'productId': cursor.fetchone()[0]})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 
 
 @app.route('/ad/img/setProductID', methods=['GET'])
