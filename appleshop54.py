@@ -13,13 +13,13 @@ def allowed_file(filename):
 def get_conn():
     return pymysql.connect(host='127.0.0.1',
                              user='root',
-                             password='jmXQF97J',
+                             password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
                              charset='utf8')
 def get_conn_1():
     return pymysql.connect(host='127.0.0.1',
                              user='root',
-                             password='jmXQF97J',
+                             password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
                              charset='utf8',
                              cursorclass=pymysql.cursors.DictCursor)
