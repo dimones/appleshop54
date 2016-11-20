@@ -56,51 +56,30 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-    <div class="container">
-        <a class="btn btn-success" href="/ad/new">Добавить продукт</a>
-        {% set needRow = 1 %}
-        {% set countProducts = 0 %}
-
-        <div class="row">
-        {% for product in products %}
-            {% if needRow == 1 %}
-                </div>
-                <br>
-                <br>
-                <div class="row">
-                {% set needRow = 0 %}
-            {% endif %}
-            <div class="col-lg-3 product_container">
-                <div class="appleshop_spec_jumb">
-                    <div class="row" style="margin: auto;">
-                        <div class="specs_icon" style="background-image: url({{ product['image'] }})"></div>
-                    </div>
-                    <br>
-                    <div class="row specs_divider"></div>
-                    <br>
-                    <div class="row" style="text-align: center; margin: auto;">
-                        <label style="font-family: 'Roboto', sans-serif;">{{ product['name'] }}</label>
-                        <br>
-                        <label style="font-family: 'Roboto Light', sans-serif;">{{ product['price'] }}р</label>
-                    </div>
-                    <br>
-                    <div class="row" style="text-align: center; margin: auto;">
-                        <button class="btn appleshop_specs_btn">ПОДРОБНЕЕ</button>
-                    </div>
-                </div>
-            </div>
-
-            {% set countProducts = countProducts + 1 %}
-
-            {% if needRow == 1 %}
-                {% set needRow = 1 %}
-            {% endif %}
-        {% endfor %}
+    <div class="container" id="productList">
+        {{ product_list | safe }}
     </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script>
+        function removeProduct(productId){
+            $.get('/ad/product/remove',{'product_id': productId})
+            .done(function (data) {
+                $.get('/ad/product/get_by_type')
+                .done(function (data) {
+                    $("#productList").html(data);
+                })
+                .fail(function (data) {
+                   alert(data.message);
+                });
+            })
+            .fail(function(data){
+                alert(data);
+            });
+        }
 
+    </script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/static/js/retina.js"></script>

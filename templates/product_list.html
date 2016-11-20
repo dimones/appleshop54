@@ -1,0 +1,39 @@
+<a class="btn btn-success" href="/ad/new">Добавить продукт</a>
+{% set needRow = 1 %}
+{% set countProducts = 0 %}
+<label>Количество продукции: {{ products | length }} штук</label>
+<div class="row">
+{% for product in products %}
+    {% if needRow == 1 %}
+        </div>
+        <br>
+        <br>
+        <div class="row">
+        {% set needRow = 0 %}
+    {% endif %}
+    <div class="col-lg-3 product_container" style="margin-top: 20px;">
+        <div class="appleshop_spec_jumb">
+            <div class="row" style="margin: auto;">
+                <div class="specs_icon" style="background-image: url(data:image/{{ product['extension'] }};base64,{{ product['image'] }})"></div>
+            </div>
+            <br>
+            <div class="row specs_divider"></div>
+            <div class="row" style="text-align: center; margin: auto;">
+                <label style="font-family: 'Roboto', sans-serif;">{{ product['name'] }}</label>
+                <br>
+                <label style="font-family: 'Roboto Light', sans-serif;">{{ product['price'] }}р</label>
+            </div>
+            <div class="row" style="text-align: center; margin: auto;">
+                <button class="btn appleshop_specs_btn">ИЗМЕНИТЬ</button>
+                <button class="btn appleshop_specs_btn" onclick="removeProduct({{ product['id'] }})">УДАЛИТЬ</button>
+            </div>
+        </div>
+    </div>
+
+    {% set countProducts = countProducts + 1 %}
+
+    {% if needRow == 1 %}
+        {% set needRow = 1 %}
+        {% set countProducts = 1 %}
+    {% endif %}
+{% endfor %}

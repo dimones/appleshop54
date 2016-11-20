@@ -66,17 +66,17 @@
         </div>
         <div class="input-group">
           <span class="input-group-addon" id="basic-addon1">Название</span>
-          <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1">
+          <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1" id="productName">
         </div>
         <br>
         <div class="input-group">
           <span class="input-group-addon" id="basic-addon1">Цена</span>
-          <input type="text" class="form-control" placeholder="Цена" aria-describedby="basic-addon1">
+          <input type="text" class="form-control" placeholder="Цена" aria-describedby="basic-addon1" id="productPrice">
         </div>
         <br>
         <div class="input-group">
           <span class="input-group-addon" id="basic-addon1">Описание</span>
-          <input type="text" class="form-control" placeholder="Описание" aria-describedby="basic-addon1">
+          <input type="text" class="form-control" placeholder="Описание" aria-describedby="basic-addon1" id="productDescription">
         </div>
         <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Фотографии продукта</h2>
 
@@ -94,7 +94,7 @@
         </div>
         <div class="row" id="tableSpecs">
             <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Характеристики продукта</h2>
-            <form class="form-horizontal">
+            <div class="form-horizontal">
               <div class="form-group">
                 <label for="inputType" class="col-lg-1 control-label">Название</label>
                 <div class="col-lg-3">
@@ -106,7 +106,7 @@
                 </div>
                 <button class="btn btn-success" onclick="addSpec()">Добавить</button>
               </div>
-            </form>
+            </div>
             <table class="table">
                 <thead>
                     <tr>
@@ -121,6 +121,11 @@
                 </tbody>
             </table>
         </div>
+        <br>
+        <br>
+        <div class="row text-center">
+            <button type="button" class="btn btn-primary btn-lg btn-block" onclick="addProduct()">ДОБАВИТЬ ПРОДУКТ</button>
+        </div>
     </div>
     <script>
         Array.prototype.remove = function(from, to) {
@@ -131,9 +136,35 @@
         var specs = new Array();
         var imageIDs = new Array();
         var typeProd = 1;
+        var productId = -1;
         $( "#typeProduct" ).change(function(data) {
             typeProd = $( "#typeProduct" ).val();
         });
+        function addProduct(){
+            $.get('/ad/product/add', {'type_product': typeProd,'name':$("#productName").val(),
+                'price':$("#productPrice").val(),'description':$("#productDescription").val()})
+            .done(function (data) {
+                for(var i = 0;i < imageIDs.length; i++){
+                    $.get('/ad/img/setProductID',{'product_id': productId,'image_id':imageIDs[i]})
+                    .done(function (data) {
+
+                    })
+                    .fail(function(data){
+                        alert(data);
+                    });
+                }
+                $.post('/ad/product/set_spec',{'specs': JSON.stringify(specs),'product_id':productId})
+                .done(function (data) {
+
+                })
+                .fail(function(data){
+                    alert(data);
+                });
+            })
+            .fail(function(data){
+                alert(data);
+            });
+        }
         function removeSpec(removeI){
             specs.remove(removeI);
             updateSpecsTable();
@@ -174,7 +205,6 @@
             $.get('/ad/img/all')
             .done(function (data) {
                 data = JSON.parse(data);
-                console.log(data);
                 var html = "";
                 imageIDs = new Array();
                 for(var i = 0; i< data.length; i++){
@@ -200,7 +230,6 @@
             $.get("/ad/product/get_types")
             .done(function(data){
                 data = JSON.parse(data);
-                console.log(data);
                 var html = "";
                 for(var i = 0; i < data.length; i++){
                     html += '<option value="' + data[i].id +'">' + data[i].type_name + '</option>';
@@ -215,7 +244,7 @@
             $.get('/ad/product/next')
             .done(function(data){
                 data = JSON.parse(data);
-                console.log(data);
+                productId = data.productId;
                 $("#productId").text('ID продукта: ' + data.productId.toString());
             })
             .fail(function(data){
