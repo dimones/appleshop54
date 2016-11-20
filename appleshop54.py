@@ -3,7 +3,7 @@ import os,pymysql,sys,base64
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
-UPLOAD_FOLDER = '/Users/dimones-dev/appleshop54'
+UPLOAD_FOLDER = app.root_path
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
