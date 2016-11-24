@@ -243,3 +243,15 @@ a.list-group-item.appleshop_menu_item:hover{
 #priceValue .slider-selection {
 	background: yellow;
 }
+.noneCat{
+    font-weight: bold;
+    position: absolute;
+    z-index: 10;
+    margin-left: 100px;
+    margin-top: 67px;
+    display: none;
+}
+/*Для плашки*/
+.none_cat:hover {
+  -webkit-filter: blur(5px);
+}

@@ -57,9 +57,11 @@
                     <div class="col-lg-8 product_container">
                         <div class="row">
 
-                            <div class="col-lg-6 product_container" id="tabletsCont">
-                                <div class="appleshop_product_jumb">
-                                    <div class="row" onclick="window.top.location.href='/каталог/планшеты';">
+                            <div class="col-lg-6 product_container " id="tabletsCont">
+                                <h3 class="noneCat" id="noneCattabl">Пока отсутствует</h3>
+                                <div class="appleshop_product_jumb ">
+                                    <div class="row none_cat">
+
                                         <div class="col-lg-7 center-block  text-center">
 
                                             <div class="product_icon icon_tablet"></div>
@@ -68,9 +70,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6 product_container" id="watchesCont">
-                               <div class="appleshop_product_jumb">
-                                    <div class="row" onclick="window.top.location.href='/каталог/smart-часы';">
+                            <div class="col-lg-6 product_container " id="watchesCont">
+                                <h3 class="noneCat" id="noneCatwatches">Пока отсутствует</h3>
+                               <div class="appleshop_product_jumb ">
+                                    <div class="row none_cat">
                                         <div class="col-lg-7 center-block  text-center">
                                             <div class="product_icon icon_watches"></div>
                                         </div>
@@ -371,6 +374,17 @@
     </div>
 <script>
     $("#tabletsCont").hover(function (data) {
+        $("#noneCattabl").css('display','inline');
+    },
+    function (data) {
 
+        $("#noneCattabl").css('display','none');
+    });
+    $("#watchesCont").hover(function (data) {
+        $("#noneCatwatches").css('display','inline');
+    },
+    function (data) {
+
+        $("#noneCatwatches").css('display','none');
     });
 </script>

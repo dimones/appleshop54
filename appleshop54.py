@@ -69,14 +69,12 @@ def cat_prices(_id):
     try:
         with connection.cursor() as cursor:
             if _id == -1:
-                cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr")
+                cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max FROM products pr")
             else:
-                cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max "
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.type_product=%s" % _id)
+                cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max FROM products pr WHERE pr.type_product=%s" % _id)
             data = cursor.fetchall()
+            print('price %s' % (str(data)))
             connection.close()
-            print(data)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
