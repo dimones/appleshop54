@@ -6,24 +6,24 @@
           <ol class="carousel-indicators" style="">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#myCarousel" data-slide-to="1"></li>
-            <li data-target="#myCarousel" data-slide-to="2"></li>
-            <li data-target="#myCarousel" data-slide-to="3"></li>
+{#            <li data-target="#myCarousel" data-slide-to="2"></li>#}
+{#            <li data-target="#myCarousel" data-slide-to="3"></li>#}
           </ol>
 
           <!-- Wrapper for slides -->
           <div class="carousel-inner" role="listbox">
-            <div class="item active back" style="background-image: url(/static/img/carousel2.png); height: 500px;">
+            <div class="item active back" style="background-image: url(/static/img/bg/iphone6.png); height: 500px;">
 
             </div>
 
-            <div class="item back" style="background-image: url(/static/img/bg/divider1.jpg); height: 500px;">
+            <div class="item back" style="background-image: url(/static/img/bg/iphone7.png); height: 500px;">
             </div>
-
-            <div class="item back" style="background-image: url(/static/img/bg/divider2.jpg); height: 500px;">
-            </div>
-
-            <div class="item back" style="background-image: url(/static/img/bg/divider3.jpg); height: 500px;">
-            </div>
+{##}
+{#            <div class="item back" style="background-image: url(/static/img/bg/divider2.jpg); height: 500px;">#}
+{#            </div>#}
+{##}
+{#            <div class="item back" style="background-image: url(/static/img/bg/divider3.jpg); height: 500px;">#}
+{#            </div>#}
           </div>
 
         </div>
@@ -57,7 +57,7 @@
                     <div class="col-lg-8 product_container">
                         <div class="row">
 
-                            <div class="col-lg-6 product_container">
+                            <div class="col-lg-6 product_container" id="tabletsCont">
                                 <div class="appleshop_product_jumb">
                                     <div class="row" onclick="window.top.location.href='/каталог/планшеты';">
                                         <div class="col-lg-7 center-block  text-center">
@@ -68,7 +68,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-6 product_container">
+                            <div class="col-lg-6 product_container" id="watchesCont">
                                <div class="appleshop_product_jumb">
                                     <div class="row" onclick="window.top.location.href='/каталог/smart-часы';">
                                         <div class="col-lg-7 center-block  text-center">
@@ -369,3 +369,8 @@
             </div>
         </div>
     </div>
+<script>
+    $("#tabletsCont").hover(function (data) {
+
+    });
+</script>

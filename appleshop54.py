@@ -63,54 +63,74 @@ def cat(_id):
         return json.dumps({'succeed': False, "error": str(e)})
     return data
 
-@app.route('/каталог/телефоны-apple')
-def catalog_apple():
+def cat_prices(_id):
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            if _id == -1:
+                cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr")
+            else:
+                cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max "
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.type_product=%s" % _id)
+            data = cursor.fetchall()
+            connection.close()
+            print(data)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return data
+
+@app.route('/каталог/<string:path>/')
+@app.route('/каталог/<string:path>')
+def catalog_path(path,name_cat=None):
+    print(path)
+    print(name_cat)
+    print('catalogue')
+    dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты'},
+             "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2},
+             "smart-часы": {"name": "SMART ЧАСЫ", "name_top": "Smart часы", "cat": 3},
+             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4},
+             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5},
+             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6},
+             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7},
+             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8}}
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
                                                                                                     'products.html',
-                                                                                                    products=cat(1),types=product_getTypesFixed()),name='ТЕЛЕФОНЫ APPLE',name_top='Телефоны Apple')))
-@app.route('/каталог/планшеты')
-def catalog_tablets():
+                                                                                                    products=cat(dict_data[path]['cat']),
+                                                                                                    types=product_getTypesFixed(),
+                                                                                                    _path = path),
+                                                                                                name=dict_data[path]['name'],
+                                                                                                name_top=dict_data[path]['name_top'], prices=cat_prices(dict_data[path]['cat']))))
+
+
+
+@app.route('/каталог/<string:path>/<string:name_cat>')
+def catalog_path_name_cat(path,name_cat=None):
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.id = %s" % request.args.get(
+                'product_id'))
+            connection.close()
+            data = cursor.fetchone()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
-                                                                                                    'products.html',
-                                                                                                    products=cat(2),types=product_getTypesFixed()),name='ПЛАНШЕТЫ',name_top='Планшеты')))
-@app.route('/каталог/smart-часы')
-def catalog_smart_watches():
-    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
-                                                                                                products=render_template(
-                                                                                                    'products.html',
-                                                                                                    products=cat(3),types=product_getTypesFixed()),name='SMART ЧАСЫ',name_top='Smart часы')))
-@app.route('/каталог/чехлы')
-def catalog_covers():
-    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
-                                                                                                products=render_template(
-                                                                                                    'products.html',
-                                                                                                    products=cat(4),types=product_getTypesFixed()),name='ЧЕХЛЫ',name_top='Чехлы')))
-@app.route('/каталог/фитнес-браслеты')
-def catalog_fitness():
-    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
-                                                                                                products=render_template(
-                                                                                                    'products.html',
-                                                                                                    products=cat(5),types=product_getTypesFixed()),name='ФИТНЕС БРАСЛЕТЫ',name_top='Фитнес браслеты')))
-@app.route('/каталог/защитные-пленки')
-def catalog_sec():
-    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
-                                                                                                products=render_template(
-                                                                                                    'products.html',
-                                                                                                    products=cat(6),types=product_getTypesFixed()),name='ЗАЩИТНЫЕ ПЛЕНКИ',name_top='Защитные пленки')))
-@app.route('/каталог/другие-устройства')
-def catalog_others():
-    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
-                                                                                                products=render_template(
-                                                                                                    'products.html',
-                                                                                                    products=cat(7),types=product_getTypesFixed()),name='ДРУГИЕ УСТРОЙСТВА',name_top='Другие устройства')))
-@app.route('/каталог/аксессуары')
-def catalog_access():
-    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
-                                                                                                products=render_template(
-                                                                                                    'products.html',
-                                                                                                    products=cat(8),types=product_getTypesFixed()),name='АКСЕССУАРЫ',name_top='Аксессуары')))
+                                                                                                    'product_detailed.html',
+                                                                                                    product=data),
+                                                                                                name=data[
+                                                                                                    'NAME'].upper(),
+                                                                                                name_top=data[
+                                                                                                    'NAME'],
+                                                                                                types=product_getTypesFixed())))
 @app.route('/каталог')
 def catalog():
     connection = get_conn_1()
@@ -131,7 +151,7 @@ def catalog():
                                                                                                     'products.html',
                                                                                                     products=data),
                                                                                                 name='КАТАЛОГ ПРОДУКЦИИ',
-                                                                                                name_top='Все',types=product_getTypesFixed())))
+                                                                                                name_top='Все',types=product_getTypesFixed(), prices=cat_prices(-1))))
 @app.route('/каталог/подробнее')
 def catalog_detail():
     connection = get_conn_1()
@@ -152,7 +172,7 @@ def catalog_detail():
                                                                                                     product=data),
                                                                                                 name=data['NAME'].upper(),
                                                                                                 name_top=data['NAME'],
-                                                                                                types=product_getTypesFixed())))
+                                                                                                types=product_getTypesFixed(), prices=cat_prices(-1))))
 
 
 @app.route('/ad')
@@ -209,6 +229,64 @@ def upload_file():
                 return json.dumps({'succeed': False, "error": str(e)})
             # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return 'good'
+
+
+
+@app.route('/ad/product/categ/all')
+def product_categAll():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM product_categ WHERE type_id = %s" % request.args.get('type_id'))
+
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/product/categ/add')
+def product_categAdd():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO product_categ(category_name,type_id) VALUES('%s',%s)" % (request.args.get('categ_name'),request.args.get('type_id')))
+            connection.commit()
+            connection.close()
+            return json.dumps({'succeed': True}, ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/product/sub_categ/all')
+def product_sub_categAll():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM product_subcat WHERE categ_id = %s" % (request.args.get('categ_id')))
+
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/product/sub_categ/add')
+def product_sup_categAdd():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO product_subcat(subcateg_name,categ_id) VALUES('%s',%s)" % (request.args.get('subcateg_name'),request.args.get('categ_id')))
+            connection.commit()
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/ad/product/get_by_type')
 def product_getByType():
     connection = get_conn_1()
@@ -239,6 +317,48 @@ def product_getTypes():
 
             connection.close()
             return json.dumps(cursor.fetchall(),ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+
+@app.route('/ad/product/add_colors', methods=['GET'])
+def product_addColors():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO product_colors(color_name) VALUES('%s')" % request.args.get('color_name'))
+            connection.commit()
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/product/get_colors', methods=['GET'])
+def product_getColors():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM product_colors")
+
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/product/set_color', methods=['GET'])
+def product_setColor():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE products SET color_id = %s WHERE id = %s" % (request.args.get('color_id'),request.args.get('device_id')))
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})

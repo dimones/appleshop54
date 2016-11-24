@@ -57,38 +57,114 @@
   </div><!-- /.container-fluid -->
 </nav>
     <div class="container">
-        <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Добавление товара</h2>
-        <h3 id="productId">ID продукта: -</h3>
-        <div class="form-group">
-          <label for="typeProduct">Выбор типа продукта :</label>
-          <select class="form-control" id="typeProduct">
-          </select>
-        </div>
-        <div class="input-group">
-          <span class="input-group-addon" id="basic-addon1">Название</span>
-          <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1" id="productName">
-        </div>
-        <br>
-        <div class="input-group">
-          <span class="input-group-addon" id="basic-addon1">Цена</span>
-          <input type="text" class="form-control" placeholder="Цена" aria-describedby="basic-addon1" id="productPrice">
-        </div>
-        <br>
-        <div class="input-group">
-          <span class="input-group-addon" id="basic-addon1">Описание</span>
-          <input type="text" class="form-control" placeholder="Описание" aria-describedby="basic-addon1" id="productDescription">
-        </div>
-        <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Фотографии продукта</h2>
+        <div class="row">
+            <div class="col-lg-6">
+                <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Добавление товара</h2>
+                <h3 id="productId">ID продукта: -</h3>
+                <div class="form-group">
+                  <label for="typeProduct">Выбор типа продукта :</label>
+                  <select class="form-control" id="typeProduct" onchange="typeProd = this.value; loadCategs();">
+                  </select>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-addon" id="basic-addon1">Название</span>
+                  <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1" id="productName">
+                </div>
+                <br>
+                <div class="input-group">
+                  <span class="input-group-addon" id="basic-addon1">Цена</span>
+                  <input type="text" class="form-control" placeholder="Цена" aria-describedby="basic-addon1" id="productPrice">
+                </div>
+                <br>
+                <div class="input-group">
+                  <span class="input-group-addon" id="basic-addon1">Описание</span>
+                  <input type="text" class="form-control" placeholder="Описание" aria-describedby="basic-addon1" id="productDescription">
+                </div>
+                <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Фотографии продукта</h2>
+            </div>
+            <div class="col-lg-6">
 
-        <form id="upload-file" method="post" enctype="multipart/form-data">
-            <fieldset>
-                <label for="file">Выберите файл для загрузки</label>
-                <input name="file" type="file">
-            </fieldset>
-            <fieldset>
-                <button id="upload-file-btn" type="button" class="btn btn-default btn-info">Загрузить</button>
-            </fieldset>
-        </form>
+                <h3>Категория продукта</h3>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                          <label for="categProduct">Выбор категории :</label>
+                          <select class="form-control" id="categProduct" onchange="categID = this.value; loadSubCategs();">
+                          </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="form-horizontal">
+                          <div class="form-group">
+                            <label for="inputType" class="col-lg-1 control-label">Название</label>
+                              <input type="text" class="form-control" id="inputCategName" placeholder="Название категории">
+                            <button class="btn btn-success" onclick="addCateg()">Добавить категорию</button>
+                          </div>
+                        </div>
+
+                    </div>
+                </div>
+                <h3>Субкатегория продукта</h3>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                          <label for="subcategProduct">Выбор субкатегории :</label>
+                          <select class="form-control" id="subcategProduct" onchange="subcategID = this.value;">
+                          </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="form-horizontal">
+                          <div class="form-group">
+                            <label for="inputType" class="col-lg-1 control-label">Название</label>
+                              <input type="text" class="form-control" id="inputSubCategName" placeholder="Название категории">
+                            <button class="btn btn-success" onclick="addSubCateg()">Добавить субкатегорию</button>
+                          </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-lg-6">
+                <form id="upload-file" method="post" enctype="multipart/form-data">
+                    <fieldset>
+                        <label for="file">Выберите файл для загрузки</label>
+                        <input name="file" type="file">
+                    </fieldset>
+                    <fieldset>
+                        <button id="upload-file-btn" type="button" class="btn btn-default btn-info">Загрузить</button>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="col-lg-6">
+
+                <h3>Цвет продукта</h3>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                          <label for="colorProduct">Выбор цвета :</label>
+                          <select class="form-control" id="colorProduct" onchange="colorId = this.value;">
+                          </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="form-horizontal">
+                          <div class="form-group">
+                            <label for="inputType" class="col-lg-1 control-label">Название</label>
+                              <input type="text" class="form-control" id="inputColorName" placeholder="Название цвета">
+                            <button class="btn btn-success" onclick="addColor()">Добавить цвет</button>
+                          </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row" id="imagesProduct">
 
         </div>
@@ -133,8 +209,11 @@
           this.length = from < 0 ? this.length + from : from;
           return this.push.apply(this, rest);
         };
+        var colorId = -1;
         var specs = new Array();
         var imageIDs = new Array();
+        var categID = -1;
+        var subcategID = -1;
         var typeProd = 1;
         var productId = -1;
         $( "#typeProduct" ).change(function(data) {
@@ -150,7 +229,7 @@
 
                     })
                     .fail(function(data){
-                        alert(data);
+                        alert(data.message);
                     });
                 }
                 $.post('/ad/product/set_spec',{'specs': JSON.stringify(specs),'product_id':productId})
@@ -158,12 +237,19 @@
 
                 })
                 .fail(function(data){
-                    alert(data);
+                    alert(data.message);
+                });
+                $.post('/ad/product/set_color',{'color_id': colorId,'product_id':productId})
+                .done(function (data) {
+
+                })
+                .fail(function(data){
+                    alert(data.message);
                 });
                 window.top.location.href = '/ad';
             })
             .fail(function(data){
-                alert(data);
+                alert(data.message);
             });
         }
         function removeSpec(removeI){
@@ -173,6 +259,33 @@
         function addSpec(){
             specs.push({'specName':$("#inputSpecsName").val(), 'specValue': $("#inputSpecsValue").val()});
             updateSpecsTable();
+        }
+        function addCateg(){
+            $.get('/ad/product/categ/add', {'categ_name': $("#inputCategName").val(), 'type_id': typeProd })
+            .done(function (data) {
+                loadCategs();
+            })
+            .fail(function(data){
+                alert(data.message);
+            });
+        }
+        function addSubCateg(){
+            $.get('/ad/product/sub_categ/add', {'subcateg_name': $("#inputSubCategName").val(), 'categ_id': categID })
+            .done(function (data) {
+                loadSubCategs();
+            })
+            .fail(function(data){
+                alert(data.message);
+            });
+        }
+        function addColor(){
+            $.get('/ad/product/add_colors?color_name='+$("#inputColorName").val())
+            .done(function (data) {
+                loadColors();
+            })
+            .fail(function(data){
+                alert(data.message);
+            });
         }
         function updateSpecsTable(){
             var html = "";
@@ -190,7 +303,7 @@
                 loadAllImages();
             })
             .fail(function(data){
-                alert(data);
+                alert(data.message);
             });
         }
         function removeImage(image_id){
@@ -199,7 +312,7 @@
                 loadAllImages();
             })
             .fail(function(data){
-                alert(data);
+                alert(data.message);
             });
         }
         function loadAllImages(){
@@ -227,6 +340,52 @@
 
             });
         }
+        function loadCategs(){
+            $.get("/ad/product/categ/all" , {'type_id': typeProd})
+            .done(function(data){
+                data = JSON.parse(data);
+                var html = "";
+                for(var i = 0; i < data.length; i++){
+                    html += '<option value="' + data[i].id +'">' + data[i].category_name + '</option>';
+                }
+                $("#categProduct").html(html);
+
+                categID = $("#categProduct").val();
+                loadSubCategs();
+            })
+            .fail(function (data) {
+                alert(data.message);
+            });
+        }
+        function loadSubCategs(){
+            $.get("/ad/product/sub_categ/all" , {'categ_id': categID})
+            .done(function(data){
+                data = JSON.parse(data);
+                console.log(data);
+                var html = "";
+                for(var i = 0; i < data.length; i++){
+                    html += '<option value="' + data[i].id +'">' + data[i].subcateg_name + '</option>';
+                }
+                $("#subcategProduct").html(html);
+            })
+            .fail(function (data) {
+                alert(data.message);
+            });
+        }
+        function loadColors(){
+            $.get("/ad/product/get_colors")
+            .done(function(data){
+                data = JSON.parse(data);
+                var html = "";
+                for(var i = 0; i < data.length; i++){
+                    html += '<option value="' + data[i].id +'">' + data[i].color_name + '</option>';
+                }
+                $("#colorProduct").html(html);
+            })
+            .fail(function (data) {
+                alert(data.message);
+            });
+        }
         function loadTypes(){
             $.get("/ad/product/get_types")
             .done(function(data){
@@ -238,7 +397,7 @@
                 $("#typeProduct").html(html);
             })
             .fail(function(data){
-                alert(data);
+                alert(data.message);
             });
         }
         function loadProductID(){
@@ -249,13 +408,15 @@
                 $("#productId").text('ID продукта: ' + data.productId.toString());
             })
             .fail(function(data){
-                alert(data);
+                alert(data.message);
             });
         }
         $(window).load(function () {
             loadAllImages();
             loadProductID();
             loadTypes();
+            loadColors();
+            loadCategs();
         });
         /*<div class="col-xs-6 col-md-3">
                 <a href="#" class="thumbnail">
@@ -288,7 +449,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
 	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/static/js/retina.js"></script>
 	<script type="text/javascript" src="/static/js/jquery.easing.1.3.js"></script>

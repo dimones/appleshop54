@@ -231,3 +231,15 @@ a.list-group-item.appleshop_menu_item:hover{
     -webkit-box-shadow: 0px 3px 8px rgb(100,100,100);
     box-shadow: 0px 3px 8px rgb(100,100,100);
 }
+.priceCard{
+    height: 140px;
+    background-color: #e0e0e0;
+}
+.settings{
+    height: 125px;
+    width: 100%;
+    background-color: white;
+}
+#priceValue .slider-selection {
+	background: yellow;
+}

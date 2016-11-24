@@ -1,0 +1,43 @@
+<div class="row">
+    <div class="col-lg-7">
+        <div class="row" style="margin-left: 13px">
+            <div class="thumbnail">
+                <img src="data:image/{{ product['extension'] }};base64,{{ product['image'] }}" alt="" id="img1">
+            </div>
+        </div>
+        <div class="row" id="images">
+
+        </div>
+        <div class="row">
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="row " style="margin-left: 13px;">
+                <div class="">
+                    <div class="row priceCard">
+                        <div class="col-lg-6">
+                            <div style="margin: auto; text-align: center;">
+                                <h5>Цена:</h5>
+                                <h3>{{ product['price'] }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <button class="btn appleshop_btn appleshop_btn_call" style="margin: auto;">ЗАКАЗАТЬ</button>
+                        </div>
+                    </div>
+                </div>
+
+
+        </div>
+        <div class="row">
+            {{ product['description'] }}
+        </div>
+    </div>
+</div>
+<div class="row" style="margin-left: 13px;">
+    <h4>Основные характеристики</h4>
+    <table>
+        <tbody>
+        </tbody>
+    </table>
+</div>
