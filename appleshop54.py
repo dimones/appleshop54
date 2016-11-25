@@ -59,7 +59,7 @@ def product_getTypesFixed():
         return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/')
 def main():
-    return render_template('index2.html',body=render_template('main.html'))
+    return render_template('index.html',body=render_template('main.html'))
 
 @app.route('/контакты')
 def contacts():
@@ -116,10 +116,14 @@ def getCatData(_id):
             cursor.execute('SELECT c.id cid,c.category_name,s.id sid,s.categ_id,s.subcateg_name FROM product_categ c,'
                            'product_subcat s WHERE c.type_id=1 and s.categ_id = c.id ORDER BY cid,sid')
             data = cursor.fetchall()
-            print('price %s' % (str(flat_to_nest(data,['cid','sid']))))
-
+            cat_data = {}
+            for dat in data:
+                if dat['cid'] in cat_data:
+                    cat_data[dat['cid']]['data'].append({'name':dat['subcateg_name'],'sid': dat['sid']})
+                else:
+                    cat_data.update({ dat['cid']: { 'data': [{'name':dat['subcateg_name'],'sid': dat['sid']}],'name':dat['category_name'] }})
             connection.close()
-            return flat_to_nest(data,['cid','sid'])
+            return cat_data
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})

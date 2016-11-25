@@ -33,12 +33,10 @@
                 <div style="border: 1px solid #d9d9d9; height: 60px;">
                     <a class="dropdown-toggle" type="button" data-toggle="dropdown"
                          style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
-                          <span style="margin-left: 15px;">Все объемы</span>
-                      <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px; "></span></a>
-                      <ul class="test dropdown-menu" style="width: 90%; margin-left: 15px;">
-                        <li><a href="#" class="category">HTML</a></li><li class="divider"></li>
-                        <li><a href="#" class="category">CSS</a></li><li class="divider"></li>
-                        <li><a href="#" class="category">JavaScript</a></li>
+                          <span style="margin-left: 15px;" id="cat1_text">Все объемы</span>
+                      <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px;  text-align: center;"></span></a>
+                      <ul class="test dropdown-menu" style="width: 90%; margin-left: 15px;" id="cat1_data">
+
                       </ul>
                 </div>
             </div>
@@ -48,12 +46,10 @@
                 <div style="border: 1px solid #d9d9d9; height: 60px;" class="dropdown">
                       <a class="dropdown-toggle" type="button" data-toggle="dropdown"
                          style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
-                          <span style="margin-left: 15px;">Все цвета</span>
+                          <span style="margin-left: 15px;" id="cat2_text">Все цвета</span>
                       <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px; "></span></a>
-                      <ul class="dropdown-menu"  style="width: 100%; margin-left: 1px;">
-                        <li><a href="#" class="category">HTML</a></li><li class="divider"></li>
-                        <li><a href="#" class="category">CSS</a></li><li class="divider"></li>
-                        <li><a href="#" class="category">JavaScript</a></li>
+                      <ul class="dropdown-menu"  style="width: 100%; margin-left: 1px; text-align: center;" id="cat2_data">
+                        <li><a href="#" class="category">Все цвета</a></li>
                       </ul>
                 </div>
             </div>
@@ -88,7 +84,35 @@
 </div>
 
 <script>
-    $(document).load(function () {
+    function changeSubCategory(key) {
+        console.log("#t" + key);
+        $("#cat2_text").text($("#t" + key).attr('value'));
 
+{#        $("#cat2_text").text($(key.target).attr('value'));#}
+    }
+    function changeCategory(key) {
+        $("#cat1_text").text(cat_data[key].name);
+        html = "";
+        for(var i = 0;i < cat_data[key].data.length; i++){
+            var temp = cat_data[key].data[i];
+            console.log(temp);
+            html += '<li class="divider"></li><li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.name + ' ">' + temp.name +'</a></li>';
+        }
+        $("#cat2_data").html(html);
+    }
+    $(window).load(function () {
+        var html = "";
+        /*
+        * <li><a href="#" class="category">HTML</a></li><li class="divider"></li>
+                        <li><a href="#" class="category">CSS</a></li><li class="divider"></li>
+                        <li><a href="#" class="category">JavaScript</a></li>*/
+        var firstKey = null;
+        for(var key in cat_data) {
+            if(firstKey== null)
+                firstKey = key;
+            console.log(cat_data[key]);
+            html += '<li class="divider"></li><li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name +'</a></li>';
+        }
+        $("#cat1_data").html(html);
     });
 </script>
