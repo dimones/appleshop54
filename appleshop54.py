@@ -1,5 +1,5 @@
 from flask import *
-import os,pymysql,sys,base64
+import os,pymysql,sys,base64,itertools
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
@@ -7,6 +7,16 @@ UPLOAD_FOLDER = app.root_path
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def flat_to_nest(data, keys):
+    """Преобразование "плоских" данных во вложенные
+    """
+    new_data = []
+    for key, group in itertools.groupby(data, lambda x: x[keys[0]]):
+        group =  map(lambda x: dict((i, x[i]) for i in x if i != keys[0]), list(group))
+        new_data.append( {keys[0]: key,"data":
+                          flat_to_nest(group, keys[1:]) if keys[1:] else list(group)} )
+    return new_data
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -72,28 +82,56 @@ def cat_prices(_id):
                 cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max FROM products pr")
             else:
                 cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max FROM products pr WHERE pr.type_product=%s" % _id)
-            data = cursor.fetchall()
+            data = cursor.fetchone()
             print('price %s' % (str(data)))
+
             connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return data
+    ret_data = {}
+    if data['min'] is None:
+        data['min'] = 0
+
+    if data['max'] is None:
+        data['max'] = 0
+    ret_data.update({'min':data['min']})
+    ret_data.update({'max':data['max']})
+    ret_data.update({'pr_min':int(data['min'] * 1.7)})
+    ret_data.update({'pr_max':int(data['max'] * 0.88)})
+    return ret_data
+
+def getCatData(_id):
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT c.id cid,c.category_name,s.id sid,s.categ_id,s.subcateg_name FROM product_categ c,'
+                           'product_subcat s WHERE c.type_id=1 and s.categ_id = c.id ORDER BY cid,sid')
+            data = cursor.fetchall()
+            print('price %s' % (str(flat_to_nest(data,['cid','sid']))))
+
+            connection.close()
+            return flat_to_nest(data,['cid','sid'])
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+
 
 @app.route('/каталог/<string:path>/')
 @app.route('/каталог/<string:path>')
-def catalog_path(path,name_cat=None):
+def catalog_path(path):
     print(path)
-    print(name_cat)
     print('catalogue')
-    dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты'},
+    dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты', 'cat_2_name': 'Цвет'},
              "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2},
              "smart-часы": {"name": "SMART ЧАСЫ", "name_top": "Smart часы", "cat": 3},
-             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4},
-             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5},
-             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6},
-             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7},
-             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8}}
+             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None},
+             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель', 'cat_2_name': None},
+             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие'},
+             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7, 'cat_1_name': 'Тип устройства','cat_2_name': None},
+             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип', 'cat_2_name': 'Семейство','availible':'Зарядные устройства'}}
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
                                                                                                     'products.html',
@@ -101,10 +139,13 @@ def catalog_path(path,name_cat=None):
                                                                                                     types=product_getTypesFixed(),
                                                                                                     _path = path),
                                                                                                 name=dict_data[path]['name'],
-                                                                                                name_top=dict_data[path]['name_top'], prices=cat_prices(dict_data[path]['cat']))))
+                                                                                                name_top=dict_data[path]['name_top'],
+                                                                                                prices=cat_prices(dict_data[path]['cat']),data=dict_data[path],
+                                                                                                cat_data=getCatData(dict_data[path]['cat']))))
 
 
 
+@app.route('/каталог/<string:path>/<string:name_cat>/')
 @app.route('/каталог/<string:path>/<string:name_cat>')
 def catalog_path_name_cat(path,name_cat=None):
     connection = get_conn_1()
@@ -501,4 +542,5 @@ def f32d73dc8d1d():
     return 'a1a24e65907a'
 
 if __name__ == '__main__':
+    getCatData(1)
     app.run(host="0.0.0.0", debug=True)

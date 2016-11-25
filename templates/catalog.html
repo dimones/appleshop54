@@ -6,7 +6,12 @@
     </ol>
     <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;" id="nameCatalogPart">{{ name }}</h3>
 </div>
-
+<script>
+    var data = {{ data | safe}};
+    {% if cat_data != None %}
+    var cat_data = {{ cat_data | safe }};
+    {% endif %}
+</script>
 {% if prices is defined %}
 <div class="row" id="settings" style="margin-left: 0px;">
     <div class="settings">
@@ -16,25 +21,43 @@
                 <div class="row" style="margin-left: 20px;">
                     <div style="border: 1px solid #d9d9d9; height: 60px;">
                         <div style="margin-left: 10px; margin-top: 18px;">
-                            <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;">{{ prices[0]['min'] }}</span>
-                            <input id="priceValue" type="text" class="span2" value="" data-slider-min="{{ prices[0]['min'] }}" data-slider-max="{{ prices[0]['max'] }}" data-slider-step="5" data-slider-value="[250,450]"/>
-                            <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;">{{ prices[0]['max'] }}</span>
+                            <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;">{{ prices['min'] }}</span>
+                            <input id="priceValue" type="text" class="span2" value="" data-slider-min="{{ prices['min'] }}" data-slider-max="{{ prices['max'] }}" data-slider-step="5" data-slider-value="[{{ prices['pr_min'] }},{{ prices['pr_max'] }}]"/>
+                            <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;">{{ prices['max'] }}</span>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Производитель:</label>
+            <div class="col-lg-4" id="cat_1">
+                <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_1_name'] }}:</label>
                 <div style="border: 1px solid #d9d9d9; height: 60px;">
-
+                    <a class="dropdown-toggle" type="button" data-toggle="dropdown"
+                         style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
+                          <span style="margin-left: 15px;">Все объемы</span>
+                      <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px; "></span></a>
+                      <ul class="test dropdown-menu" style="width: 90%; margin-left: 15px;">
+                        <li><a href="#" class="category">HTML</a></li><li class="divider"></li>
+                        <li><a href="#" class="category">CSS</a></li><li class="divider"></li>
+                        <li><a href="#" class="category">JavaScript</a></li>
+                      </ul>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цвет:</label>
-                <div style="border: 1px solid #d9d9d9; height: 60px;">
-
+            {% if data['cat_2_name'] != None %}
+            <div class="col-lg-3" id="cat_2">
+                <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_2_name'] }}:</label>
+                <div style="border: 1px solid #d9d9d9; height: 60px;" class="dropdown">
+                      <a class="dropdown-toggle" type="button" data-toggle="dropdown"
+                         style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
+                          <span style="margin-left: 15px;">Все цвета</span>
+                      <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px; "></span></a>
+                      <ul class="dropdown-menu"  style="width: 100%; margin-left: 1px;">
+                        <li><a href="#" class="category">HTML</a></li><li class="divider"></li>
+                        <li><a href="#" class="category">CSS</a></li><li class="divider"></li>
+                        <li><a href="#" class="category">JavaScript</a></li>
+                      </ul>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -65,4 +88,7 @@
 </div>
 
 <script>
+    $(document).load(function () {
+
+    });
 </script>
