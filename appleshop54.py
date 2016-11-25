@@ -11,12 +11,19 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def flat_to_nest(data, keys):
     """Преобразование "плоских" данных во вложенные
     """
-    new_data = []
+    new_data = {}
     for key, group in itertools.groupby(data, lambda x: x[keys[0]]):
         group =  map(lambda x: dict((i, x[i]) for i in x if i != keys[0]), list(group))
-        new_data.append( {keys[0]: key,"data":
-                          flat_to_nest(group, keys[1:]) if keys[1:] else list(group)} )
+        name = ""
+        temp = flat_to_nest(group, keys[1:]) if keys[1:] else list(group)
+        # print(temp)
+        if isinstance(temp, list):
+            print(temp[0]['category_name'])
+            name = temp[0]['category_name']
+            # pass
+        new_data.update( {key:temp,'name': name} )
     return new_data
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -52,7 +59,7 @@ def product_getTypesFixed():
         return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/')
 def main():
-    return render_template('index.html',body=render_template('main.html'))
+    return render_template('index2.html',body=render_template('main.html'))
 
 @app.route('/контакты')
 def contacts():
