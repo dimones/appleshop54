@@ -59,7 +59,7 @@ def product_getTypesFixed():
         return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/')
 def main():
-    return render_template('index.html',body=render_template('main.html'))
+    return render_template('index2.html',body=render_template('main.html'))
 
 @app.route('/контакты')
 def contacts():
@@ -151,6 +151,7 @@ def getProductsBy():
             subcat = request.args.get('subcat')
             color = request.args.get('color')
             type_id = request.args.get('type')
+            path = request.args.get('path')
 
             if cat != '' and subcat != '' and color != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
@@ -195,11 +196,10 @@ def getProductsBy():
                                type_id))
             connection.close()
             data = cursor.fetchall()
-            print(data)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('products.html', products=data)
+    return render_template('products.html', products=data,types=product_getTypesFixed(),_path = 'телефоны-apple')
 
 @app.route('/getColorsByType', methods=['GET'])
 def getColorByType():
@@ -225,12 +225,22 @@ def catalog_path(path):
     dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты',
                                       'cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все объемы'},
              "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2},
+
              "smart-часы": {"name": "SMART ЧАСЫ", "name_top": "Smart часы", "cat": 3},
-             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True},
-             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель', 'cat_2_name': None, 'cat2_color': True},
+
+             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True,'cat_1_def': 'Все типы'},
+
+             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель', 'cat_2_name': None, 'cat2_color': True, 'cat1_vendor': True},
+
              "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие', 'cat_1_def': 'Все типы', 'cat_2_def': 'Все покрытия' },
-             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7, 'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства'},
-             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип', 'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': True, 'cat_2_def': 'Все типы', 'cat_1_def': 'Все семейства'}}
+
+             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7,
+                                   'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства'},
+
+             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип',
+                            'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все типы', 'cat_1_def': 'Все семейства'}}
+
+
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
                                                                                                     'products.html',

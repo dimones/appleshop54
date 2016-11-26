@@ -88,27 +88,31 @@
 <div class="row" id="products">
     {{ products | safe }}
 </div>
-<div class="row" style="margin-left: 0px;">
-    <nav aria-label="Page navigation">
-      <ul class="pagination">
-        <li>
-          <a href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        <li><a href="#">1</a></li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">5</a></li>
-        <li>
-          <a href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-</div>
+<br>
+<br>
+<br>
+<br>
+{#<div class="row" style="margin-left: 0px;">#}
+{#    <nav aria-label="Page navigation">#}
+{#      <ul class="pagination">#}
+{#        <li>#}
+{#          <a href="#" aria-label="Previous">#}
+{#            <span aria-hidden="true">&laquo;</span>#}
+{#          </a>#}
+{#        </li>#}
+{#        <li><a href="#">1</a></li>#}
+{#        <li><a href="#">2</a></li>#}
+{#        <li><a href="#">3</a></li>#}
+{#        <li><a href="#">4</a></li>#}
+{#        <li><a href="#">5</a></li>#}
+{#        <li>#}
+{#          <a href="#" aria-label="Next">#}
+{#            <span aria-hidden="true">&raquo;</span>#}
+{#          </a>#}
+{#        </li>#}
+{#      </ul>#}
+{#    </nav>#}
+{#</div>#}
 
 <script>
     var colorId = null;
@@ -130,27 +134,43 @@
     }
     function changeCategory(key) {
         cat1Id = key;
-        if(cat_data[key] == null){
-            $("#cat_2").hide();
+        if(key == null){
+            $("#cat1_text").text(data.cat_1_def);
+            filterProducts();
         }
-        $("#cat1_text").text(cat_data[key].name);
-
-        if($("#cat_2").attr('type') != "color") {
-            html = "";
-            for (var i = 0; i < cat_data[key].data.length; i++) {
-                var temp = cat_data[key].data[i];
-                console.log(temp);
-                if(i == 0) {
-
-                    html += '<a id="t0" onclick="changeColor(null);" class="category" sid="null" value="null">' + data.cat_2_def + ' </a><li class="divider"></li>';
-                    html += '<li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
-                }
-                else
-                    html += '<li class="divider"></li><li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
+        else {
+            if (cat_data[key] == null) {
+                $("#cat_2").hide();
             }
-            $("#cat2_data").html(html);
+            $("#cat1_text").text(cat_data[key].name);
+
+            if ($("#cat_2").attr('type') != "color") {
+                console.log(cat_data[key].data);
+                html = "";
+                if(cat_data[key].data.length == 0)
+                {
+                    $("#cat_2").hide();
+                }
+                else{
+                    $("#cat_2").show();
+                    for (var i = 0; i < cat_data[key].data.length; i++) {
+                    var temp = cat_data[key].data[i];
+                    console.log(temp);
+                    if (i == 0) {
+
+                        html += '<a id="t0" onclick="changeColor(null);" class="category" sid="null" value="null">' + data.cat_2_def + ' </a><li class="divider"></li>';
+                        html += '<li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
+                    }
+                    else
+                        html += '<li class="divider"></li><li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
+                }
+                $("#cat2_data").html(html);
+
+                }
+
+            }
+            filterProducts();
         }
-        filterProducts();
     }
     function changeColor(color){
         console.log(color);
