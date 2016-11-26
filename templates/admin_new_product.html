@@ -366,7 +366,9 @@
                     html += '<option value="' + data[i].id +'">' + data[i].category_name + '</option>';
                 }
                 $("#categProduct").html(html);
-
+                if(data.length == 0)
+                    categID = -1;
+                else
                 categID = $("#categProduct").val();
                 loadSubCategs();
             })

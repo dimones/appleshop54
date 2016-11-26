@@ -42,6 +42,20 @@
                 </div>
             </div>
             {% endif %}
+            {% if data['cat1_vendor'] == True %}
+            <div class="col-lg-4" id="cat_1" type="vendor">
+                <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_1_name'] }}:</label>
+                <div style="border: 1px solid #d9d9d9; height: 60px;">
+                    <a class="dropdown-toggle" type="button" data-toggle="dropdown"
+                         style="height: 100%; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
+                          <span style="margin-left: 15px;" id="cat1_text">{{ data['cat_1_def'] }}</span>
+                      <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px;  text-align: center;"></span></a>
+                      <ul class="test dropdown-menu" style="margin-top: -15px;width: 90%; margin-left: 15px;" id="cat1_data">
+
+                      </ul>
+                </div>
+            </div>
+            {% else %}
             <div class="col-lg-4" id="cat_1">
                 <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_1_name'] }}:</label>
                 <div style="border: 1px solid #d9d9d9; height: 60px;">
@@ -54,7 +68,8 @@
                       </ul>
                 </div>
             </div>
-            {% if data['cat2_color'] != None %}
+            {% endif %}
+            {% if data['cat2_color'] == True %}
             <div class="col-lg-3" id="cat_2" type="color">
                 <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цвет:</label>
                 <div style="border: 1px solid #d9d9d9; height: 60px;" class="dropdown">
@@ -118,8 +133,10 @@
     var colorId = null;
     var cat1Id = null;
     var cat2Id = null;
+    var vendorId = null;
     function filterProducts(){
-        $.get('/getProductsBy',{'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat})
+        console.log({'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId});
+        $.get('/getProductsBy',{'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId})
         .done(function (data) {
             $("#products").html(data);
         })
@@ -127,21 +144,43 @@
         });
     }
     function changeSubCategory(key) {
-        console.log("#t" + key);
-        $("#cat2_text").text($("#t" + key).attr('value'));
+        if(key == null){
+            $("#cat2_text").text(data['cat_2_def']);
+            cat2Id = null;
+        }
+        else{
+            console.log("#t" + key);
+            cat2Id = key;
+            $("#cat2_text").text($("#t" + key).attr('value'));
 
+        }
+        filterProducts();
 {#        $("#cat2_text").text($(key.target).attr('value'));#}
     }
     function changeCategory(key) {
         cat1Id = key;
+
         if(key == null){
             $("#cat1_text").text(data.cat_1_def);
             filterProducts();
+
+            $("#cat_2").hide();
         }
         else {
+            if(data.availble != null) {
+                if (cat_data[key].data.length > 0) {
+                    cat2Id = null;
+
+                    $("#cat_2").hide();
+                }
+                else {
+                    $("#cat_2").show();
+                }
+            }
             if (cat_data[key] == null) {
                 $("#cat_2").hide();
             }
+
             $("#cat1_text").text(cat_data[key].name);
 
             if ($("#cat_2").attr('type') != "color") {
@@ -158,7 +197,7 @@
                     console.log(temp);
                     if (i == 0) {
 
-                        html += '<a id="t0" onclick="changeColor(null);" class="category" sid="null" value="null">' + data.cat_2_def + ' </a><li class="divider"></li>';
+                        html += '<li><a id="t0" onclick="changeColor(null);" class="category" sid="null" value="null">' + data.cat_2_def + ' </a></li><li class="divider"></li>';
                         html += '<li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
                     }
                     else
@@ -188,7 +227,52 @@
             filterProducts();
         }
     }
+    function changeVendor(vendor){
+        console.log(vendor);
+        if(vendor == null){
+            vendorId = null;
+            $("#cat1_text").text('Все производители');
+            filterProducts();
+        }
+        else {
+            var key = vendor;
+            console.log($("#v" + key.toString()).text());
+            vendorId = $("#v" + key.toString()).text();
+            console.log(vendorId);
+            console.log("#v" + key);
+            $("#cat1_text").text($("#v" + key.toString()).attr('value'));
+            filterProducts();
+        }
+    }
     $(window).load(function () {
+        if($("#cat_1").attr('type') == "vendor"){
+            $.get('/getVendorsByType',{'id':data.cat})
+            .done(function (data) {
+                data = JSON.parse(data);
+                console.log(data);
+                var html = "";
+                for (var i = 0; i < data.length; i++) {
+                    var temp = data[i];
+                    console.log(temp);
+                    if(i==0) {
+                        html += '<li><a id="v00" onclick="changeVendor(null);" class="category" sid="null" value="null">Все производители</a></li><li class="divider"></li>';
+                        html += '<li><a id="v' + i + '" onclick="changeVendor(' + i + ');" class="category" sid="' + i + '" value="' + temp.vendor
+                                + ' ">' + temp.vendor + '</a></li>';
+                    }
+                    else
+                        html += '<li class="divider"><li><a id="v' + i + '" onclick="changeVendor('
+                                + i + ');" class="category" sid="' + i + '" value="' + temp.vendor
+                                + ' ">' + temp.vendor + '</a></li>';
+                }
+                $("#cat1_data").html(html);
+            })
+            .fail(function (data) {
+
+            });
+        }
+
+
+
         if($("#cat_2").attr('type') == "color"){
             $.get('/getColorsByType',{'id':data.cat})
             .done(function (data) {

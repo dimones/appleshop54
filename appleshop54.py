@@ -59,7 +59,7 @@ def product_getTypesFixed():
         return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/')
 def main():
-    return render_template('index2.html',body=render_template('main.html'))
+    return render_template('index.html',body=render_template('main.html'))
 
 @app.route('/контакты')
 def contacts():
@@ -71,8 +71,8 @@ def cat(_id):
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.type_product=%s" % _id)
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.type_product=%s" % _id)
             connection.close()
             data = cursor.fetchall()
     except Exception as e:
@@ -104,7 +104,7 @@ def cat_prices(_id):
         data['max'] = 0
     ret_data.update({'min':data['min']})
     ret_data.update({'max':data['max']})
-    ret_data.update({'pr_min':int(data['min'] * 1.7)})
+    ret_data.update({'pr_min':int(data['min'] * 1.2)})
     ret_data.update({'pr_max':int(data['max'] * 0.88)})
     return ret_data
 
@@ -152,46 +152,52 @@ def getProductsBy():
             color = request.args.get('color')
             type_id = request.args.get('type')
             path = request.args.get('path')
-
+            vendor = request.args.get('vendor')
             if cat != '' and subcat != '' and color != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
                                "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s" % (cat,color,subcat))
             elif cat!= '' and color != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
                                "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s" % (
                                cat, color))
             elif cat!= '' and subcat != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
                                "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s" % (
                                cat, subcat))
             elif cat!= '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
                                "FROM products pr WHERE pr.categ_id = %s" % (
                                cat))
             elif color!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
                                "FROM products pr WHERE pr.color_id = %s" % (
                                color))
             elif subcat!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
                                "FROM products pr WHERE pr.subcateg_id = %s" % (
                                subcat))
+            elif vendor!= '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
+                               "FROM products pr WHERE pr.vendor = '%s'" % (
+                               vendor))
             elif type_id!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
                                "FROM products pr WHERE pr.type_product = %s" % (
                                type_id))
             connection.close()
@@ -207,8 +213,22 @@ def getColorByType():
     data = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT pr.color_id,(SELECT color_name FROM product_colors WHERE id = pr.color_id) color FROM "
+            cursor.execute("SELECT DISTINCT(pr.color_id),(SELECT color_name FROM product_colors WHERE id = pr.color_id) color FROM "
                            "products pr WHERE pr.color_id > 0 AND pr.type_product = %s" % request.args.get('id'))
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return json.dumps(data,ensure_ascii=False)
+
+@app.route('/getVendorsByType', methods=['GET'])
+def getVendorsByType():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT(pr.vendor) FROM products pr WHERE pr.type_product = %s" % request.args.get('id'))
             connection.close()
             data = cursor.fetchall()
     except Exception as e:
@@ -230,7 +250,8 @@ def catalog_path(path):
 
              "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True,'cat_1_def': 'Все типы'},
 
-             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель', 'cat_2_name': None, 'cat2_color': True, 'cat1_vendor': True},
+             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель',
+                                 'cat_2_name': None, 'cat2_color': True, 'cat1_vendor': True, 'cat_1_def': 'Все производители'},
 
              "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие', 'cat_1_def': 'Все типы', 'cat_2_def': 'Все покрытия' },
 
@@ -262,8 +283,8 @@ def catalog_path_name_cat(path,name_cat=None):
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.id = %s" % request.args.get(
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % request.args.get(
                 'product_id'))
             connection.close()
             data = cursor.fetchone()
@@ -286,8 +307,8 @@ def catalog():
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr")
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr")
             connection.close()
             data = cursor.fetchall()
     except Exception as e:
@@ -307,8 +328,8 @@ def catalog_detail():
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.id = %s" % request.args.get('product_id'))
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % request.args.get('product_id'))
             connection.close()
             data = cursor.fetchone()
     except Exception as e:
@@ -330,8 +351,8 @@ def admin():
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr")
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr")
             connection.close()
             data = cursor.fetchall()
             print(data)
@@ -443,12 +464,12 @@ def product_getByType():
         with connection.cursor() as cursor:
             if request.args.get('type') is None:
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr")
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr")
             else:
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension FROM products pr WHERE pr.type_product = %s" % (request.args.get('type')))
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.type_product = %s" % (request.args.get('type')))
             connection.close()
             data = cursor.fetchall()
             return render_template('product_list.html',products=data)
