@@ -57,7 +57,7 @@
                                 <div class="col-sm-6">
                                     <div class="phone_icon inline-image" style="float: right; margin-top:28px; color:white; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic;">
                                         <img src="/static/img/header_phone.png" align="left" style="filter: invert(100%); margin-top: 2px">
-                                        <span class="phone_text">8 (961) 123-45-67</span>
+                                        <span class="phone_text">358-00-48</span>
                                     </div>
                                 </div>
                                 <div class="col-sm-6" style="text-align: right; top:10px;">
@@ -150,7 +150,7 @@
                     <div class="col-sm-6">
                         <div class="phone_icon inline-image" style="float: right; margin-top:28px; color:white; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic;">
                             <img src="/static/img/header_phone.png" align="left" style="filter: invert(100%); margin-top: 2px">
-                            <span class="phone_text">8 (961) 123-45-67</span>
+                            <span class="phone_text">358-00-48</span>
                         </div>
                     </div>
                     <div class="col-sm-6" style="text-align: right; top:10px;">
@@ -172,6 +172,7 @@
 	<script type="text/javascript" src="/static/js/jquery.easing.1.3.js"></script>
     <script type="text/javascript" src="/static/js/smoothscroll.js"></script>
     <script>
+        var testSlider;
         $(document).ready(function() {
             $( "div.appleshop_spec_jumb" ).hover(function() {
               $(this).toggleClass('appleshop_spec_jumb_hover');
@@ -186,8 +187,7 @@
             $( "div.appleshop_product_jumb" ).hover(function() {
               $(this).toggleClass('appleshop_catalog_jumb_hover');
             });
-            $("#priceValue").slider({});
-
+            testSlider = $("#priceValue").slider({});
         });
 
     </script>

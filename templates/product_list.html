@@ -28,8 +28,13 @@
                 <label style="font-family: 'Roboto Light', sans-serif;">{{ product['price'] }}р</label>
             </div>
             <div class="row" style="text-align: center; margin: auto;">
-                <a class="btn appleshop_specs_btn" href="/ad/change/{{ product['id'] }}">ИЗМЕНИТЬ</a>
-                <button class="btn appleshop_specs_btn" onclick="removeProduct({{ product['id'] }})">УДАЛИТЬ</button>
+                <a class="btn btn-info" href="/ad/change/{{ product['id'] }}">ИЗМЕНИТЬ</a>
+                {% if product['is_special'] == 0 %}
+                <button class="btn btn-default" style="display: inline-block; z-index: 100;" onclick="setSpecial(this,{{ product['id'] }});">Сделать спец.предложением</button>
+                {% else %}
+                <button class="btn btn-success" style="display: inline-block; z-index: 100;" onclick="setSpecial(this,{{ product['id'] }});">Сделать спец.предложением</button>
+                {% endif %}
+                <button class="btn btn-danger" onclick="removeProduct({{ product['id'] }})">УДАЛИТЬ</button>
             </div>
         </div>
     </div>
@@ -41,3 +46,41 @@
         {% set countProducts = 1 %}
     {% endif %}
 {% endfor %}
+
+<script>
+    function setSpecial(btn,id){
+        console.log($(btn).hasClass('btn-default'));
+        if($(btn).hasClass('btn-default')){
+
+            $.get('/ad/change/special/set',{'product_id': id, 'is_special': 1})
+            .done(function (data) {
+                data = JSON.parse(data);
+                console.log(data);
+                if(data.success == true)
+                {
+                    $(btn).removeClass('btn-default');
+                    $(btn).addClass('btn-success');
+                }
+                else{
+                    alert('Назначено больше 8 спец. предложений');
+                }
+            })
+            .fail(function (data) {
+
+            });
+        }else{
+            $.get('/ad/change/special/set',{'product_id': id, 'is_special': 0})
+            .done(function (data) {
+                data = JSON.parse(data);
+                if(data.success == true){
+                    $(btn).addClass('btn-default');
+                    $(btn).removeClass('btn-success');
+                }
+            })
+            .fail(function (data) {
+
+            });
+        }
+        console.log(btn);
+    }
+</script>

@@ -1,37 +1,41 @@
 <div class="row">
     <div class="col-lg-7">
-        <div class="row" style="margin-left: 13px">
-            <div class="thumbnail">
-                <img src="data:image/{{ product['extension'] }};base64,{{ product['image'] }}" alt="" id="img1">
+        <div class="row" style="margin-left: 13px; background-color: white; border: 0;">
+            <div class="" style="background: url(data:image/{{ product['extension'] }};base64,{{ product['image'] }});  height: 450px; background-size: contain;background-position: center;background-repeat: no-repeat;">
             </div>
         </div>
-        <div class="row" id="images">
-
-        </div>
+{#        <div class="row" id="images">#}
+{##}
+{#        </div>#}
         <div class="row">
         </div>
     </div>
     <div class="col-lg-5">
         <div class="row " style="margin-left: 13px;">
             <div class="">
-                <div class="row priceCard">
+                <div class="row priceCard" style="width: 400px;;">
                     <div class="col-lg-6">
-                        <div style="margin: auto; text-align: center;">
-                            <h5>Цена:</h5>
-                            <h3>{{ product['price'] }}</h3>
+                        <div style="margin: auto; text-align: left; margin-left: 50px; margin-top: 40px;">
+                            <div class="row" style=" text-align: left;">
+                                <label  style="font-family: 'Roboto', sans-serif; font-size: 16px;">Цена:</label>
+                            </div>
+                            <div class="row" style=" text-align: left;">
+                                <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px;">{{ product['price'] }} р</label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <button class="btn appleshop_btn appleshop_btn_call" style="margin: auto;">ЗАКАЗАТЬ</button>
+                        <button class="btn appleshop_btn appleshop_btn_call" style="margin: auto; margin-left: -20px; margin-top: 40px;">ЗАКАЗАТЬ</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <label>{{ product['description'] }} {{ product }}</label>
+        <div class="row" style="margin-left: 0px; margin-top: 10px;width: 400px;">
+            <div style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ product['description'] }}</div>
         </div>
     </div>
 </div>
+{% if specs != None %}
 <div class="row" style="margin-left: 13px;">
     <h4>Основные характеристики</h4>
     <table>
@@ -39,3 +43,4 @@
         </tbody>
     </table>
 </div>
+{% endif %}

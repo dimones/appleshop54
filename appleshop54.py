@@ -59,7 +59,56 @@ def product_getTypesFixed():
         return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/')
 def main():
-    return render_template('index.html',body=render_template('main.html'))
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                                    SELECT
+                            pr.id ,
+                            pr.type_product ,
+                            pr. NAME ,
+                            pr.price ,
+                            (
+                                SELECT
+                                    image
+                                FROM
+                                    product_images
+                                WHERE
+                                    product_id = pr.id
+                                AND is_main = 1
+                                LIMIT 0 ,
+                                1
+                            ) image ,
+                            (
+                                SELECT
+                                    extension
+                                FROM
+                                    product_images
+                                WHERE
+                                    product_id = pr.id
+                                AND is_main = 1
+                                LIMIT 0 ,
+                                1
+                            ) extension ,
+                            (
+                                SELECT
+                                    LOWER(REPLACE(tp.type_name , ' ' , '-')) link
+                                FROM
+                                    type_products tp
+                                WHERE
+                                    tp.id = pr.type_product
+                            ) tp
+                        FROM
+                            products pr
+                        WHERE
+                            pr.is_special = 1""")
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return render_template('index.html',body=render_template('main.html',data=data))
 
 @app.route('/контакты')
 def contacts():
@@ -90,8 +139,6 @@ def cat_prices(_id):
             else:
                 cursor.execute("SELECT MIN(pr.price) min, MAX(pr.price) max FROM products pr WHERE pr.type_product=%s" % _id)
             data = cursor.fetchone()
-            print('price %s' % (str(data)))
-
             connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
@@ -121,21 +168,17 @@ def getCatData(_id):
                 cursor.execute("SELECT s.id sid,s.categ_id,s.subcateg_name FROM product_subcat s WHERE s.categ_id = %s"
                                % dat['id'])
                 out_data.update({dat['id']: {'name' : dat['name'], 'data': list(cursor.fetchall())}})
-            print(out_data)
             return out_data
             cursor.execute('SELECT c.id cid,c.category_name,s.id sid,s.categ_id,s.subcateg_name FROM product_categ c,'
                            'product_subcat s WHERE c.type_id=%s and (s.categ_id = c.id OR  ORDER BY cid,sid' % _id)
             data = cursor.fetchall()
             cat_data = {}
-            print(data)
             for dat in data:
-                print(dat)
                 if dat['cid'] in cat_data:
                     cat_data[dat['cid']]['data'].append({'name':dat['subcateg_name'],'sid': dat['sid']})
                 else:
                     cat_data.update({ dat['cid']: { 'data': [{'name':dat['subcateg_name'],'sid': dat['sid']}],'name':dat['category_name'] }})
             connection.close()
-            print(cat_data)
             return cat_data
     except Exception as e:
         print(str(e), file=sys.stderr)
@@ -259,7 +302,7 @@ def catalog_path(path):
                                    'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства'},
 
              "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип',
-                            'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все типы', 'cat_1_def': 'Все семейства'}}
+                            'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все семейства', 'cat_1_def': 'Все типы'}}
 
 
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
@@ -280,14 +323,18 @@ def catalog_path(path):
 def catalog_path_name_cat(path,name_cat=None):
     connection = get_conn_1()
     data = None
+    data_specs = None
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.description,pr.type_product,"
                            "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                            "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % request.args.get(
                 'product_id'))
-            connection.close()
             data = cursor.fetchone()
+            cursor.execute('SELECT * FROM product_specs WHERE product_id = %s ' % data['id'])
+            data_specs = cursor.fetchall()
+            print(data_specs)
+            connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
@@ -299,7 +346,7 @@ def catalog_path_name_cat(path,name_cat=None):
                                                                                                     'NAME'].upper(),
                                                                                                 name_top=data[
                                                                                                     'NAME'],
-                                                                                                types=product_getTypesFixed())))
+                                                                                                types=product_getTypesFixed(), specs=data_specs)))
 @app.route('/каталог')
 def catalog():
     connection = get_conn_1()
@@ -361,7 +408,7 @@ def admin():
     data = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.is_special,"
                            "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                            "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr")
             connection.close()
@@ -391,7 +438,44 @@ def admin_change_product(product_id):
         return json.dumps({'succeed': False, "error": str(e)})
     return render_template('change_product.html',product_id=product_id,data=data)
 
+@app.route('/ad/change/special/set', methods=['GET'])
+def special_set():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            print(request.args.get)
+            if int(request.args.get('is_special')) is 1:
+                cursor.execute("SELECT count(id) c FROM products WHERE is_special = 1")
+                t = cursor.fetchone()['c']
+                print(t)
+                if t >= 8:
+                    return json.dumps({'succeed': False })
+                cursor.execute(
+                    "UPDATE products SET is_special = %s WHERE id = %s" % (request.args.get('is_special'),request.args.get('product_id')))
+            else:
+                cursor.execute(
+                    "UPDATE products SET is_special = %s WHERE id = %s" % (request.args.get('is_special'),request.args.get('product_id')))
 
+            connection.commit()
+            connection.close()
+            return json.dumps({"success":True}, ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/change/special/unset', methods=['GET'])
+def special_unset():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE products SET is_special = %s WHERE id = " % (request.args.get('is_special')))
+            connection.commit()
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/upload/<_id>', methods=['GET', 'POST'])
 def upload_file_2(_id):
     if request.method == 'POST':
@@ -629,7 +713,6 @@ def product_update():
     connection = get_conn()
     try:
         with connection.cursor() as cursor:
-            print(request.args)
             cursor.execute("UPDATE products SET type_product=%s, NAME='%s', price = %s , description='%s' , vendor = '%s'"
                            " , categ_id=%s , subcateg_id=%s WHERE id=%s"
                            %(request.args.get('type_product'),request.args.get('name'),
@@ -656,6 +739,18 @@ def product_remove():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/product/load_spec')
+def product_loadSpec():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM product_specs WHERE product_id = %s" % request.args.get('product_id'))
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/ad/product/set_spec',methods=['POST'])
 def product_setSpec():
     connection = get_conn()
@@ -663,6 +758,10 @@ def product_setSpec():
         with connection.cursor() as cursor:
             productSpecs = json.loads(request.form['specs'])
             productId = request.form['product_id']
+            cursor.execute("SELECT * FROM product_specs WHERE product_id = %s" % productId)
+            if cursor.rowcount > 0:
+                cursor.execute("DELETE FROM product_specs WHERE product_id = %s" % productId)
+                connection.commit()
             for spec in productSpecs:
                 cursor.execute("INSERT INTO product_specs(specName,specValue,product_id) VALUES('%s','%s',%s)"
                                % (spec['specName'],spec['specValue'],productId))

@@ -83,7 +83,12 @@
                 </div>
             </div>
             {% elif data['cat_2_name'] != None %}
-            <div class="col-lg-3" id="cat_2">
+                {% if data['availible'] is defined %}
+                    <div class="col-lg-3" id="cat_2" style="display: none;">
+                {% else %}
+
+                    <div class="col-lg-3" id="cat_2">
+                {% endif %}
                 <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_2_name'] }}:</label>
                 <div style="border: 1px solid #d9d9d9; height: 60px;" class="dropdown">
                       <a class="dropdown-toggle" type="button" data-toggle="dropdown"
@@ -163,15 +168,16 @@
         if(key == null){
             $("#cat1_text").text(data.cat_1_def);
             filterProducts();
-
-            $("#cat_2").hide();
+            if(data.cat2_color != true)
+                $("#cat_2").hide();
         }
         else {
             if(data.availble != null) {
                 if (cat_data[key].data.length > 0) {
                     cat2Id = null;
 
-                    $("#cat_2").hide();
+                    if(data.cat2_color != true)
+                        $("#cat_2").hide();
                 }
                 else {
                     $("#cat_2").show();
@@ -244,6 +250,9 @@
             filterProducts();
         }
     }
+    $(testSlider).change(function (data) {
+       console.log(data);
+    });
     $(window).load(function () {
         if($("#cat_1").attr('type') == "vendor"){
             $.get('/getVendorsByType',{'id':data.cat})

@@ -448,6 +448,14 @@
             loadTypes();
             loadColors();
             loadCategs();
+            $.get('/ad/product/load_spec?product_id=' + productId )
+            .done(function (data) {
+                specs = JSON.parse(data);
+                updateSpecsTable();
+            })
+            .fail(function (data) {
+
+            });
         });
         /*<div class="col-xs-6 col-md-3">
                 <a href="#" class="thumbnail">
