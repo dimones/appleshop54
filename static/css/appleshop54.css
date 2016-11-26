@@ -266,3 +266,16 @@ a.list-group-item.appleshop_menu_item:hover{
 .category{
     font-family: 'Roboto Light', sans-serif; font-size: 16px;  font-weight: 300; color:black;
 }
+.call_modal.modal-dialog{
+    background-color: #f7f7f7;
+}
+.close{
+    float: right;
+font-size: 21px;
+font-weight: bold;
+line-height: 1;
+ color: #000;
+ text-shadow: 0 1px 0 #fff;
+ filter: !important;
+ opacity: 1!important;
+}

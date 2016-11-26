@@ -1,5 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,8 +68,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
-                <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Добавление товара</h2>
-                <h3 id="productId">ID продукта: -</h3>
+                <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Изменение товара</h2>
+                <h3 id="productId">ID продукта: {{ data['id'] }}</h3>
                 <div class="form-group">
                   <label for="typeProduct">Выбор типа продукта :</label>
                   <select class="form-control" id="typeProduct" onchange="typeProd = this.value; loadCategs();">
@@ -69,21 +78,21 @@
                 <br>
                 <div class="input-group">
                   <span class="input-group-addon" id="basic-addon1">Производитель</span>
-                  <input type="text" class="form-control" placeholder="Производитель" aria-describedby="basic-addon1" id="productVendor">
+                  <input type="text" class="form-control" placeholder="Производитель" aria-describedby="basic-addon1" id="productVendor" value="{{ data['vendor'] }}">
                 </div>
                 <div class="input-group">
                   <span class="input-group-addon" id="basic-addon1">Название</span>
-                  <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1" id="productName">
+                  <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1" id="productName" value="{{ data['NAME'] }}">
                 </div>
                 <br>
                 <div class="input-group">
                   <span class="input-group-addon" id="basic-addon1">Цена</span>
-                  <input type="text" class="form-control" placeholder="Цена" aria-describedby="basic-addon1" id="productPrice">
+                  <input type="text" class="form-control" placeholder="Цена" aria-describedby="basic-addon1" id="productPrice" value="{{ data['price'] }}">
                 </div>
                 <br>
                 <div class="input-group">
                   <span class="input-group-addon" id="basic-addon1">Описание</span>
-                    <textarea rows="10" cols="45" name="text" class="form-control" placeholder="Описание"id="productDescription"></textarea>
+                    <textarea rows="10" cols="45" name="text" class="form-control" placeholder="Описание"id="productDescription">{{ data['description'] }}</textarea>
 {#                  <input type="text" class="form-control" placeholder="Описание" aria-describedby="basic-addon1" id="productDescription">#}
                 </div>
                 <h2 id="progress-label"><a class="anchorjs-link " href="#progress-label" aria-label="Anchor link for: progress label" data-anchorjs-icon="" style="font-family: anchorjs-icons; font-style: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-variant-east-asian: normal; font-weight: normal; line-height: inherit; position: absolute; margin-left: -1em; padding-right: 0.5em;"></a>Фотографии продукта</h2>
@@ -207,7 +216,7 @@
         <br>
         <br>
         <div class="row text-center">
-            <button type="button" class="btn btn-primary btn-lg btn-block" onclick="addProduct()">ДОБАВИТЬ ПРОДУКТ</button>
+            <button type="button" class="btn btn-primary btn-lg btn-block" onclick="addProduct()">Принять изменения</button>
         </div>
     </div>
     <script>
@@ -216,30 +225,30 @@
           this.length = from < 0 ? this.length + from : from;
           return this.push.apply(this, rest);
         };
-        var colorId = -1;
+        var colorId = {{ data['color_id'] | safe }};
         var specs = new Array();
         var imageIDs = new Array();
-        var categID = -1;
+        var categID = {{ data['categ_id'] |safe }};
         var subcategID = -1;
         var typeProd = 1;
-        var productId = -1;
+        var productId = {{ product_id }};
         $( "#typeProduct" ).change(function(data) {
             typeProd = $( "#typeProduct" ).val();
         });
         function addProduct(){
-            $.get('/ad/product/add', {'type_product': typeProd,'name':$("#productName").val(),
+            $.get('/ad/product/update', {'type_product': typeProd,'name':$("#productName").val(),
                 'price':$("#productPrice").val(),'description':$("#productDescription").val(),
-                'vendor': $("#productVendor").val(),'categ':categID,'sub_categ':subcategID})
+                'vendor': $("#productVendor").val(),'categ':categID,'sub_categ':subcategID,'product_id':productId})
             .done(function (data) {
-                for(var i = 0;i < imageIDs.length; i++){
-                    $.get('/ad/img/setProductID',{'product_id': productId,'image_id':imageIDs[i]})
-                    .done(function (data) {
-
-                    })
-                    .fail(function(data){
-                        alert(data.message);
-                    });
-                }
+{#                for(var i = 0;i < imageIDs.length; i++){#}
+{#                    $.get('/ad/img/setProductID',{'product_id': productId,'image_id':imageIDs[i]})#}
+{#                    .done(function (data) {#}
+{##}
+{#                    })#}
+{#                    .fail(function(data){#}
+{#                        alert(data.message);#}
+{#                    });#}
+{#                }#}
                 if(specs != {})
                     $.post('/ad/product/set_spec',{'specs': JSON.stringify(specs),'product_id':productId})
                     .done(function (data) {
@@ -316,7 +325,7 @@
             $("#specsBody").html(html);
         }
         function setMain(image_id){
-            $.get('/ad/img/setMain?image_id='+image_id.toString())
+            $.get('/ad/img/setMain?product_id=' + productId.toString() + '&image_id='+image_id.toString())
             .done(function (data) {
                 loadAllImages();
             })
@@ -334,7 +343,7 @@
             });
         }
         function loadAllImages(){
-            $.get('/ad/img/all')
+            $.get('/ad/img/all?product_id=' + productId.toString())
             .done(function (data) {
                 data = JSON.parse(data);
                 var html = "";
@@ -370,7 +379,8 @@
                 if(data.length == 0)
                     categID = -1;
                 else
-                categID = $("#categProduct").val();
+                    $("#categProduct").val(categID);
+{#                categID = $("#categProduct").val();#}
                 loadSubCategs();
             })
             .fail(function (data) {
@@ -401,6 +411,7 @@
                     html += '<option value="' + data[i].id +'">' + data[i].color_name + '</option>';
                 }
                 $("#colorProduct").html(html);
+                $("#colorProduct").val(colorId);
             })
             .fail(function (data) {
                 alert(data.message);
@@ -433,7 +444,7 @@
         }
         $(window).load(function () {
             loadAllImages();
-            loadProductID();
+{#            loadProductID();#}
             loadTypes();
             loadColors();
             loadCategs();
@@ -448,7 +459,7 @@
             var form_data = new FormData($('#upload-file')[0]);
             $.ajax({
                 type: 'POST',
-                url: '/upload',
+                url: '/upload/'+ productId.toString(),
                 data: form_data,
                 contentType: false,
                 cache: false,

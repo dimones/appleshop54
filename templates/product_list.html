@@ -28,7 +28,7 @@
                 <label style="font-family: 'Roboto Light', sans-serif;">{{ product['price'] }}р</label>
             </div>
             <div class="row" style="text-align: center; margin: auto;">
-                <button class="btn appleshop_specs_btn">ИЗМЕНИТЬ</button>
+                <a class="btn appleshop_specs_btn" href="/ad/change/{{ product['id'] }}">ИЗМЕНИТЬ</a>
                 <button class="btn appleshop_specs_btn" onclick="removeProduct({{ product['id'] }})">УДАЛИТЬ</button>
             </div>
         </div>

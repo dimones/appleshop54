@@ -282,7 +282,7 @@ def catalog_path_name_cat(path,name_cat=None):
     data = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.description,pr.type_product,"
                            "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                            "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % request.args.get(
                 'product_id'))
@@ -343,7 +343,18 @@ def catalog_detail():
                                                                                                 name_top=data['NAME'],
                                                                                                 types=product_getTypesFixed(), prices=cat_prices(-1))))
 
-
+@app.route('/new_call_request',methods=['POST'])
+def new_call_request():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO messages(name,phone,date) VALUES('%s','%s',NOW())" % (request.form['name'],request.form['phone']))
+            connection.commit()
+            connection.close()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/ad')
 def admin():
     connection = get_conn_1()
@@ -355,7 +366,6 @@ def admin():
                            "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr")
             connection.close()
             data = cursor.fetchall()
-            print(data)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
@@ -363,6 +373,58 @@ def admin():
 @app.route('/ad/new')
 def admin_new():
     return render_template('admin_new_product.html')
+
+@app.route('/ad/change/<product_id>')
+def admin_change_product(product_id):
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.description,pr.categ_id,pr.subcateg_id,pr.vendor,pr.color_id,"
+                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
+                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % product_id)
+            connection.close()
+            data = cursor.fetchone()
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return render_template('change_product.html',product_id=product_id,data=data)
+
+
+@app.route('/upload/<_id>', methods=['GET', 'POST'])
+def upload_file_2(_id):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], 'tmp'))
+            buffer = None
+            with open(os.path.join(app.config['UPLOAD_FOLDER'], 'tmp'),'rb') as file:
+                buffer = file.read()
+                file.close()
+            connection = get_conn()
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "INSERT INTO product_images(image,product_id,is_main,extension) VALUES ('%s',%s,%s,'image/%s')" % (base64.b64encode(buffer).decode('utf8'),_id,0,filename.rsplit('.', 1)[1]))
+                    connection.commit()
+                    connection.close()
+                    return json.dumps({'imgId': cursor.lastrowid})
+            except Exception as e:
+                print(str(e), file=sys.stderr)
+                return json.dumps({'succeed': False, "error": str(e)})
+            # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return 'good'
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -562,6 +624,25 @@ def product_add():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
 
+@app.route('/ad/product/update', methods=['GET'])
+def product_update():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            print(request.args)
+            cursor.execute("UPDATE products SET type_product=%s, NAME='%s', price = %s , description='%s' , vendor = '%s'"
+                           " , categ_id=%s , subcateg_id=%s WHERE id=%s"
+                           %(request.args.get('type_product'),request.args.get('name'),
+                             request.args.get('price'),request.args.get('description'),request.args.get('vendor'),
+                             request.args.get('categ'),request.args.get('sub_categ'),request.args.get('product_id')))
+            connection.commit()
+            connection.close()
+            return json.dumps({'succeed':True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+
 @app.route('/ad/product/remove',methods= ['GET'])
 def product_remove():
     connection = get_conn()
@@ -639,10 +720,19 @@ def img_setMain():
     connection = get_conn()
     try:
         with connection.cursor() as cursor:
-            cursor.execute('UPDATE product_images SET is_main = 0 WHERE  product_id = -1 AND is_main = 1')
+
+            if request.args.get('product_id') != None:
+                cursor.execute('UPDATE product_images SET is_main = 0 WHERE  product_id = %s AND is_main = 1 ' %request.args.get('product_id'))
+            else:
+                cursor.execute('UPDATE product_images SET is_main = 0 WHERE  product_id = -1 AND is_main = 1 ')
             connection.commit()
-            cursor.execute(
-                "UPDATE product_images SET is_main = 1 WHERE  product_id = -1 AND id = %s" % (request.args.get('image_id')))
+            if request.args.get('product_id') != None:
+                cursor.execute(
+                    "UPDATE product_images SET is_main = 1 WHERE  product_id = %s AND id = %s" % (request.args.get('product_id'),
+                    request.args.get('image_id')))
+            else:
+                cursor.execute(
+                    "UPDATE product_images SET is_main = 1 WHERE  product_id = -1 AND id = %s" % (request.args.get('image_id')))
             connection.commit()
             connection.close()
             return json.dumps({'succeed': True})
@@ -656,8 +746,11 @@ def img_all():
     connection = get_conn()
     try:
         with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT id,image,extension,is_main FROM product_images WHERE product_id = -1")
+            if request.args.get('product_id') != None:
+                cursor.execute('SELECT id,image,extension,is_main FROM product_images WHERE product_id = %s' % request.args.get('product_id'))
+            else:
+                cursor.execute(
+                    "SELECT id,image,extension,is_main FROM product_images WHERE product_id = -1")
             images = []
             for data in cursor.fetchall():
                 images.append({'id':data[0] ,'image':('data:image/%s;base64,%s' %(data[2],data[1])), 'is_main' :bool(data[3]) })
