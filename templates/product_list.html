@@ -14,7 +14,11 @@
     <div class="col-lg-3 product_container" style="margin-top: 20px;">
         <div class="appleshop_spec_jumb">
             <div class="row" style="margin: auto;">
-                <div class="specs_icon" style="background-image: url(data:image/{{ product['extension'] }};base64,{{ product['image'] }})"></div>
+                {% if product['image'] != None %}
+                    <div class="specs_icon" style="background-image: url(data:image/{{ product['extension'] }};base64,{{ product['image'] }})"></div>
+                {% else %}
+                    <div class="specs_icon" style="background-image: url(/static/img/img_dummy.png)"></div>
+                {% endif %}
             </div>
             <br>
             <div class="row specs_divider"></div>

@@ -7,7 +7,7 @@
     <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;" id="nameCatalogPart">{{ name }}</h3>
 </div>
 <script>
-    var data = {{ data | safe}};
+    var data = {{ js_data | safe}};
     {% if cat_data != None %}
     var cat_data = {{ cat_data | safe }};
     {% endif %}
@@ -16,6 +16,7 @@
 <div class="row" id="settings" style="margin-left: 0px;">
     <div class="settings">
         <div class="row">
+            {% if prices['min'] != prices['max'] %}
             <div class="col-lg-5">
                 <label style="margin-left: 20px;margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цена:</label>
                 <div class="row" style="margin-left: 20px;">
@@ -28,25 +29,51 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
+            {% if prices['min'] == prices['max'] %}
+            <div class="col-lg-5">
+                <label style="margin-left: 20px;margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цена:</label>
+                <div class="row" style="margin-left: 20px;">
+                    <div style="border: 1px solid #d9d9d9; height: 60px;">
+                        <div style="margin-left: 10px; margin-top: 18px;">
+                            <label style="margin-left: 10%;margin-right: 10%; padding-left: 35px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">Фильтр недоступен</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
             <div class="col-lg-4" id="cat_1">
                 <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_1_name'] }}:</label>
                 <div style="border: 1px solid #d9d9d9; height: 60px;">
                     <a class="dropdown-toggle" type="button" data-toggle="dropdown"
-                         style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
-                          <span style="margin-left: 15px;" id="cat1_text">Все объемы</span>
+                         style="height: 100%; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
+                          <span style="margin-left: 15px;" id="cat1_text">{{ data['cat_1_def'] }}</span>
                       <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px;  text-align: center;"></span></a>
-                      <ul class="test dropdown-menu" style="width: 90%; margin-left: 15px;" id="cat1_data">
+                      <ul class="test dropdown-menu" style="margin-top: -15px;width: 90%; margin-left: 15px;" id="cat1_data">
 
                       </ul>
                 </div>
             </div>
-            {% if data['cat_2_name'] != None %}
+            {% if data['cat2_color'] != None %}
+            <div class="col-lg-3" id="cat_2" type="color">
+                <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цвет:</label>
+                <div style="border: 1px solid #d9d9d9; height: 60px;" class="dropdown">
+                      <a class="dropdown-toggle" type="button" data-toggle="dropdown"
+                         style="height: 100%; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
+                          <span style="margin-left: 15px;" id="cat2_text">Все цвета</span>
+                      <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px; "></span></a>
+                      <ul class="dropdown-menu"  style="width: 100%; margin-left: 1px; text-align: center;" id="cat2_data">
+                        <li><a href="#" class="category">Все цвета</a></li>
+                      </ul>
+                </div>
+            </div>
+            {% elif data['cat_2_name'] != None %}
             <div class="col-lg-3" id="cat_2">
                 <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_2_name'] }}:</label>
                 <div style="border: 1px solid #d9d9d9; height: 60px;" class="dropdown">
                       <a class="dropdown-toggle" type="button" data-toggle="dropdown"
-                         style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
-                          <span style="margin-left: 15px;" id="cat2_text">Все цвета</span>
+                         style="height: 100%; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;">
+                          <span style="margin-left: 15px;" id="cat2_text">{{ data['cat_2_def'] }}</span>
                       <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px; "></span></a>
                       <ul class="dropdown-menu"  style="width: 100%; margin-left: 1px; text-align: center;" id="cat2_data">
                         <li><a href="#" class="category">Все цвета</a></li>
@@ -84,6 +111,17 @@
 </div>
 
 <script>
+    var colorId = null;
+    var cat1Id = null;
+    var cat2Id = null;
+    function filterProducts(){
+        $.get('/getProductsBy',{'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat})
+        .done(function (data) {
+            $("#products").html(data);
+        })
+        .fail(function (data) {
+        });
+    }
     function changeSubCategory(key) {
         console.log("#t" + key);
         $("#cat2_text").text($("#t" + key).attr('value'));
@@ -91,27 +129,88 @@
 {#        $("#cat2_text").text($(key.target).attr('value'));#}
     }
     function changeCategory(key) {
-        $("#cat1_text").text(cat_data[key].name);
-        html = "";
-        for(var i = 0;i < cat_data[key].data.length; i++){
-            var temp = cat_data[key].data[i];
-            console.log(temp);
-            html += '<li class="divider"></li><li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.name + ' ">' + temp.name +'</a></li>';
+        cat1Id = key;
+        if(cat_data[key] == null){
+            $("#cat_2").hide();
         }
-        $("#cat2_data").html(html);
+        $("#cat1_text").text(cat_data[key].name);
+
+        if($("#cat_2").attr('type') != "color") {
+            html = "";
+            for (var i = 0; i < cat_data[key].data.length; i++) {
+                var temp = cat_data[key].data[i];
+                console.log(temp);
+                if(i == 0) {
+
+                    html += '<a id="t0" onclick="changeColor(null);" class="category" sid="null" value="null">' + data.cat_2_def + ' </a><li class="divider"></li>';
+                    html += '<li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
+                }
+                else
+                    html += '<li class="divider"></li><li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
+            }
+            $("#cat2_data").html(html);
+        }
+        filterProducts();
+    }
+    function changeColor(color){
+        console.log(color);
+        if(color == null){
+            colorId = null;
+
+            $("#cat2_text").text('Все цвета');
+            filterProducts();
+        }
+        else {
+            colorId = color;
+            console.log(color);
+            console.log("#t" + color);
+            $("#cat2_text").text($("#t" + color).attr('value'));
+            filterProducts();
+        }
     }
     $(window).load(function () {
+        if($("#cat_2").attr('type') == "color"){
+            $.get('/getColorsByType',{'id':data.cat})
+            .done(function (data) {
+                data = JSON.parse(data);
+                var html = "";
+                for (var i = 0; i < data.length; i++) {
+                    var temp = data[i];
+                    console.log(temp);
+                    if(i==0) {
+                        html += '<li><a id="t0" onclick="changeColor(null);" class="category" sid="null" value="null">Все цвета</a></li><li class="divider"></li>';
+                        html += '<li><a id="t' + temp['color_id'] + '" onclick="changeColor('
+                                + temp['color_id'] + ');" class="category" sid="' + temp['color_id'] + '" value="' + temp.color
+                                + ' ">' + temp.color + '</a></li>';
+                    }
+                    else
+                        html += '<li class="divider"></li><li><a id="t' + temp['color_id'] + '" onclick="changeColor('
+                            + temp['color_id'] + ');" class="category" sid="' + temp['color_id'] + '" value="' + temp.color
+                            + '">' + temp.color + '</a></li>';
+                }
+                $("#cat2_data").html(html);
+            })
+            .fail(function (data) {
+
+            });
+        }
         var html = "";
         /*
         * <li><a href="#" class="category">HTML</a></li><li class="divider"></li>
                         <li><a href="#" class="category">CSS</a></li><li class="divider"></li>
                         <li><a href="#" class="category">JavaScript</a></li>*/
+
         var firstKey = null;
+        var i = 0;
         for(var key in cat_data) {
-            if(firstKey== null)
-                firstKey = key;
-            console.log(cat_data[key]);
-            html += '<li class="divider"></li><li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name +'</a></li>';
+            if(i==0) {
+
+                html += '<li><a onclick="changeCategory(null);" class="category">' + data.cat_1_def +'</a></li><li class="divider">';
+                html += '<li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name + '</a></li>';
+            }
+            else
+                html += '<li class="divider"></li><li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name +'</a></li>';
+            i++;
         }
         $("#cat1_data").html(html);
     });

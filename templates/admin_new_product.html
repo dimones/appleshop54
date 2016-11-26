@@ -66,6 +66,11 @@
                   <select class="form-control" id="typeProduct" onchange="typeProd = this.value; loadCategs();">
                   </select>
                 </div>
+                <br>
+                <div class="input-group">
+                  <span class="input-group-addon" id="basic-addon1">Производитель</span>
+                  <input type="text" class="form-control" placeholder="Производитель" aria-describedby="basic-addon1" id="productVendor">
+                </div>
                 <div class="input-group">
                   <span class="input-group-addon" id="basic-addon1">Название</span>
                   <input type="text" class="form-control" placeholder="Название" aria-describedby="basic-addon1" id="productName">
@@ -157,6 +162,7 @@
                             <label for="inputType" class="col-lg-1 control-label">Название</label>
                               <input type="text" class="form-control" id="inputColorName" placeholder="Название цвета">
                             <button class="btn btn-success" onclick="addColor()">Добавить цвет</button>
+                            <button class="btn btn-danger" onclick="removeColor()">Удалить текущий цвет</button>
                           </div>
                         </div>
 
@@ -221,7 +227,8 @@
         });
         function addProduct(){
             $.get('/ad/product/add', {'type_product': typeProd,'name':$("#productName").val(),
-                'price':$("#productPrice").val(),'description':$("#productDescription").val()})
+                'price':$("#productPrice").val(),'description':$("#productDescription").val(),
+                'vendor': $("#productVendor").val(),'categ':categID,'sub_categ':subcategID})
             .done(function (data) {
                 for(var i = 0;i < imageIDs.length; i++){
                     $.get('/ad/img/setProductID',{'product_id': productId,'image_id':imageIDs[i]})
@@ -232,21 +239,22 @@
                         alert(data.message);
                     });
                 }
-                $.post('/ad/product/set_spec',{'specs': JSON.stringify(specs),'product_id':productId})
+                if(specs != {})
+                    $.post('/ad/product/set_spec',{'specs': JSON.stringify(specs),'product_id':productId})
+                    .done(function (data) {
+
+                    })
+                    .fail(function(data){
+                    });
+                $.get('/ad/product/set_color',{'color_id': colorId,'product_id':productId})
                 .done(function (data) {
 
                 })
                 .fail(function(data){
-                    alert(data.message);
                 });
-                $.post('/ad/product/set_color',{'color_id': colorId,'product_id':productId})
-                .done(function (data) {
+                loadProductID();
 
-                })
-                .fail(function(data){
-                    alert(data.message);
-                });
-                window.top.location.href = '/ad';
+{#                window.top.location.href = '/ad';#}
             })
             .fail(function(data){
                 alert(data.message);
@@ -255,6 +263,15 @@
         function removeSpec(removeI){
             specs.remove(removeI);
             updateSpecsTable();
+        }
+        function removeColor(){
+            $.get('/ad/product/del_color?color_id='+colorId)
+            .done(function (data) {
+                loadColors();
+            })
+            .fail(function(data){
+                alert(data.message);
+            });
         }
         function addSpec(){
             specs.push({'specName':$("#inputSpecsName").val(), 'specValue': $("#inputSpecsValue").val()});

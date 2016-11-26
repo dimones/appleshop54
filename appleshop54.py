@@ -112,37 +112,125 @@ def getCatData(_id):
     connection = get_conn_1()
     data = None
     try:
+        print(_id)
         with connection.cursor() as cursor:
+            cursor.execute('SELECT c.id, c.category_name name FROM product_categ c WHERE c.type_id = %s' % _id)
+            da = cursor.fetchall()
+            out_data = {}
+            for dat in da:
+                cursor.execute("SELECT s.id sid,s.categ_id,s.subcateg_name FROM product_subcat s WHERE s.categ_id = %s"
+                               % dat['id'])
+                out_data.update({dat['id']: {'name' : dat['name'], 'data': list(cursor.fetchall())}})
+            print(out_data)
+            return out_data
             cursor.execute('SELECT c.id cid,c.category_name,s.id sid,s.categ_id,s.subcateg_name FROM product_categ c,'
-                           'product_subcat s WHERE c.type_id=1 and s.categ_id = c.id ORDER BY cid,sid')
+                           'product_subcat s WHERE c.type_id=%s and (s.categ_id = c.id OR  ORDER BY cid,sid' % _id)
             data = cursor.fetchall()
             cat_data = {}
+            print(data)
             for dat in data:
+                print(dat)
                 if dat['cid'] in cat_data:
                     cat_data[dat['cid']]['data'].append({'name':dat['subcateg_name'],'sid': dat['sid']})
                 else:
                     cat_data.update({ dat['cid']: { 'data': [{'name':dat['subcateg_name'],'sid': dat['sid']}],'name':dat['category_name'] }})
             connection.close()
+            print(cat_data)
             return cat_data
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
 
+@app.route('/getProductsBy',methods=['GET'])
+def getProductsBy():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cat = request.args.get('cat')
+            subcat = request.args.get('subcat')
+            color = request.args.get('color')
+            type_id = request.args.get('type')
 
+            if cat != '' and subcat != '' and color != '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s" % (cat,color,subcat))
+            elif cat!= '' and color != '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s" % (
+                               cat, color))
+            elif cat!= '' and subcat != '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s" % (
+                               cat, subcat))
+            elif cat!= '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "FROM products pr WHERE pr.categ_id = %s" % (
+                               cat))
+            elif color!= '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "FROM products pr WHERE pr.color_id = %s" % (
+                               color))
+            elif subcat!= '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "FROM products pr WHERE pr.subcateg_id = %s" % (
+                               subcat))
+            elif type_id!= '':
+                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1) image ,"
+                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1) extension "
+                               "FROM products pr WHERE pr.type_product = %s" % (
+                               type_id))
+            connection.close()
+            data = cursor.fetchall()
+            print(data)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return render_template('products.html', products=data)
+
+@app.route('/getColorsByType', methods=['GET'])
+def getColorByType():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT pr.color_id,(SELECT color_name FROM product_colors WHERE id = pr.color_id) color FROM "
+                           "products pr WHERE pr.color_id > 0 AND pr.type_product = %s" % request.args.get('id'))
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return json.dumps(data,ensure_ascii=False)
 
 @app.route('/каталог/<string:path>/')
 @app.route('/каталог/<string:path>')
 def catalog_path(path):
     print(path)
     print('catalogue')
-    dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты', 'cat_2_name': 'Цвет'},
+    #TODO ну это пиздец. Не смог нормально придумать
+    dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты',
+                                      'cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все объемы'},
              "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2},
              "smart-часы": {"name": "SMART ЧАСЫ", "name_top": "Smart часы", "cat": 3},
-             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None},
-             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель', 'cat_2_name': None},
-             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие'},
-             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7, 'cat_1_name': 'Тип устройства','cat_2_name': None},
-             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип', 'cat_2_name': 'Семейство','availible':'Зарядные устройства'}}
+             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True},
+             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель', 'cat_2_name': None, 'cat2_color': True},
+             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие', 'cat_1_def': 'Все типы', 'cat_2_def': 'Все покрытия' },
+             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7, 'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства'},
+             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип', 'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': True, 'cat_2_def': 'Все типы', 'cat_1_def': 'Все семейства'}}
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
                                                                                                     'products.html',
@@ -152,7 +240,7 @@ def catalog_path(path):
                                                                                                 name=dict_data[path]['name'],
                                                                                                 name_top=dict_data[path]['name_top'],
                                                                                                 prices=cat_prices(dict_data[path]['cat']),data=dict_data[path],
-                                                                                                cat_data=getCatData(dict_data[path]['cat']))))
+                                                                                                cat_data=getCatData(dict_data[path]['cat']), js_data = json.dumps(dict_data[path]))))
 
 
 
@@ -377,15 +465,16 @@ def product_addColors():
     connection = get_conn_1()
     try:
         with connection.cursor() as cursor:
-            cursor.execute(
-                "INSERT INTO product_colors(color_name) VALUES('%s')" % request.args.get('color_name'))
-            connection.commit()
-            connection.close()
-            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+            cursor.execute('SELECT id FROM product_colors WHERE color_name =\'%s\'' % request.args.get('color_name'))
+            if cursor.rowcount == 0:
+                cursor.execute(
+                    "INSERT INTO product_colors(color_name) VALUES('%s')" % request.args.get('color_name'))
+                connection.commit()
+                connection.close()
+            return json.dumps('', ensure_ascii=False)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/ad/product/get_colors', methods=['GET'])
 def product_getColors():
     connection = get_conn_1()
@@ -399,14 +488,28 @@ def product_getColors():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
+@app.route('/ad/product/del_color', methods=['GET'])
+def product_delColor():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "DELETE FROM product_colors WHERE id = %s" % (
+                request.args.get('color_id')))
+            connection.commit()
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/ad/product/set_color', methods=['GET'])
 def product_setColor():
     connection = get_conn_1()
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                "UPDATE products SET color_id = %s WHERE id = %s" % (request.args.get('color_id'),request.args.get('device_id')))
+                "UPDATE products SET color_id = %s WHERE id = %s" % (request.args.get('color_id'),request.args.get('product_id')))
+            connection.commit()
             connection.close()
             return json.dumps(cursor.fetchall(), ensure_ascii=False)
     except Exception as e:
@@ -417,9 +520,10 @@ def product_add():
     connection = get_conn()
     try:
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO products(type_product,name,price,description) VALUES(%s,'%s',%s,'%s')"
+            cursor.execute("INSERT INTO products(type_product,name,price,description,vendor,categ_id,subcateg_id) VALUES(%s,'%s',%s,'%s','%s',%s,%s)"
                            %(request.args.get('type_product'),request.args.get('name'),
-                             request.args.get('price'),request.args.get('description')))
+                             request.args.get('price'),request.args.get('description'),request.args.get('vendor'),
+                             request.args.get('categ'),request.args.get('sub_categ')))
             connection.commit()
             connection.close()
             return json.dumps({'succeed':True})
@@ -553,5 +657,5 @@ def f32d73dc8d1d():
     return 'a1a24e65907a'
 
 if __name__ == '__main__':
-    getCatData(1)
+    # getCatData(1)
     app.run(host="0.0.0.0", debug=True)
