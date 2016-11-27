@@ -129,6 +129,50 @@
       </div>
     </div>
 
+   <div class="modal fade call_modal" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="myOrderLabel" >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 710px; margin-top: 200px;margin-left: -50px;">
+
+          <div class="modal-body" style="background-color: #f7f7f7">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; margin-top: -50px; margin-right: -15px;"><span style="font-size: 14px;">Закрыть</span></button>
+            <div class="row" style="margin: auto; width: 550px">
+                <br>
+                <div class="row">
+                    <div class="col-lg-12 text-center">
+                        <h3 class="section-heading" style="font-weight: bold;">ЗАКАЗАТЬ ТОВАРА</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <h4 class="section-heading" style="text-align: center; font-weight: bold;">Отправьте заявку на покупку товара и в ближайшее время, наши специалисты свяжуться с Вами для уточнения деталей</h4>
+                </div>
+                <br>
+                <div class="row text-center">
+                    <input class="appleshop_questions_input text-center" placeholder="Как Вас зовут?" id="orderName">
+                </div>
+                <br>
+                <div class="row text-center" >
+                    <input class="appleshop_questions_input text-center" placeholder="Ваш номер телефона"  type="text" id="orderPhone">
+                </div>
+                <br>
+                <div class="row text-center" >
+                    <input class="appleshop_questions_input text-center" placeholder="Ваша почта"  type="text" id="orderEmail">
+                </div>
+                <br>
+                <div class="row" >
+                    <textarea class="appleshop_questions_input" placeholder="Ваш комментарий..."  type="text" id="orderComment" style="min-height: 145px;"></textarea>
+                </div>
+                <br>
+                <br>
+                <div class="row text-center">
+                    <button class="btn appleshop_btn appleshop_btn_call disabled" onclick="orderRequest()" id="orderSendBtn">ЗАКАЗАТЬ ТОВАР</button>
+                </div>
+            </div>
+        </div>
+        </div>
+      </div>
+    </div>
+
+
 
     {{ body | safe }}
     <div class="row" style="height: 75px; background: #222">

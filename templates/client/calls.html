@@ -1,0 +1,17 @@
+{% for call in calls %}
+    <a href="#" class="list-group-item" id="c{{ call['id'] }}">
+      <div class="row">
+          <div class="col-lg-5">
+                <h4 class="list-group-item-heading">{{ call['name'] }}</h4>
+                <p class="list-group-item-text">{{ call['phone'] }}</p>
+          </div>
+          <div class="col-lg-4">
+                <h4 class="list-group-item-heading">Дата</h4>
+                <p class="list-group-item-text">{{ call['date'] }}</p>
+          </div>
+          <div class="col-lg-3" style="text-align: right;">
+              <button class="btn btn-success" onclick="removeCall({{ call['id'] }});">Уже позвонили</button>
+          </div>
+      </div>
+  </a>
+{% endfor %}

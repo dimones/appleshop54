@@ -1,0 +1,32 @@
+{% for call in orders %}
+    <a href="#" class="list-group-item" id="o{{ call['id'] }}">
+      <div class="row">
+          <div class="col-lg-5">
+                <h4 class="list-group-item-heading">{{ call['name'] }}</h4>
+              <br>
+                <h4 class="list-group-item-heading">{{ call['product'] }}</h4>
+                <p class="list-group-item-text">{{ call['phone'] }}</p>
+          </div>
+          <div class="col-lg-4">
+              <br>
+              <br>
+                <h4 class="list-group-item-heading">Дата</h4>
+                <p class="list-group-item-text">{{ call['date'] }}</p>
+          </div>
+          <div class="col-lg-3" style="text-align: right;">
+              <button class="btn btn-success" onclick="removeOrder({{ call['id'] }});">Уже позвонили</button>
+          </div>
+      </div>
+        <br>
+    <div class="row">
+        <div class="col-lg-4">
+            <h4 class="list-group-item-heading">Комментарий</h4>
+        </div>
+        <div class="col-lg-8">
+            <label>
+                {{ call['comment'] }}
+            </label>
+        </div>
+    </div>
+  </a>
+{% endfor %}

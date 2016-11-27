@@ -185,13 +185,58 @@ def getCatData(_id):
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
 
+
+@app.route('/remove_order_request', methods=['POST'])
+def remove_order_request():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM orders WHERE id = %s" % request.form['id'])
+            connection.commit()
+            connection.close()
+            return json.dumps({'succeed': True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/order_request', methods=['POST'])
+def order_request():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            print("INSERT INTO orders (name,phone,date,product_id,email,comment) VALUES('%s','%s',NOW(),%s,'%s','%s')"
+                           % (request.form['name'],request.form['phone'],request.form['product_id'],request.form['email'],request.form['comment']))
+            cursor.execute("INSERT INTO orders (name,phone,date,product_id,email,comment) VALUES('%s','%s',NOW(),%s,'%s','%s')"
+                           % (request.form['name'],request.form['phone'],request.form['product_id'],request.form['email'],request.form['comment']))
+            connection.commit()
+            name_product = ""
+            cursor.execute('SELECT name FROM products WHERE id = %s' % request.form['product_id'])
+            name_product = cursor.fetchone()['name']
+            connection.close()
+
+            me = 'system@appleshop54.com'
+            smtp_server = 'smtp.yandex.ru'
+            msg = MIMEText('Новый заказ на %s на звонок от %s по номеру %s' % (name_product,request.form['name'],request.form['phone']), 'html')
+            msg['Subject'] = 'Новый заказ!'
+            msg['From'] = me
+            msg['To'] = 'direct@appleshop54.com'
+            # print(text)
+            s = smtplib.SMTP_SSL(host=smtp_server, port=465)
+            s.login(me, 'qkeNxV5B')
+            s.sendmail(me, ['direct@appleshop54.com'], msg.as_string())
+            s.quit()
+            return json.dumps({'succeed': True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/remove_call_request',methods=['POST'])
 def remove_call_request():
     connection = get_conn_1()
     data = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM messages WHERE id = %s" % (request.form['id']))
+            cursor.execute("DELETE FROM call_requests WHERE id = %s" % (request.form['id']))
             connection.commit()
             connection.close()
             return json.dumps({'succeed':True})
@@ -455,20 +500,45 @@ def admin():
 @app.route('/ad/new')
 def admin_new():
     return render_template('admin_new_product.html')
-@app.route('/ad/clients')
-def admin_calls():
+
+@app.route('/ad/clients/get_data')
+def clients_getData():
     connection = get_conn_1()
     data = None
+    data_Orders = None
     try:
         with connection.cursor() as cursor:
             cursor.execute(
                 "SELECT * FROM call_requests")
-            connection.close()
             data = cursor.fetchall()
+            cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
+                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o")
+            data_Orders = cursor.fetchall()
+            connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('calls.html',calls=data)
+    return json.dumps({'calls': render_template('client/calls.html',calls=data),'orders': render_template('client/orders.html',orders=data_Orders)},ensure_ascii=False)
+@app.route('/ad/clients')
+def admin_calls():
+
+    connection = get_conn_1()
+    data = None
+    data_Orders = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM call_requests")
+            data = cursor.fetchall()
+            cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
+                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o")
+            data_Orders = cursor.fetchall()
+            connection.close()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return render_template('calls.html',calls=render_template('client/calls.html',calls=data),orders=render_template('client/orders.html',orders=data_Orders))
+
 @app.route('/ad/change/<product_id>')
 def admin_change_product(product_id):
     connection = get_conn_1()
@@ -524,6 +594,7 @@ def special_unset():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
+
 @app.route('/upload/<_id>', methods=['GET', 'POST'])
 def upload_file_2(_id):
     if request.method == 'POST':

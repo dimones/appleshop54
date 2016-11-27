@@ -61,39 +61,14 @@
             <div class="col-sm-6">
 
                 <h3 id="productId">Запросы на звонки</h3>
-                <div class="list-group">
-                    {% for call in calls %}
-                        <a href="#" class="list-group-item">
-                          <div class="row">
-                              <div class="col-lg-6">
-                                    <h4 class="list-group-item-heading">{{ call['name'] }}</h4>
-                                    <p class="list-group-item-text">{{ call['phone'] }}</p>
-                              </div>
-                              <div class="col-lg-6" style="text-align: right;">
-                                  <button class="btn btn-success" onclick="removeCalls({{ call['id'] }});">Уже позвонили</button>
-                              </div>
-                          </div>
-                      </a>
-                    {% endfor %}
+                <div class="list-group" id="calls">
+                    {{ calls | safe }}
                 </div>
             </div>
             <div class="col-sm-6">
                 <h3 id="productId">Заказы</h3>
-                <div class="list-group">
-                      {% for call in orders %}
-                        <a href="#" class="list-group-item">
-                          <div class="row">
-                              <div class="col-lg-6">
-                                    <h4 class="list-group-item-heading">{{ call['name'] }}</h4>
-                                    <h4 class="list-group-item-heading">{{ call['product_name'] }}</h4>
-                                    <p class="list-group-item-text">{{ call['phone'] }}</p>
-                              </div>
-                              <div class="col-lg-6" style="text-align: right;">
-                                  <button class="btn btn-success" onclick="removeOrder({{ call['id'] }});">Уже позвонили</button>
-                              </div>
-                          </div>
-                      </a>
-                    {% endfor %}
+                <div class="list-group" id="orders">
+                    {{ orders | safe  }}
                 </div>
             </div>
         </div>
@@ -104,6 +79,41 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script>
+        setInterval(function (data) {
+            $.get('/ad/clients/get_data')
+            .done(function (data) {
+                data = JSON.parse(data);
+                $("#calls").html(data.calls);
+                $("#orders").html(data.orders);
+            })
+            .fail(function (data) {
+
+            });
+        },2000);
+        function removeOrder(id){
+            $.post('/remove_order_request',{'id': id})
+            .done(function(data){
+                data = JSON.parse(data);
+                if(data.succeed == true)
+                    $("#o"+id.toString()).remove();
+            })
+            .fail(function (data) {
+
+            });
+
+        }
+        function removeCall(id){
+            $.post('/remove_call_request',{'id': id})
+            .done(function(data){
+                data = JSON.parse(data);
+                if(data.succeed == true)
+                    $("#c"+id.toString()).remove();
+            })
+            .fail(function (data) {
+
+            });
+
+        }
         function removeProduct(productId){
             $.get('/ad/product/remove',{'product_id': productId})
             .done(function (data) {

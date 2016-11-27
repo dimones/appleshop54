@@ -6,9 +6,12 @@
     </ol>
     <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;" id="nameCatalogPart">{{ name }}</h3>
 </div>
+
 <script>
-    var data = {{ js_data | safe}};
-    {% if cat_data != None %}
+    {% if data is defined %}
+        var data = {{ js_data | safe}};
+    {% endif %}
+    {% if cat_data is defined %}
     var cat_data = {{ cat_data | safe }};
     {% endif %}
 </script>
@@ -144,25 +147,29 @@
     var priceMax = null;
     $(document).ready(function (data) {
         testSlider = $("#priceValue").slider({});
-        priceMin = $(testSlider).val().split(',')[0];
-        priceMax = $(testSlider).val().split(',')[1];
-        setInterval(function() {
-            if($(testSlider).val() == undefined)
-            {
-                priceMin = priceMax = 0;
-                return;
-            }
-            var value = $(testSlider).val().split(',');
-            var tempMin = value[0];
-            var tempMax = value[1];
-            if(tempMin != priceMin || tempMax != priceMax)
-            {
-                priceMin = tempMin;
-                priceMax = tempMax;
-                console.log('Вот дичь то');
-                filterProducts();
-            }
-        }, 1800);
+        if(testSlider)
+        {
+            priceMin = $(testSlider).val().split(',')[0];
+            priceMax = $(testSlider).val().split(',')[1];
+            setInterval(function() {
+                if($(testSlider).val() == undefined)
+                {
+                    priceMin = priceMax = 0;
+                    return;
+                }
+                var value = $(testSlider).val().split(',');
+                var tempMin = value[0];
+                var tempMax = value[1];
+                if(tempMin != priceMin || tempMax != priceMax)
+                {
+                    priceMin = tempMin;
+                    priceMax = tempMax;
+                    console.log('Вот дичь то');
+                    filterProducts();
+                }
+            }, 1800);
+        }
+
     });
     function filterProducts(){
         console.log({'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId,
@@ -342,16 +349,102 @@
 
         var firstKey = null;
         var i = 0;
-        for(var key in cat_data) {
-            if(i==0) {
+        if(this.cat_data != undefined)
+        {
+            for(var key in cat_data) {
+                if(i==0) {
 
-                html += '<li><a onclick="changeCategory(null);" class="category">' + data.cat_1_def +'</a></li><li class="divider">';
-                html += '<li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name + '</a></li>';
+                    html += '<li><a onclick="changeCategory(null);" class="category">' + data.cat_1_def +'</a></li><li class="divider">';
+                    html += '<li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name + '</a></li>';
+                }
+                else
+                    html += '<li class="divider"></li><li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name +'</a></li>';
+                i++;
             }
-            else
-                html += '<li class="divider"></li><li><a onclick="changeCategory(' + key + ');" class="category">' + cat_data[key].name +'</a></li>';
-            i++;
+            $("#cat1_data").html(html);
         }
-        $("#cat1_data").html(html);
+
+
+
+
+        (function( $ ){
+
+            //// ---> Проверка на существование элемента на странице
+            jQuery.fn.exists = function() {
+               return jQuery(this).length;
+            };
+
+            //	Phone Mask
+            $(function() {
+
+              if($('#orderPhone').exists()){
+
+                $('#orderPhone').each(function(){
+                  $('#orderPhone').mask(" +7 (999) 999-99-99");
+                });
+
+              }
+                setInterval(function () {
+                    var pmc = $('#orderPhone');
+                    if(isEmail($("#orderEmail").val()) && $("#orderName").val().length > 2)
+                    {
+                        console.log('here');
+                        if ( ((pmc.val().indexOf("_") != -1) || pmc.val() == '' )) {
+                            $("#orderSendBtn").addClass('disabled');
+                            canSendOrder = false;
+                        } else {
+                            if($("#orderName").val().length > 2) {
+                                canSendOrder = true;
+                                $("#orderSendBtn").removeClass('disabled');
+                            }
+                            else {
+                                canSendOrder = false;
+
+                                $("#orderSendBtn").addClass('disabled');
+                            }
+                        }
+                    }
+                    else{
+                        canSendOrder = false;
+
+                        $("#orderSendBtn").addClass('disabled');
+                    }
+
+                },200);
+
+            });
+
+            })( jQuery );
+
+
     });
+    var canSendOrder = false;
+
+    function isEmail(email) {
+      var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+      return regex.test(email);
+    }
+
+
+    function orderRequest(){
+        if(canSendOrder)
+        {
+            $.post('/order_request',{'name': $("#orderName").val(), 'phone': $('#orderPhone').val(), 'product_id': productID
+                ,'email':$('#orderEmail').val(),'comment':$('#orderComment').val()})
+            .done(function (data) {
+                data = JSON.parse(data);
+                if(data.succeed) {
+                    $("#orderModal").modal('toggle');
+                    alert('Заказ успешно оформлен, ожидайте звонка от специалиста компании');
+                }
+            })
+            .fail(function (data) {
+                    alert('Произошла ошибка при отправлении заказа');
+
+            });
+
+        }
+    }
+
+
 </script>
