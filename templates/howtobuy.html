@@ -1,0 +1,61 @@
+<div class="row">
+    <ol class="breadcrumb" style="background: #f1f1f1;">
+      <li><a href="/">Главная</a></li>
+      <li class="active">Как купить</li>
+    </ol>
+    <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;">КАК КУПИТЬ</h3>
+</div>
+<div class="row"  style="margin-left: 0;">
+    <ul class="timeline">
+        <li>
+          <div class="timeline-badge"><i class="glyphicon glyphicon-check"></i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Выбор</h4>
+            </div>
+            <div class="timeline-body">
+              <p>На нашем сайте Вы выбираете понравившийся Вам продукт и делаете на него заказ через форму, а также если у Вас остались вопросы Вы можете все уточнить заказав обратный звонок.</p>
+            </div>
+          </div>
+        </li>
+        <li class="timeline-inverted">
+          <div class="timeline-badge warning"><i class="glyphicon glyphicon-credit-card"></i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Подтверждение и оплата</h4>
+            </div>
+            <div class="timeline-body">
+                <p>После того как Вы заказали товар, Вам перезвонят и подтвердят заказ, также Вы можете обговорить условия доставки товара курьером с нашим специалистом.</p>
+                <p>Доставка по городу Новосибирску осуществляется курьером, стоимость доставки уточняйте у менеджеров нашей компании. Минимальная сумма заказа на доставку от 7000 рублей.</p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="timeline-badge success"><i class="glyphicon glyphicon-thumbs-up"></i></div>
+          <div class="timeline-panel">
+            <div class="timeline-heading">
+              <h4 class="timeline-title">Получение товара</h4>
+            </div>
+            <div class="timeline-body">
+                <p>Оплата производится после полной проверки устройства в офисе нашей компании.</p>
+                <p>При покупке предоставляется товарный чек и гарантийный талон. Так же мы лично предоставляем собственную гарантию на все устройства.</p>
+            </div>
+          </div>
+        </li>
+        
+    </ul>
+</div>
+<br>
+<script src="http://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
+<script type="text/javascript">
+    var map;
+
+    DG.then(function () {
+        map = DG.map('map', {
+            center: [55.022846, 82.912348],
+            zoom: 16
+        });
+
+        DG.marker([55.022846, 82.912348]).addTo(map).bindPopup('APPLESHOP54<br>Время работы:<br>08:00-20:00');
+    });
+</script>

@@ -58,9 +58,6 @@
     <div class="container" id="productList">
         {{ product_list | safe }}
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script>
         function removeProduct(productId){
             $.get('/ad/product/remove',{'product_id': productId})

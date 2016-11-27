@@ -114,6 +114,12 @@ def main():
 @app.route('/контакты')
 def contacts():
     return render_template('index.html',body=render_template('page.html',body=render_template('contacts.html')))
+@app.route('/акции')
+def discount():
+    return render_template('index.html',body=render_template('page.html',body=render_template('discount.html')))
+@app.route('/как-купить')
+def how_tp_buys():
+    return render_template('index.html',body=render_template('page.html',body=render_template('howtobuy.html')))
 
 def cat(_id):
     connection = get_conn_1()

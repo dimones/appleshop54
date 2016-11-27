@@ -1,0 +1,27 @@
+<div class="row">
+    <ol class="breadcrumb" style="background: #f1f1f1;">
+      <li><a href="/">Главная</a></li>
+      <li class="active">Акции</li>
+    </ol>
+    <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;">АКЦИИ</h3>
+</div>
+<div class="row"  style="margin-left: 0; min-height: 330px; background-image: url(/static/img/bg/iphone6.png); background-size: cover; background-repeat: no-repeat;">
+</div>
+<br>
+<div class="row" style="margin: 0;">
+    <h3 style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 18px;">iPhone 6 с большой скидкой!</h3>
+    <label style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">Специальное предложение в нашем магазине iphone 6 по новогодней цене всего 23900 рублей</label>
+</div>
+<script src="http://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
+<script type="text/javascript">
+    var map;
+
+    DG.then(function () {
+        map = DG.map('map', {
+            center: [55.022846, 82.912348],
+            zoom: 16
+        });
+
+        DG.marker([55.022846, 82.912348]).addTo(map).bindPopup('APPLESHOP54<br>Время работы:<br>08:00-20:00');
+    });
+</script>
