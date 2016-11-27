@@ -196,53 +196,60 @@ def getProductsBy():
             type_id = request.args.get('type')
             path = request.args.get('path')
             vendor = request.args.get('vendor')
+            priceMin = request.args.get('priceMin')
+            priceMax = request.args.get('priceMax')
+            print(priceMax)
+            if priceMin == '':
+                priceMin = 0
+            if priceMax == '':
+                priceMax = 0
             if cat != '' and subcat != '' and color != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s" % (cat,color,subcat))
+                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
             elif cat!= '' and color != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s" % (
-                               cat, color))
+                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               cat, color,priceMax,priceMin))
             elif cat!= '' and subcat != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s" % (
-                               cat, subcat))
+                               "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               cat, subcat,priceMax,priceMin))
             elif cat!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.categ_id = %s" % (
-                               cat))
+                               "FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               cat,priceMax,priceMin))
             elif color!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.color_id = %s" % (
-                               color))
+                               "FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               color,priceMax,priceMin))
             elif subcat!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.subcateg_id = %s" % (
-                               subcat))
+                               "FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               subcat,priceMax,priceMin))
             elif vendor!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.vendor = '%s'" % (
-                               vendor))
+                               "FROM products pr WHERE pr.vendor = '%s'  AND ( price <= %s AND price >= %s)" % (
+                               vendor,priceMax,priceMin))
             elif type_id!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                                "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
                                "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.type_product = %s" % (
-                               type_id))
+                               "FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
+                               type_id,priceMax,priceMin))
             connection.close()
             data = cursor.fetchall()
     except Exception as e:

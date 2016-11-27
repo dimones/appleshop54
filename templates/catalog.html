@@ -23,7 +23,7 @@
                     <div style="border: 1px solid #d9d9d9; height: 60px;">
                         <div style="margin-left: 10px; margin-top: 18px;">
                             <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;">{{ prices['min'] }}</span>
-                            <input id="priceValue" type="text" class="span2" value="" data-slider-min="{{ prices['min'] }}" data-slider-max="{{ prices['max'] }}" data-slider-step="5" data-slider-value="[{{ prices['pr_min'] }},{{ prices['pr_max'] }}]"/>
+                            <input id="priceValue" type="text" class="span2" value="" data-slider-min="{{ prices['min'] }}" data-slider-max="{{ prices['max'] }}" data-slider-step="5" data-slider-value="[{{ prices['min'] }},{{ prices['max'] }}]"/>
                             <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;">{{ prices['max'] }}</span>
                         </div>
                     </div>
@@ -135,17 +135,45 @@
 {#</div>#}
 
 <script>
+    var testSlider;
     var colorId = null;
     var cat1Id = null;
     var cat2Id = null;
     var vendorId = null;
+    var priceMin = null;
+    var priceMax = null;
+    $(document).ready(function (data) {
+        testSlider = $("#priceValue").slider({});
+        priceMin = $(testSlider).val().split(',')[0];
+        priceMax = $(testSlider).val().split(',')[1];
+        setInterval(function() {
+            if($(testSlider).val() == undefined)
+            {
+                priceMin = priceMax = 0;
+                return;
+            }
+            var value = $(testSlider).val().split(',');
+            var tempMin = value[0];
+            var tempMax = value[1];
+            if(tempMin != priceMin || tempMax != priceMax)
+            {
+                priceMin = tempMin;
+                priceMax = tempMax;
+                console.log('Вот дичь то');
+                filterProducts();
+            }
+        }, 1800);
+    });
     function filterProducts(){
-        console.log({'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId});
-        $.get('/getProductsBy',{'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId})
+        console.log({'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId,
+            'priceMin': priceMin, 'priceMax': priceMax});
+        $.get('/getProductsBy',{'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId,
+            'priceMin': priceMin, 'priceMax': priceMax })
         .done(function (data) {
             $("#products").html(data);
         })
         .fail(function (data) {
+
         });
     }
     function changeSubCategory(key) {
@@ -254,6 +282,7 @@
        console.log(data);
     });
     $(window).load(function () {
+
         if($("#cat_1").attr('type') == "vendor"){
             $.get('/getVendorsByType',{'id':data.cat})
             .done(function (data) {
@@ -279,8 +308,6 @@
 
             });
         }
-
-
 
         if($("#cat_2").attr('type') == "color"){
             $.get('/getColorsByType',{'id':data.cat})
