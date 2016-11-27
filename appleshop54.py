@@ -1,5 +1,6 @@
 from flask import *
-import os,pymysql,sys,base64,itertools
+import os,pymysql,sys,base64,itertools, smtplib
+from email.mime.text import MIMEText
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
@@ -183,7 +184,31 @@ def getCatData(_id):
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
+@app.route('/call_request', methods=['POST'])
+def call_request():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO call_requests (name,phone,date,is_called) VALUES('%s','%s',NOW(),0)" % (request.form['name'],request.form['phone']))
+            connection.commit()
+            connection.close()
+            me = 'system@appleshop54.com'
+            smtp_server = 'smtp.yandex.ru'
+            msg = MIMEText('Новый запрос на звонок от %s по номеру %s' % (request.form['name'],request.form['phone']), 'html')
+            msg['Subject'] = 'Новый запрос на звонок!'
+            msg['From'] = me
+            msg['To'] = 'direct@appleshop54.com'
+            # print(text)
+            s = smtplib.SMTP_SSL(host=smtp_server, port=465)
+            s.login(me, 'qkeNxV5B')
+            s.sendmail(me, ['direct@appleshop54.com'], msg.as_string())
+            s.quit()
+            return json.dumps({'succeed': True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return data
 @app.route('/getProductsBy',methods=['GET'])
 def getProductsBy():
     connection = get_conn_1()
@@ -427,7 +452,9 @@ def admin():
 @app.route('/ad/new')
 def admin_new():
     return render_template('admin_new_product.html')
-
+@app.route('/ad/calls')
+def admin_calls():
+    return render_template('admin_new_product.html')
 @app.route('/ad/change/<product_id>')
 def admin_change_product(product_id):
     connection = get_conn_1()

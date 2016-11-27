@@ -112,16 +112,16 @@
                 </div>
                 <br>
                 <div class="row text-center">
-                    <input class="appleshop_questions_input text-center" placeholder="Как Вас зовут?">
+                    <input class="appleshop_questions_input text-center" placeholder="Как Вас зовут?" id="callName">
                 </div>
                 <br>
-                <div class="row text-center">
-                    <input class="appleshop_questions_input text-center" placeholder="Ваш номер телефона">
+                <div class="row text-center" >
+                    <input class="appleshop_questions_input text-center" placeholder="Ваш номер телефона"  type="text" id="callPhoneNumber">
                 </div>
                 <br>
                 <br>
                 <div class="row text-center">
-                    <button class="btn appleshop_btn appleshop_btn_call">ЗАКАЗАТЬ ЗВОНОК</button>
+                    <button class="btn appleshop_btn appleshop_btn_call disabled" onclick="callRequest()" id="callSendBtn">ЗАКАЗАТЬ ЗВОНОК</button>
                 </div>
             </div>
         </div>
@@ -166,13 +166,84 @@
     <!-- Placed at the end of the document so the pages load faster -->
 		
     <script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery.maskedinput.js"></script>
 	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="/static/js/retina.js"></script>
 	<script type="text/javascript" src="/static/js/bootstrap-slider.js"></script>
 	<script type="text/javascript" src="/static/js/jquery.easing.1.3.js"></script>
     <script type="text/javascript" src="/static/js/smoothscroll.js"></script>
     <script>
+{#        $('#callPhoneNumber').mask('+7 (999) 999 - 99 - 99', {#}
+{#            placeholder: '_'#}
+{#        });#}
+        var canSendCall = false;
+
+
+
+
+        function callRequest(){
+            if(canSendCall)
+            {
+                $.post('/call_request',{'name': $("#callName").val(), 'phone': $('#callPhoneNumber').val()})
+                .done(function (data) {
+                    data = JSON.parse(data);
+                    if(data.succeed)
+                        $("#callModal").modal('toggle');
+                })
+                .fail(function (data) {
+
+                });
+
+            }
+        }
         $(document).ready(function() {
+{#            $("#callPhoneNumber").mask("+7(999) 999-9999");#}
+            (function( $ ){
+
+            //// ---> Проверка на существование элемента на странице
+            jQuery.fn.exists = function() {
+               return jQuery(this).length;
+            };
+
+            //	Phone Mask
+            $(function() {
+
+              if($('#callPhoneNumber').exists()){
+
+                $('#callPhoneNumber').each(function(){
+                  $('#callPhoneNumber').mask(" +7 (999) 999-99-99");
+                });
+
+              }
+                setInterval(function () {
+                    var pmc = $('#callPhoneNumber');
+                    if ( ((pmc.val().indexOf("_") != -1) || pmc.val() == '' )) {
+                        if(!$("#callSendBtn").hasClass('disabled'))
+                            $("#callSendBtn").addClass('disabled');
+                        canSendCall = false;
+                    } else {
+                        if($("#callName").val().length > 2) {
+                            canSendCall = true;
+                            $("#callSendBtn").removeClass('disabled');
+                        }
+                        else
+                            canSendCall = false;
+                    }
+                },200);
+
+            });
+
+            })( jQuery );
+
+
+
+
+
+
+
+
+
+
             $( "div.appleshop_spec_jumb" ).hover(function() {
               $(this).toggleClass('appleshop_spec_jumb_hover');
             });

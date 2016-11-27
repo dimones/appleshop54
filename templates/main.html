@@ -383,16 +383,16 @@
                             </div>
                             <br>
                             <div class="row text-center">
-                                <input class="appleshop_questions_input text-center" placeholder="Как Вас зовут?">
+                                <input class="appleshop_questions_input text-center" placeholder="Как Вас зовут?" id="questionName">
                             </div>
                             <br>
                             <div class="row text-center">
-                                <input class="appleshop_questions_input text-center" placeholder="Ваш номер телефона">
+                                <input class="appleshop_questions_input text-center" placeholder="Ваш номер телефона" id="questionPhone" type="text">
                             </div>
                             <br>
                             <br>
                             <div class="row text-center">
-                                <button class="btn appleshop_btn appleshop_btn_call">ОТПРАВИТЬ</button>
+                                <button class="btn appleshop_btn appleshop_btn_call" id="questionSendBtn" onclick="sendQuestion()">ОТПРАВИТЬ</button>
                             </div>
                         </div>
                     </div>
@@ -401,18 +401,79 @@
         </div>
     </div>
 <script>
-    $("#tabletsCont").hover(function (data) {
-        $("#noneCattabl").css('display','inline');
-    },
-    function (data) {
+    var canSendQuestion = false;
 
-        $("#noneCattabl").css('display','none');
-    });
-    $("#watchesCont").hover(function (data) {
-        $("#noneCatwatches").css('display','inline');
-    },
-    function (data) {
 
-        $("#noneCatwatches").css('display','none');
-    });
+
+
+        function sendQuestion(){
+            if(canSendQuestion)
+            {
+                $.post('/call_request',{'name': $("#questionName").val(), 'phone': $('#questionPhone').val()})
+                .done(function (data) {
+                    data = JSON.parse(data);
+                    if(data.succeed)
+                        alert('Спасибо за проявленный интерес, с Вами скоро свяжутся наши специалисты!')
+                })
+                .fail(function (data) {
+
+                });
+
+            }
+        }
+        $(document).ready(function() {
+            {#            $("#callPhoneNumber").mask("+7(999) 999-9999");#}
+            (function ($) {
+
+                //// ---> Проверка на существование элемента на странице
+                jQuery.fn.exists = function () {
+                    return jQuery(this).length;
+                };
+
+                //	Phone Mask
+                $(function () {
+
+                    if ($('#questionPhone').exists()) {
+
+                        $('#questionPhone').each(function () {
+                            $('#questionPhone').mask(" +7 (999) 999-99-99");
+                        });
+
+                    }
+                    setInterval(function () {
+                        var pmc = $('#questionPhone');
+                        if (((pmc.val().indexOf("_") != -1) || pmc.val() == '' )) {
+                            if (!$("#questionSendBtn").hasClass('disabled'))
+                                $("#questionSendBtn").addClass('disabled');
+                            canSendQuestion = false;
+                        } else {
+                            if ($("#questionName").val().length > 2) {
+                                canSendQuestion = true;
+                                $("#questionSendBtn").removeClass('disabled');
+                            }
+                            else
+                                canSendQuestion = false;
+                        }
+                    }, 200);
+
+                });
+
+            })(jQuery);
+
+
+            $("#tabletsCont").hover(function (data) {
+                        $("#noneCattabl").css('display', 'inline');
+                    },
+                    function (data) {
+
+                        $("#noneCattabl").css('display', 'none');
+                    });
+            $("#watchesCont").hover(function (data) {
+                        $("#noneCatwatches").css('display', 'inline');
+                    },
+                    function (data) {
+
+                        $("#noneCatwatches").css('display', 'none');
+                    });
+        });
 </script>
