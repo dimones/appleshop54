@@ -49,14 +49,56 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li class="active"><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
-        <li><a href="/ad/clients">Клиенты</a></li>
+        <li><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
+        <li class="active"><a href="/ad/clients">Клиенты</a></li>
+
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
     <div class="container" id="productList">
-        {{ product_list | safe }}
+        <div class="row">
+            <div class="col-sm-6">
+
+                <h3 id="productId">Запросы на звонки</h3>
+                <div class="list-group">
+                    {% for call in calls %}
+                        <a href="#" class="list-group-item">
+                          <div class="row">
+                              <div class="col-lg-6">
+                                    <h4 class="list-group-item-heading">{{ call['name'] }}</h4>
+                                    <p class="list-group-item-text">{{ call['phone'] }}</p>
+                              </div>
+                              <div class="col-lg-6" style="text-align: right;">
+                                  <button class="btn btn-success" onclick="removeCalls({{ call['id'] }});">Уже позвонили</button>
+                              </div>
+                          </div>
+                      </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <h3 id="productId">Заказы</h3>
+                <div class="list-group">
+                      {% for call in orders %}
+                        <a href="#" class="list-group-item">
+                          <div class="row">
+                              <div class="col-lg-6">
+                                    <h4 class="list-group-item-heading">{{ call['name'] }}</h4>
+                                    <h4 class="list-group-item-heading">{{ call['product_name'] }}</h4>
+                                    <p class="list-group-item-text">{{ call['phone'] }}</p>
+                              </div>
+                              <div class="col-lg-6" style="text-align: right;">
+                                  <button class="btn btn-success" onclick="removeOrder({{ call['id'] }});">Уже позвонили</button>
+                              </div>
+                          </div>
+                      </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        </div>
     </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->

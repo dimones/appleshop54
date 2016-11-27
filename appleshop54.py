@@ -184,6 +184,20 @@ def getCatData(_id):
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/remove_call_request',methods=['POST'])
+def remove_call_request():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM messages WHERE id = %s" % (request.form['id']))
+            connection.commit()
+            connection.close()
+            return json.dumps({'succeed':True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/call_request', methods=['POST'])
 def call_request():
     connection = get_conn_1()
@@ -422,18 +436,7 @@ def catalog_detail():
                                                                                                 name_top=data['NAME'],
                                                                                                 types=product_getTypesFixed(), prices=cat_prices(-1))))
 
-@app.route('/new_call_request',methods=['POST'])
-def new_call_request():
-    connection = get_conn_1()
-    data = None
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO messages(name,phone,date) VALUES('%s','%s',NOW())" % (request.form['name'],request.form['phone']))
-            connection.commit()
-            connection.close()
-    except Exception as e:
-        print(str(e), file=sys.stderr)
-        return json.dumps({'succeed': False, "error": str(e)})
+
 @app.route('/ad')
 def admin():
     connection = get_conn_1()
@@ -452,9 +455,20 @@ def admin():
 @app.route('/ad/new')
 def admin_new():
     return render_template('admin_new_product.html')
-@app.route('/ad/calls')
+@app.route('/ad/clients')
 def admin_calls():
-    return render_template('admin_new_product.html')
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT * FROM call_requests")
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return render_template('calls.html',calls=data)
 @app.route('/ad/change/<product_id>')
 def admin_change_product(product_id):
     connection = get_conn_1()
