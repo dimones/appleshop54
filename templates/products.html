@@ -19,8 +19,9 @@
                 <br>
             </div>
             <br>
+{#        {{ product['NAME'] | safe }}#}
             <div class="row" style="text-align: center; margin: auto;">
-                <button class="btn appleshop_specs_btn" onclick="window.top.location.href='/каталог/{{ _path }}/{{ product['NAME'] | safe }}?product_id={{ product['id'] }}';">ПОДРОБНЕЕ</button>
+                <button class="btn appleshop_specs_btn" onclick="window.top.location.href='/каталог/{{ _path }}/?product_id={{ product['id'] }}';">ПОДРОБНЕЕ</button>
             </div>
         </div>
     </div>
