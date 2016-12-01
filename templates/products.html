@@ -1,9 +1,10 @@
+
 {% for product in products %}
     <div class="col-lg-4 product_container" style="margin-top: 20px;">
         <div class="appleshop_catalog_jumb">
             <div class="row" style="margin: auto;">
-                {% if product['image'] != None %}
-                    <div class="specs_icon" style="background-image: url(data:image/{{ product['extension'] }};base64,{{ product['image'] }})"></div>
+                {% if product['image_id'] != None %}
+                    <div class="specs_icon" style="background-image: url(/get_image/{{ product['image_id'] }})"></div>
                 {% else %}
                     <div class="specs_icon" style="background-image: url(/static/img/img_dummy.png)"></div>
                 {% endif %}

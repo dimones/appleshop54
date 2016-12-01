@@ -127,8 +127,8 @@ def cat(_id):
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.type_product=%s" % _id)
+                           "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                           " FROM products pr WHERE pr.type_product=%s" % _id)
             connection.close()
             data = cursor.fetchall()
     except Exception as e:
@@ -274,6 +274,21 @@ def call_request():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return data
+@app.route('/get_image/<id>')
+def get_image(id):
+    connection = get_conn()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT image,extension FROM product_images WHERE id = %s" % id)
+            data = cursor.fetchone()
+            return Response(base64.b64decode(data[0]), mimetype=data[1])
+            return 'data:%s;base64,%s' % (data[1], data[0])
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
 @app.route('/getProductsBy',methods=['GET'])
 def getProductsBy():
     connection = get_conn_1()
@@ -295,50 +310,69 @@ def getProductsBy():
                 priceMax = 0
             if cat != '' and subcat != '' and color != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
+                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
             elif cat!= '' and color != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               cat, color,priceMax,priceMin))
+                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
                                cat, color,priceMax,priceMin))
             elif cat!= '' and subcat != '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id "
+                               "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               cat, subcat,priceMax,priceMin))
+                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id "
                                "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
                                cat, subcat,priceMax,priceMin))
             elif cat!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               cat,priceMax,priceMin))
+                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
                                cat,priceMax,priceMin))
             elif color!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               color,priceMax,priceMin))
+                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
                                color,priceMax,priceMin))
             elif subcat!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+                               subcat,priceMax,priceMin))
+                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
                                subcat,priceMax,priceMin))
             elif vendor!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.vendor = '%s'  AND ( price <= %s AND price >= %s)" % (
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.vendor = '%s'  AND ( price <= %s AND price >= %s)" % (
                                vendor,priceMax,priceMin))
             elif type_id!= '':
                 cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                               "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension "
-                               "FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
+                               type_id,priceMax,priceMin))
+                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                               "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id"
+                               " FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
                                type_id,priceMax,priceMin))
             connection.close()
             data = cursor.fetchall()
@@ -424,8 +458,7 @@ def catalog_path_name_cat(path,name_cat=None):
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.description,pr.type_product,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % request.args.get(
+                           "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id FROM products pr WHERE pr.id = %s" % request.args.get(
                 'product_id'))
             data = cursor.fetchone()
             cursor.execute('SELECT * FROM product_specs WHERE product_id = %s ' % data['id'])
@@ -451,8 +484,7 @@ def catalog():
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr")
+                           "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id FROM products pr")
             connection.close()
             data = cursor.fetchall()
     except Exception as e:
@@ -472,8 +504,7 @@ def catalog_detail():
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % request.args.get('product_id'))
+                           "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id FROM products pr WHERE pr.id = %s" % request.args.get('product_id'))
             connection.close()
             data = cursor.fetchone()
     except Exception as e:
@@ -495,8 +526,7 @@ def admin():
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.is_special,"
-                           "( SELECT image FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image ,"
-                           "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr")
+                           "( SELECT id FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) image_id FROM products pr")
             connection.close()
             data = cursor.fetchall()
     except Exception as e:
