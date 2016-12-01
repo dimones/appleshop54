@@ -83,7 +83,7 @@ def main():
                             ) image ,
                             (
                                 SELECT
-                                    extension
+                                    id
                                 FROM
                                     product_images
                                 WHERE
@@ -91,7 +91,7 @@ def main():
                                 AND is_main = 1
                                 LIMIT 0 ,
                                 1
-                            ) extension ,
+                            ) image_id ,
                             (
                                 SELECT
                                     LOWER(REPLACE(tp.type_name , ' ' , '-')) link
