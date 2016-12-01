@@ -852,7 +852,7 @@ def product_add():
     connection = get_conn()
     try:
         with connection.cursor() as cursor:
-            cursor.execute("INSERT INTO products(type_product,name,price,description,vendor,categ_id,subcateg_id) VALUES(%s,'%s',%s,'%s','%s',%s,%s)"
+            cursor.execute("INSERT INTO products(type_product,name,price,description,vendor,categ_id,subcateg_id,is_special) VALUES(%s,'%s',%s,'%s','%s',%s,%s,0)"
                            %(request.args.get('type_product'),request.args.get('name'),
                              request.args.get('price'),request.args.get('description'),request.args.get('vendor'),
                              request.args.get('categ'),request.args.get('sub_categ')))
