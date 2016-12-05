@@ -220,11 +220,13 @@
         </div>
     </div>
     <script>
+        var firstLoad = true;
         Array.prototype.remove = function(from, to) {
           var rest = this.slice((to || from) + 1 || this.length);
           this.length = from < 0 ? this.length + from : from;
           return this.push.apply(this, rest);
         };
+        var tempProdData = null;
         var colorId = {{ data['color_id'] | safe }};
         var specs = new Array();
         var imageIDs = new Array();
@@ -368,24 +370,44 @@
             });
         }
         function loadCategs(){
-            $.get("/ad/product/categ/all" , {'type_id': typeProd})
-            .done(function(data){
-                data = JSON.parse(data);
-                var html = "";
-                for(var i = 0; i < data.length; i++){
-                    html += '<option value="' + data[i].id +'">' + data[i].category_name + '</option>';
-                }
-                $("#categProduct").html(html);
-                if(data.length == 0)
-                    categID = -1;
-                else
-                    $("#categProduct").val(categID);
-{#                categID = $("#categProduct").val();#}
-                loadSubCategs();
-            })
-            .fail(function (data) {
-                alert(data.message);
-            });
+            if(firstLoad)
+            {
+                console.log('firstLoad');
+                $.get('/ad/product/data',{'prod_id': productId})
+                .done(function(data){
+                    tempProdData = JSON.parse(data)[0];
+                    console.log(tempProdData);
+
+                    $("#typeProduct").val(tempProdData.type_product);
+                    typeProd = tempProdData.type_product;
+                    if(tempProdData.categ_id!=-1)
+                        $("#categProduct").val(tempProdData.categ_id);
+{#                    loadSubCategs();#}
+                    $.get("/ad/product/categ/all" , {'type_id': typeProd})
+                    .done(function(data){
+                        data = JSON.parse(data);
+                        var html = "";
+                        for(var i = 0; i < data.length; i++){
+                            html += '<option value="' + data[i].id +'">' + data[i].category_name + '</option>';
+                        }
+                        $("#categProduct").html(html);
+                        if(data.length == 0)
+                            categID = -1;
+                        else
+                            $("#categProduct").val(categID);
+        {#                categID = $("#categProduct").val();#}
+                            loadSubCategs();
+
+                    })
+                    .fail(function (data) {
+                        alert(data.message);
+                    });
+                })
+                .fail(function (data) {
+
+                });
+            }
+
         }
         function loadSubCategs(){
             $.get("/ad/product/sub_categ/all" , {'categ_id': categID})
@@ -397,6 +419,12 @@
                     html += '<option value="' + data[i].id +'">' + data[i].subcateg_name + '</option>';
                 }
                 $("#subcategProduct").html(html);
+                if(firstLoad)
+                {
+                    if(tempProdData.subcateg_id!= -1)
+                        $("#subcategProduct").val(data.subcateg_id);
+                    firstLoad = false;
+                }
             })
             .fail(function (data) {
                 alert(data.message);
@@ -456,6 +484,7 @@
             .fail(function (data) {
 
             });
+
         });
         /*<div class="col-xs-6 col-md-3">
                 <a href="#" class="thumbnail">

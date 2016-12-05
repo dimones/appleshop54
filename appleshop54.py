@@ -438,7 +438,7 @@ def catalog_path(path):
 
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
-                                                                                                    'products.html',
+                                                                                                    'produc ts.html',
                                                                                                     products=cat(dict_data[path]['cat']),
                                                                                                     types=product_getTypesFixed(),
                                                                                                     _path = path),
@@ -701,7 +701,18 @@ def upload_file():
             return 'good'
 
 
-
+@app.route('/ad/product/data')
+def product_categLoad():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT categ_id,subcateg_id,type_product FROM products WHERE id = %s" % request.args.get('prod_id'))
+            connection.close()
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/ad/product/categ/all')
 def product_categAll():
     connection = get_conn_1()
