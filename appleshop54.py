@@ -438,7 +438,7 @@ def catalog_path(path):
 
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
-                                                                                                    'produc ts.html',
+                                                                                                    'products.html',
                                                                                                     products=cat(dict_data[path]['cat']),
                                                                                                     types=product_getTypesFixed(),
                                                                                                     _path = path),
