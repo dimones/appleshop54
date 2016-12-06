@@ -237,7 +237,8 @@
 
                     })
                     .fail(function(data){
-                        alert(data.message);
+{#                        alert(data.message);#}
+                        alert('Ошибка выставления картинки');
                     });
                 }
                 if(specs != {})
@@ -246,16 +247,20 @@
 
                     })
                     .fail(function(data){
+                        alert('Ошибка добавления характеристик');
                     });
                 $.get('/ad/product/set_color',{'color_id': colorId,'product_id':productId})
                 .done(function (data) {
 
                 })
                 .fail(function(data){
-                });
-                loadProductID();
+                    alert('Ошибка выставления цвета');
 
-                window.top.location.href = '/ad';
+                });
+                alert('Успешно добавлено');
+{#                loadProductID();#}
+
+{#                window.top.location.href = '/ad';#}
             })
             .fail(function(data){
                 alert(data.message);
