@@ -330,7 +330,7 @@
                             <div class="appleshop_catalog_jumb" style="background-color: #f5f5f5">
                                 <div class="row" style="margin: auto;">
                                     {% if product['image_id'] != None %}
-                                        <div class="specs_icon" style="background-image: url(/get_image/{{ product['image_id'] }})"></div>
+                                        <div class="specs_icon" style="background-image: url(/static/img/products/tmp/{{ product['id'] }}/{{ product['image_id'] }})"></div>
                                     {% else %}
                                         <div class="specs_icon" style="background-image: url(/static/img/img_dummy.png)"></div>
                                     {% endif %}

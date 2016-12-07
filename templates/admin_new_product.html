@@ -229,7 +229,7 @@
         function addProduct(){
             $.get('/ad/product/add', {'type_product': typeProd,'name':$("#productName").val(),
                 'price':$("#productPrice").val(),'description':$("#productDescription").val(),
-                'vendor': $("#productVendor").val(),'categ':categID,'sub_categ':subcategID})
+                'vendor': $("#productVendor").val(),'categ':categID,'sub_categ':subcategID, 'main_image': imageIDs[0]})
             .done(function (data) {
                 for(var i = 0;i < imageIDs.length; i++){
                     $.get('/ad/img/setProductID',{'product_id': productId,'image_id':imageIDs[i]})
@@ -330,8 +330,9 @@
             });
         }
         function removeImage(image_id){
-            $.get('/ad/img/remove?image_id='+image_id.toString())
+            $.get('/ad/img/remove?image_id='+image_id.toString() + "&prod_id=" + productId.toString())
             .done(function (data) {
+                console.log(data);
                 loadAllImages();
             })
             .fail(function(data){
@@ -339,24 +340,36 @@
             });
         }
         function loadAllImages(){
-            $.get('/ad/img/all')
+            $.get('/ad/img/all', {'product_id' :productId})
             .done(function (data) {
                 data = JSON.parse(data);
+                console.log(data);
                 var html = "";
                 imageIDs = new Array();
-                for(var i = 0; i< data.length; i++){
-                    imageIDs.push(data[i].id);
-                    console.log(data[i].is_main == true?'btn-success' : '');
-                    html += '<div class="col-xs-6 col-md-3"> <div class="thumbnail">';
-                    html += '<img src="'+ data[i].image +'" alt="..." id="img1" imageId='+ data[i].id +'>';
-                    html += '<div class="caption">' +
-                            '<p><a onclick="removeImage('+ data[i].id +')" class="btn btn-primary" role="button">Удалить изображение</a> ';
-                    if(data[i].is_main == true)
-                        html += '<a onclick="setMain('+ data[i].id +')" class="btn btn-default btn-success" role="button">Поставить главной</a></p></div></div></div>';
-                    else
-                        html += '<a onclick="setMain('+ data[i].id +')" class="btn btn-default" role="button">Поставить главной</a></p></div></div></div>';
+                console.log('length ' + data.length);
+                $("#imagesProduct").html("");
+                if(data.length > 0) {
+                    $("#upload-file-btn").addClass('disabled');
+                    for(var i = 0; i< 1; i++){
+                        imageIDs.push(data[i]);
+    {#                    console.log(data[i].is_main == true?'btn-success' : '');#}
+                        html += '<div class="col-xs-6 col-md-3"> <div class="thumbnail">';
+                        html += '<img src="/static/img/products/tmp/' + productId.toString() + '/' + data[i] + '" alt="..." id="img1" imageId='+ data[i] +'>';
+                        html += '<div class="caption">' +
+                                '<p><a onclick="removeImage(\''+ data[i] +'\');" class="btn btn-primary" role="button">Удалить изображение</a> ';
+    {#                    if(data[i].is_main == true)#}
+    {#                        html += '<a onclick="setMain('+ data[i] +')" class="btn btn-default btn-success" role="button">Поставить главной</a></p></div></div></div>';#}
+    {#                    else#}
+    {#                        html += '<a onclick="setMain('+ data[i] +')" class="btn btn-default" role="button">Поставить главной</a></p></div></div></div>';#}
+                        html += '</div></div></div>';
+                    }
+                    $("#imagesProduct").html(html);
                 }
-                $("#imagesProduct").html(html);
+                else{
+                    $("#upload-file-btn").removeClass('disabled');
+
+                }
+
 
             })
             .fail(function (data) {
@@ -429,15 +442,17 @@
             $.get('/ad/product/next')
             .done(function(data){
                 data = JSON.parse(data);
+                console.log(data);
                 productId = data.productId;
                 $("#productId").text('ID продукта: ' + data.productId.toString());
+
+                loadAllImages();
             })
             .fail(function(data){
                 alert(data.message);
             });
         }
         $(window).load(function () {
-            loadAllImages();
             loadProductID();
             loadTypes();
             loadColors();
@@ -453,7 +468,7 @@
             var form_data = new FormData($('#upload-file')[0]);
             $.ajax({
                 type: 'POST',
-                url: '/upload',
+                url: '/upload/' + productId.toString(),
                 data: form_data,
                 contentType: false,
                 cache: false,
@@ -462,8 +477,7 @@
                 success: function(data) {
                     console.log('Success!');
 
-                    data = JSON.parse(data);
-                    console.log(data);
+
                     loadAllImages();
                 }
             });
