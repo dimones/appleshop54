@@ -5,11 +5,58 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 from os import listdir
 from os.path import isfile, join
+from requests.compat import basestring
+from datetime import timedelta
+from flask import make_response, request, current_app
+from functools import update_wrapper
+import Auth
 UPLOAD_FOLDER = app.root_path
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+def crossdomain(origin=None, methods=None, headers=None,
+                max_age=21600, attach_to_all=True,
+                automatic_options=True):
+    if methods is not None:
+        methods = ', '.join(sorted(x.upper() for x in methods))
+    if headers is not None and not isinstance(headers, basestring):
+        headers = ', '.join(x.upper() for x in headers)
+    if not isinstance(origin, basestring):
+        origin = ', '.join(origin)
+    if isinstance(max_age, timedelta):
+        max_age = max_age.total_seconds()
 
+    def get_methods():
+        if methods is not None:
+            return methods
+
+        options_resp = current_app.make_default_options_response()
+        return options_resp.headers['allow']
+
+    def decorator(f):
+        def wrapped_function(*args, **kwargs):
+            if automatic_options and request.method == 'OPTIONS':
+                resp = current_app.make_default_options_response()
+            else:
+                resp = make_response(f(*args, **kwargs))
+            if not attach_to_all and request.method != 'OPTIONS':
+                return resp
+
+            h = resp.headers
+            h['Access-Control-Allow-Origin'] = origin
+            h['Access-Control-Allow-Methods'] = get_methods()
+            h['Access-Control-Max-Age'] = str(max_age)
+            h['Access-Control-Allow-Credentials'] = 'true'
+            h['Access-Control-Allow-Headers'] = \
+                "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+            if headers is not None:
+                h['Access-Control-Allow-Headers'] = headers
+            return resp
+
+        f.provide_automatic_options = False
+        return update_wrapper(wrapped_function, f)
+
+    return decorator
 def flat_to_nest(data, keys):
     """Преобразование "плоских" данных во вложенные
     """
@@ -90,6 +137,27 @@ def main():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return render_template('index.html',body=render_template('main.html',data=data))
+
+@app.route('/ad/auth')
+def ad_auth():
+    return render_template('login.html')
+
+@app.route('/admin/auth', methods=['POST'])
+@crossdomain(origin='*')
+def admin_auth():
+    username = request.form["username"]
+    password = request.form["password"]
+    device_id = request.form["device_id"]
+    a = Auth.AdminAuther(username, password, device_id)
+    obj = a.auth_user()
+    print(obj)
+    del a
+    response = current_app.make_response(obj)
+    j_obj = json.loads(obj)
+    if j_obj['succeed'] is True:
+        response.set_cookie('device_id', value=device_id)
+        response.set_cookie('device_token', value=j_obj['device_token'])
+    return response
 
 @app.route('/контакты')
 def contacts():
@@ -501,6 +569,12 @@ def catalog_detail():
 
 @app.route('/ad')
 def admin():
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        print('cookie fail')
+        return redirect(url_for('ad_auth'))
+    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+        print('token fail')
+        return redirect(url_for('ad_auth'))
     connection = get_conn_1()
     data = None
     try:
@@ -515,6 +589,12 @@ def admin():
     return render_template('admin.html',product_list=render_template('product_list.html',products=data))
 @app.route('/ad/new')
 def admin_new():
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        print('cookie fail')
+        return redirect(url_for('ad_auth'))
+    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+        print('token fail')
+        return redirect(url_for('ad_auth'))
     return render_template('admin_new_product.html')
 
 @app.route('/ad/clients/get_data')
@@ -537,7 +617,12 @@ def clients_getData():
     return json.dumps({'calls': render_template('client/calls.html',calls=data),'orders': render_template('client/orders.html',orders=data_Orders)},ensure_ascii=False)
 @app.route('/ad/clients')
 def admin_calls():
-
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        print('cookie fail')
+        return redirect(url_for('ad_auth'))
+    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+        print('token fail')
+        return redirect(url_for('ad_auth'))
     connection = get_conn_1()
     data = None
     data_Orders = None
@@ -557,6 +642,12 @@ def admin_calls():
 
 @app.route('/ad/change/<product_id>')
 def admin_change_product(product_id):
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        print('cookie fail')
+        return redirect(url_for('ad_auth'))
+    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+        print('token fail')
+        return redirect(url_for('ad_auth'))
     connection = get_conn_1()
     data = None
     try:
