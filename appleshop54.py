@@ -169,6 +169,15 @@ def discount():
 def how_tp_buys():
     return render_template('index.html',body=render_template('page.html',body=render_template('howtobuy.html')))
 
+@app.route('/ремонт')
+def repair():
+    return render_template('index.html',body=render_template('page.html',body=render_template('repair.html')))
+
+@app.route('/доставка-и-оплата')
+def delivery():
+    return render_template('index.html',body=render_template('page.html',body=render_template('delivery.html')))
+
+
 def cat(_id):
     connection = get_conn_1()
     data = None
