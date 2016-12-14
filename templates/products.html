@@ -1,27 +1,120 @@
-
-{% for product in products %}
-    <div class="col-lg-4 product_container" style="margin-top: 20px;">
-        <div class="appleshop_catalog_jumb">
-            <div class="row" style="margin: auto;">
-                {% if product['image_id'] != None %}
-                    <div class="specs_icon" style="background-image: url(/static/img/products/tmp/{{ product['id'] }}/{{ product['image_id'] }})"></div>
-                {% else %}
-                    <div class="specs_icon" style="background-image: url(/static/img/img_dummy.png)"></div>
-                {% endif %}
-            </div>
-            <br>
-            <div class="row specs_divider"></div>
-            <div class="row" style="text-align: center; margin: auto;">
+<div class="row" id="products_cols" style="margin: 0;">
+   {% if products | length > 9 %}
+        <script>
+            var products = {{ products|tojson|safe }};
+            var _path = "{{ _path | safe }}";
+            var cur_li_id = 1;
+            var countPages;
+            $(document).ready(function () {
+                countPages = Math.floor(products.length / 9);
+                if(products.length % 9 > 0)
+                    countPages += 1;
+                var html = "";
+                var current = 1;
+                for(var i = 1; i <= countPages; i++){
+                    html += '<li id="lid' + i + '"><a onclick="showProducts(' + current.toString() + ',' + (current + 9).toString() + ',' + i.toString()+ ');">' + i.toString() + '</a></li>';
+                    current += 9;
+                }
+                $("#pages").html(html);
+                $("#lid" + cur_li_id).addClass('active');
+            });
+            function showProducts(from,to,li_id){
+                console.log('li id ' + li_id);
+                $("#lid" + cur_li_id).removeClass('active');
+                $("#lid" + li_id).addClass('active');
+                cur_li_id = li_id;
+                var html = "";
+                for(;from < to;from++){
+                    if(products[from] == undefined)
+                        continue;
+                    console.log(products[from]);
+                    html += '<div class="col-lg-4 product_container" style="margin-top: 20px;">' +
+                            '<div class="appleshop_catalog_jumb">' +
+                            '<div class="row" style="margin: auto;">';
+                    if(products[from].image_id != null)
+                        html += '<div class="specs_icon" style="background-image: url(/static/img/products/tmp/' + products[from].id + '/' + products[from].image_id +')"></div>';
+                     else
+                         html += '<div class="specs_icon" style="background-image: url(/static/img/img_dummy.png)"></div>';
+                    html += '</div><br>' +
+                            '<div class="row specs_divider"></div>' +
+                            '<div class="row" style="text-align: center; margin: auto;"><br>' +
+                            '<label style="font-family: \'Roboto\', sans-serif;">' + truncateOnWord(products[from].NAME,50) +
+                            '</label><br><label style="font-family: \'Roboto Light\', sans-serif;">' + products[from].price + 'р</label>' +
+                            '<br></div><br><div class="row" style="text-align: center; margin: auto;">' +
+                            '<button class="btn appleshop_specs_btn" onclick="window.top.location.href=\'/каталог/{{ _path }}/подробнее?product_id=' + products[from].id +'\';">ПОДРОБНЕЕ</button>' +
+                            '</div></div></div>';
+                }
+                $("#products_cols").html(html);
+            }
+            function truncateOnWord(str, limit) {
+                var trimmable = '\u0009\u000A\u000B\u000C\u000D\u0020\u00A0\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u2028\u2029\u3000\uFEFF';
+                var reg = new RegExp('(?=[' + trimmable + '])');
+                var words = str.split(reg);
+                var count = 0;
+                return words.filter(function(word) {
+                    count += word.length;
+                    return count <= limit;
+                }).join('');
+            }
+        </script>
+        {% for i in range(9) %}
+            {% set product = products[i] %}
+        <div class="col-lg-4 product_container" style="margin-top: 20px;">
+            <div class="appleshop_catalog_jumb">
+                <div class="row" style="margin: auto;">
+                    {% if product['image_id'] != None %}
+                        <div class="specs_icon" style="background-image: url(/static/img/products/tmp/{{ product['id'] }}/{{ product['image_id'] }})"></div>
+                    {% else %}
+                        <div class="specs_icon" style="background-image: url(/static/img/img_dummy.png)"></div>
+                    {% endif %}
+                </div>
                 <br>
-                <label style="font-family: 'Roboto', sans-serif;">{{ product['NAME']| truncate(50) }}</label>
+                <div class="row specs_divider"></div>
+                <div class="row" style="text-align: center; margin: auto;">
+                    <br>
+                    <label style="font-family: 'Roboto', sans-serif;">{{ product['NAME']| truncate(50) }}</label>
+                    <br>
+                    <label style="font-family: 'Roboto Light', sans-serif;">{{ product['price'] }}р</label>
+                    <br>
+                </div>
                 <br>
-                <label style="font-family: 'Roboto Light', sans-serif;">{{ product['price'] }}р</label>
-                <br>
-            </div>
-            <br>
-            <div class="row" style="text-align: center; margin: auto;">
-                <button class="btn appleshop_specs_btn" onclick="window.top.location.href='/каталог/{{ _path }}/подробнее?product_id={{ product['id'] }}';">ПОДРОБНЕЕ</button>
+                <div class="row" style="text-align: center; margin: auto;">
+                    <button class="btn appleshop_specs_btn" onclick="window.top.location.href='/каталог/{{ _path }}/подробнее?product_id={{ product['id'] }}';">ПОДРОБНЕЕ</button>
+                </div>
             </div>
         </div>
-    </div>
-{% endfor %}
+    {% endfor %}
+    {% else %}
+        {% for product in products %}
+            <div class="col-lg-4 product_container" style="margin-top: 20px;">
+                <div class="appleshop_catalog_jumb">
+                    <div class="row" style="margin: auto;">
+                        {% if product['image_id'] != None %}
+                            <div class="specs_icon" style="background-image: url(/static/img/products/tmp/{{ product['id'] }}/{{ product['image_id'] }})"></div>
+                        {% else %}
+                            <div class="specs_icon" style="background-image: url(/static/img/img_dummy.png)"></div>
+                        {% endif %}
+                    </div>
+                    <br>
+                    <div class="row specs_divider"></div>
+                    <div class="row" style="text-align: center; margin: auto;">
+                        <br>
+                        <label style="font-family: 'Roboto', sans-serif;">{{ product['NAME']| truncate(50) }}</label>
+                        <br>
+                        <label style="font-family: 'Roboto Light', sans-serif;">{{ product['price'] }}р</label>
+                        <br>
+                    </div>
+                    <br>
+                    <div class="row" style="text-align: center; margin: auto;">
+                        <button class="btn appleshop_specs_btn" onclick="window.top.location.href='/каталог/{{ _path }}/подробнее?product_id={{ product['id'] }}';">ПОДРОБНЕЕ</button>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+<nav aria-label="" style="margin-left: 13px;">
+  <ul class="pagination" id="pages">
+  </ul>
+</nav>
+
