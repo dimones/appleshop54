@@ -240,7 +240,7 @@
         function addProduct(){
             $.get('/ad/product/update', {'type_product': typeProd,'name':$("#productName").val(),
                 'price':$("#productPrice").val(),'description':$("#productDescription").val(),
-                'vendor': $("#productVendor").val(),'categ':categID,'sub_categ':subcategID,'product_id':productId})
+                'vendor': $("#productVendor").val(),'categ':categID,'sub_categ':subcategID,'product_id':productId,'type_prod': typeProd, 'main_image': imageIDs[0]})
             .done(function (data) {
 {#                for(var i = 0;i < imageIDs.length; i++){#}
 {#                    $.get('/ad/img/setProductID',{'product_id': productId,'image_id':imageIDs[i]})#}
@@ -336,7 +336,7 @@
             });
         }
         function removeImage(image_id){
-            $.get('/ad/img/remove?image_id='+image_id.toString())
+            $.get('/ad/img/remove?image_id='+image_id.toString() + "&prod_id=" + productId)
             .done(function (data) {
                 loadAllImages();
             })
@@ -392,6 +392,7 @@
 
                     $("#typeProduct").val(tempProdData.type_product);
                     typeProd = tempProdData.type_product;
+                    console.log('type: ' + typeProd);
                     if(tempProdData.categ_id!=-1)
                         $("#categProduct").val(tempProdData.categ_id);
 {#                    loadSubCategs();#}
@@ -417,6 +418,25 @@
                 })
                 .fail(function (data) {
 
+                });
+            }
+            else{
+                $.get("/ad/product/categ/all" , {'type_id': typeProd})
+                .done(function(data){
+                    data = JSON.parse(data);
+                    var html = "";
+                    for(var i = 0; i < data.length; i++){
+                        html += '<option value="' + data[i].id +'">' + data[i].category_name + '</option>';
+                    }
+                    $("#categProduct").html(html);
+                    if(data.length == 0)
+                        categID = -1;
+                    else
+                    categID = $("#categProduct").val();
+                    loadSubCategs();
+                })
+                .fail(function (data) {
+                    alert(data.message);
                 });
             }
 

@@ -959,10 +959,6 @@ def product_add():
     connection = get_conn()
     try:
         with connection.cursor() as cursor:
-            print("INSERT INTO products(type_product,name,price,description,vendor,categ_id,subcateg_id,is_special,main_image) VALUES(%s,'%s',%s,'%s','%s',%s,%s,0,'%s')"
-                           %(request.args.get('type_product'),request.args.get('name'),
-                             request.args.get('price'),request.args.get('description'),request.args.get('vendor'),
-                             request.args.get('categ'),request.args.get('sub_categ'),request.args.get('main_image')))
             cursor.execute("INSERT INTO products(type_product,name,price,description,vendor,categ_id,subcateg_id,is_special,main_image) VALUES(%s,'%s',%s,'%s','%s',%s,%s,0,'%s')"
                            %(request.args.get('type_product'),request.args.get('name'),
                              request.args.get('price'),request.args.get('description'),request.args.get('vendor'),
@@ -976,14 +972,20 @@ def product_add():
 
 @app.route('/ad/product/update', methods=['GET'])
 def product_update():
+    print(request.args)
     connection = get_conn()
     try:
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE products SET type_product=%s, NAME='%s', price = %s , description='%s' , vendor = '%s'"
+            print("UPDATE products SET type_product=%s, NAME='%s', price = %s , description='%s' , vendor = '%s'"
                            " , categ_id=%s , subcateg_id=%s, main_image=%s WHERE id=%s"
                            %(request.args.get('type_product'),request.args.get('name'),
                              request.args.get('price'),request.args.get('description'),request.args.get('vendor'),
-                             request.args.get('categ'),request.args.get('sub_categ'),request.args.get('product_id'),request.args.get('main_image')))
+                             request.args.get('categ'),request.args.get('sub_categ'),request.args.get('main_image'),request.args.get('product_id')))
+            cursor.execute("UPDATE products SET type_product=%s, NAME='%s', price = %s , description='%s' , vendor = '%s'"
+                           " , categ_id=%s , subcateg_id=%s, main_image='%s' WHERE id=%s"
+                           %(request.args.get('type_product'),request.args.get('name'),
+                             request.args.get('price'),request.args.get('description'),request.args.get('vendor'),
+                             request.args.get('categ'),request.args.get('sub_categ'),request.args.get('main_image'),request.args.get('product_id')))
             connection.commit()
             connection.close()
             return json.dumps({'succeed':True})
