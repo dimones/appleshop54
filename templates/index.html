@@ -71,14 +71,6 @@
                               <span></span>
                               <span></span>
                             </div>
-
-
-{#                            <button type="button" class="navbar-toggle nav-icon1" data-toggle="collapse" data-target=".navbar-collapse">#}
-{#                                    <span></span>#}
-{#                                  <span></span>#}
-{#                                  <span></span>#}
-                                {#                                <span class="glyphicon glyphicon-menu-hamburger" style="font-size:30px; color: white;"></span>#}
-{#                            </button>#}
                         </div>
 
                     </div>
@@ -99,6 +91,7 @@
                         <li> <a href="/доставка-и-оплата" class="smoothScroll appleshop_menu_btn" style="width: 210px;">ДОСТАВКА И ОПЛАТА</a></li>
                         <li> <a href="/контакты" class="smoothScroll appleshop_menu_btn" style="width: 137px;">КОНТАКТЫ</a></li>
                         <li> <a href="#" class="smoothScroll appleshop_menu_btn" style="width: 80px;">ПОИСК</a></li>
+
                       </ul>
                     </div><!--/.nav-collapse -->
                   </div>
@@ -108,13 +101,25 @@
                     <div class="navbar-collapse collapse " style="margin-top: 0px; background: white; color: black; ">
                       <ul class="nav navbar-nav mob_nav" style="margin-top: 0; text-align: center;">
                         <li><a href="/" class="smoothScroll">ГЛАВНАЯ</a></li>
-                        <li> <a href="/каталог/телефоны-apple" class="smoothScroll">ПРОДУКЦИЯ</a></li>
+                          <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="color: black;">ПРОДУКЦИЯ<span class="caret"></span></a>
+                            <ul class="dropdown-menu" style="background: #e7e7e7;">
+                              <li><a href="/каталог/телефоны-apple">ТЕЛЕФОНЫ APPLE</a></li>
+                              <li><a href="/каталог/чехлы">ЧЕХЛЫ</a></li>
+                              <li><a href="/каталог/фитнес-браслеты">ФИТНЕС БРАСЛЕТЫ</a></li>
+                              <li><a href="/каталог/защита-экрана">ЗАЩИТА ЭКРАНА</a></li>
+                              <li><a href="/каталог/другие-устройства">ДРУГИЕ УСТРОЙСТВА</a></li>
+                              <li><a href="/каталог/аксессуары">АКСЕССУАРЫ</a></li>
+                            </ul>
+                          </li>
+{#                        <li> <a href="/каталог/телефоны-apple" class="smoothScroll">ПРОДУКЦИЯ</a></li>#}
                         <li> <a href="/ремонт" class="smoothScroll">РЕМОНТ</a></li>
                         <li> <a href="/акции" class="smoothScroll">АКЦИИ</a></li>
                         <li> <a href="/как-купить" class="smoothScroll">КАК КУПИТЬ</a></li>
                         <li> <a href="/доставка-и-оплата" class="smoothScroll">ДОСТАВКА И ОПЛАТА</a></li>
                         <li> <a href="/контакты" class="smoothScroll">КОНТАКТЫ</a></li>
                         <li> <a href="#" class="smoothScroll">ПОИСК</a></li>
+
                       </ul>
                     </div><!--/.nav-collapse -->
                   </div>
@@ -269,6 +274,15 @@
             }
         }
         $(document).ready(function() {
+             // Add slideDown animation to Bootstrap dropdown when expanding.
+              $('.dropdown').on('show.bs.dropdown', function() {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideDown();
+              });
+
+              // Add slideUp animation to Bootstrap dropdown when collapsing.
+              $('.dropdown').on('hide.bs.dropdown', function() {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
+              });
 {#            $("#callPhoneNumber").mask("+7(999) 999-9999");#}
             (function( $ ){
 
