@@ -700,6 +700,9 @@ line-height: 1;
     #nav_pc{
         display: none !important;
     }
+    #ap_menu{
+        display: none !important;
+    }
     #nav_mob{
         display: block !important;
     }
