@@ -275,7 +275,7 @@ a.list-group-item.appleshop_menu_item:hover{
     background-color: #e0e0e0;
 }
 .settings{
-    height: 125px;
+    height: auto;
     width: 100%;
     background-color: white;
 }

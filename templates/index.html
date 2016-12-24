@@ -209,20 +209,19 @@
 
     {{ body | safe }}
     <div class="row" style="height: 75px; background: #222">
-        <div class="container">
-            <div class="col-sm-6">
+        <div class="container" style="text-align: center;">
+            <div class="col-sm-6" id="nav_logo_text">
                 <div class="row" style="margin-top:5px;">
                     <h2 class="header_logo" style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px;">APPLESHOP54&nbsp&nbsp&nbsp</h2>
                     <span class="header_logo" style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500;">Магазин трендовых гаджетов</span>
                 </div>
-
             </div>
-            <div class="col-sm-1" style="text-align: center;">
+            <div class="col-sm-1" style="text-align: center;" id="nav_logo">
                 <div class="apple_logo header_logo" style="margin-top: 12px; float: left;  margin-left: -40px;">
                     <img src="/static/img/apple_logo.png">
                 </div>
             </div>
-            <div class="col-sm-5">
+            <div class="col-sm-5" id="nav_logo_btn">
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="phone_icon inline-image" style="float: right; margin-top:28px; color:white; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic;">
@@ -235,6 +234,13 @@
                     </div>
                 </div>
             </div>
+{#            <div class="col-sm-1" id="nav_btn_hamb" style="display: none;  height: 30px; width: 12.5px;">#}
+{#                <div id="nav-icon4" style="margin-top: -25px;"  data-toggle="collapse" data-target=".navbar-collapse">#}
+{#                  <span></span>#}
+{#                  <span></span>#}
+{#                  <span></span>#}
+{#                </div>#}
+{#            </div>#}
         </div>
     </div>
 
