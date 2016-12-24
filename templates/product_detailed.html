@@ -1,7 +1,7 @@
 <script> var productID = {{ product['id'] }};</script>
 <div class="row">
     <div class="col-lg-7">
-        <div class="row" style="margin-left: 13px; background-color: white; border: 0;">
+        <div class="row" style="margin-left: 13px; background-color: white; border: 0; margin-right: -20px;">
             <div class="" style="background: url(/static/img/products/tmp/{{ product['id'] }}/{{ product['image_id'] }});  height: 450px; background-size: contain;background-position: center;background-repeat: no-repeat;">
             </div>
         </div>
@@ -11,12 +11,12 @@
         <div class="row">
         </div>
     </div>
-    <div class="col-lg-5">
+    <div class="col-lg-5" id="cat_pc_det">
         <div class="row " style="margin-left: 13px;">
             <div class="">
-                <div class="row priceCard" style="width: 400px;;">
+                <div class="row priceCard" style="margin-left: 0;margin-right: -20px; ">
                     <div class="col-lg-6">
-                        <div style="margin: auto; text-align: left; margin-left: 50px; margin-top: 40px;">
+                        <div style="margin: auto; text-align: left; margin-left: 30px; margin-top: 40px;">
                             <div class="row" style=" text-align: left;">
                                 <label  style="font-family: 'Roboto', sans-serif; font-size: 16px;">Цена:</label>
                             </div>
@@ -26,15 +26,41 @@
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <button class="btn appleshop_btn appleshop_btn_call" style="margin: auto; margin-left: -20px;
+                        <button class="btn appleshop_btn appleshop_btn_call" style="width:150px; margin: auto; margin-left: -20px;
                         margin-top: 40px;" data-toggle="modal" data-target="#orderModal">ЗАКАЗАТЬ</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-left: 0px; margin-top: 10px;width: 400px;">
+        <div class="row" style="margin-left: 13px; margin-top: 10px;width: 400px;">
             <div style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ product['description'] }}</div>
         </div>
+    </div>
+    <div class="col-lg-5" id="cat_mob_det" style="display: none;">
+        <div class="row " style="margin-left: 13px;">
+            <div class="">
+                <div class="row priceCard" style="margin-left: 0;margin-right: -20px; ">
+                    <div class="col-lg-6" style="width: 45%; display: inline-block;">
+                        <div style="margin: auto; text-align: left; margin-left: 30px; margin-top: 40px;">
+                            <div class="row" style=" text-align: left;">
+                                <label  style="font-family: 'Roboto', sans-serif; font-size: 16px;">Цена:</label>
+                            </div>
+                            <div class="row" style=" text-align: left;">
+                                <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px;">{{ product['price'] }} р</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6" style="width: 45%; display: inline-block;">
+                        <button class="btn appleshop_btn appleshop_btn_call" style="width: 150px; margin: auto;
+                        margin-left: -20px; margin-top: -20px;" data-toggle="modal" data-target="#orderModal">ЗАКАЗАТЬ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-left: 13px; margin-top: 10px;width: 400px;">
+            <div style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ product['description'] }}</div>
+        </div>
+        <br>
     </div>
 </div>
 {% if specs != None %}
