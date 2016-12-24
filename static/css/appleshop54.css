@@ -236,7 +236,7 @@ a.list-group-item.appleshop_menu_item:hover{
 }
 /* для страницы контактов */
 .appleshop_contacts_info{
-    height: 145px;
+    height: auto;
     width: calc(100% - 26px);
     margin-left: 13px;
     background: white;
