@@ -37,22 +37,22 @@
    <!-- МЕНЮХА -->
   	<div id="navbar-main">
         <!-- Fixed navbar -->
-        <div class="navbar navbar navbar-top">
+        <div class="navbar navbar navbar-top" id="navbar" style="z-index: 10000;">
             <div class="row" style="height: 75px; background: #222">
                 <div class="container">
-                    <div class="row" style="margin-left: 15px;">
-                        <div class="col-sm-6">
+                    <div class="row" id="nav_row" style="margin-left: 15px;">
+                        <div class="col-sm-6" id="nav_logo_text">
                             <div class="row" style="margin-top:5px;">
                                 <h2 class="header_logo" style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px;">APPLESHOP54&nbsp&nbsp&nbsp</h2>
                                 <span class="header_logo" style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500;">Магазин трендовых гаджетов</span>
                             </div>
                         </div>
-                        <div class="col-sm-1" style="text-align: center;">
+                        <div class="col-sm-1" style="text-align: center;" id="nav_logo">
                             <div class="apple_logo header_logo" style="margin-top: 12px; float: left;  margin-left: -40px;">
                                 <img src="/static/img/apple_logo.png">
                             </div>
                         </div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-5" id="nav_logo_btn">
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="phone_icon inline-image" style="float: right; margin-top:28px; color:white; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic;">
@@ -65,18 +65,30 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-sm-1" id="nav_btn_hamb" style="display: none;  height: 30px; width: 12.5px;">
+                            <div id="nav-icon4" style="margin-top: -25px;"  data-toggle="collapse" data-target=".navbar-collapse">
+                              <span></span>
+                              <span></span>
+                              <span></span>
+                            </div>
+
+
+{#                            <button type="button" class="navbar-toggle nav-icon1" data-toggle="collapse" data-target=".navbar-collapse">#}
+{#                                    <span></span>#}
+{#                                  <span></span>#}
+{#                                  <span></span>#}
+                                {#                                <span class="glyphicon glyphicon-menu-hamburger" style="font-size:30px; color: white;"></span>#}
+{#                            </button>#}
+                        </div>
+
                     </div>
 
     {#                <div style="background-image: url(/static/img/apple_logo.png); background-size: cover; background-position: center; width:50px; height: 50px;"></div>#}
                 </div>
             </div>
-            <div class="row appleshop_header" style="height: 50px; background: white; ">
+            <div class="row appleshop_header" style="height: 50px; background: white; " id="nav_pc">
                 <div class="container">
-                    <div class="navbar-header">
-                      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon icon-shield" style="font-size:30px; color:#3498db;"></span>
-                      </button>
-                    </div>
+
                     <div class="navbar-collapse collapse " style="">
                       <ul class="nav navbar-nav">
                         <li><a href="/" class="smoothScroll appleshop_menu_btn_active" style="width: 135px;">ГЛАВНАЯ</a></li>
@@ -87,6 +99,22 @@
                         <li> <a href="/доставка-и-оплата" class="smoothScroll appleshop_menu_btn" style="width: 210px;">ДОСТАВКА И ОПЛАТА</a></li>
                         <li> <a href="/контакты" class="smoothScroll appleshop_menu_btn" style="width: 137px;">КОНТАКТЫ</a></li>
                         <li> <a href="#" class="smoothScroll appleshop_menu_btn" style="width: 80px;">ПОИСК</a></li>
+                      </ul>
+                    </div><!--/.nav-collapse -->
+                  </div>
+            </div>
+            <div class="row" style="margin-left: 0px; height: 0; background: white; display: none;" id="nav_mob">
+                <div class="container">
+                    <div class="navbar-collapse collapse " style="margin-top: 0px; background: white; color: black; ">
+                      <ul class="nav navbar-nav mob_nav" style="margin-top: 0; text-align: center;">
+                        <li><a href="/" class="smoothScroll">ГЛАВНАЯ</a></li>
+                        <li> <a href="/каталог/телефоны-apple" class="smoothScroll">ПРОДУКЦИЯ</a></li>
+                        <li> <a href="/ремонт" class="smoothScroll">РЕМОНТ</a></li>
+                        <li> <a href="/акции" class="smoothScroll">АКЦИИ</a></li>
+                        <li> <a href="/как-купить" class="smoothScroll">КАК КУПИТЬ</a></li>
+                        <li> <a href="/доставка-и-оплата" class="smoothScroll">ДОСТАВКА И ОПЛАТА</a></li>
+                        <li> <a href="/контакты" class="smoothScroll">КОНТАКТЫ</a></li>
+                        <li> <a href="#" class="smoothScroll">ПОИСК</a></li>
                       </ul>
                     </div><!--/.nav-collapse -->
                   </div>
@@ -307,6 +335,11 @@
     </script>
   <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
+        $(document).ready(function(){
+            $('#nav-icon1,#nav-icon2,#nav-icon3,#nav-icon4').click(function(){
+                $(this).toggleClass('open');
+            });
+        });
         (function (d, w, c) {
             (w[c] = w[c] || []).push(function() {
                 try {

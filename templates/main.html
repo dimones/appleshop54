@@ -1,19 +1,40 @@
  
     <!-- ==== КАРУСЕЛЬКА ==== -->
-    <div class="row" id="home" name="home" style="height: 500px; margin-top: -20px">
+    <div class="row" id="home" name="home" style="height: 500px; margin-top: -26px;">
         <div id="myCarousel" class="carousel slide" data-ride="carousel">
           <!-- Indicators -->
           <ol class="carousel-indicators" style="">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
             <li data-target="#myCarousel" data-slide-to="1"></li>
-{#            <li data-target="#myCarousel" data-slide-to="2"></li>#}
-{#            <li data-target="#myCarousel" data-slide-to="3"></li>#}
           </ol>
 
           <!-- Wrapper for slides -->
           <div class="carousel-inner" role="listbox">
-            <div class="item active back" style="background-image: url(/static/img/bg/iphone6.png); height: 500px;">
+            <div class="item active back" style=" height: 500px; z-index: 1; ">
+                <div style="background-image: url(/static/img/bg/iphone6.png); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
+{#                <img src="/static/img/bg/iphone6.png">#}
+                <div class="images_carousel" style="text-shadow: none  !important;">
+                    <div class="container">
+                        <div class="row" style="margin-left: 10px; margin-top: 150px;">
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">iPhone 6 с большой скидкой!</label>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:black; margin-left: 0">Специальное предложение в нашем магазине iphone 6 по новогодней цене всего 23900 рублей</label>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+                                </div>
+                            </div>
 
+                        </div>
+{#                        <span style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">Chania</span>#}
+{#                        <p>The atmosphere in Chania has a touch of Florence and Venice.</p>#}
+                    </div>
+                </div>
             </div>
 
             <div class="item back" style="background-image: url(/static/img/bg/iphone7.png); height: 500px;">
@@ -31,15 +52,15 @@
 
     <!-- ==== GREYWRAP ==== -->
     <div style="background-color: #e7e7e7;">
-        <div class="row">
+        <div class="row" style="margin-left: 0;">
             <br>
             <br>
-            <div class="row">
+            <div class="row" style="margin-left: 0;">
                 <div class="col-lg-12 text-center">
                     <h3 class="section-heading" style="font-weight: bold;">НАША ПРОДУКЦИЯ</h3>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-left: 0;">
                 <h4 class="section-heading" style="text-align: center">Более 500 товаров ждут вашего выбора в нашем каталоге</h4>
             </div>
             <br>
@@ -153,15 +174,15 @@
         </div><!-- row -->
     </div><!-- greywrap -->
     <div style="background-color: white;">
-        <div class="row">
+        <div class="row" style="margin-left: 0;">
             <br>
             <br>
-            <div class="row">
+            <div class="row" style="margin-left: 0;">
                 <div class="col-lg-12 text-center">
                     <h3 class="section-heading" style="font-weight: bold;">СПЕЦПРЕДЛОЖЕНИЯ</h3>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="margin-left: 0;">
                 <h4 class="section-heading" style="text-align: center">Лучшие предложения от нашего магазина</h4>
             </div>
             <br>
@@ -371,7 +392,7 @@
                 <div class="col-lg-6"></div>
                 <div class="col-lg-6">
                     <div class="appleshop_question">
-                        <div class="row" style="margin: auto; width: 440px;">
+                        <div class="row" id="question" style="margin: auto; width: 440px;">
                             <br>
                             <div class="row">
                                 <div class="col-lg-12 text-center">

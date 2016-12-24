@@ -595,7 +595,7 @@ def admin():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('admin.html',product_list=render_template('product_list.html',products=data))
+    return render_template('admin.html', product_list=render_template('product_list.html',products=data))
 @app.route('/ad/new')
 def admin_new():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
@@ -1185,4 +1185,4 @@ def f32d73dc8d1d():
 if __name__ == '__main__':
     # getCatData(1)
     # fixImages()
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0",port=5000, debug=True)
