@@ -488,13 +488,13 @@
         </div>
     </div>
 
-    <div class="row" style="height: 450px; background-image: url(/static/img/question_bg.png); background-position: center; background-size: cover;">
+    <div class="row" style="height: 450px; background-image: url(/static/img/question_bg.png); background-position: center; background-size: cover;" id="question_pc">
         <div class="container">
             <div class="row">
                 <div class="col-lg-6"></div>
                 <div class="col-lg-6">
                     <div class="appleshop_question">
-                        <div class="row" id="question" style="margin: auto; width: 440px;">
+                        <div class="row" id="question" style="margin-left:25px; margin-right: 10px;">
                             <br>
                             <div class="row">
                                 <div class="col-lg-12 text-center">
@@ -519,10 +519,44 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="row" style="height: 450px; background-image: url(/static/img/question_bg.png); background-position: center; background-size: cover; display: none; margin-top: 20px;" id="question_mob">
+        <div class="container">
+            <div class="row" style="margin-left: 10px; margin-right: -10px; margin-top: 20px;
+    background-color: #fdfdfd;
+    min-height: 400px;">
+                <br>
+                <div class="row" style="margin-left: 0;">
+                    <div class="col-lg-12 text-center">
+                        <h3 class="section-heading" style="font-weight: bold;">ЕСТЬ ВОПРОС?</h3>
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 0;">
+                    <h4 class="section-heading" style="text-align: center">Оставтье нам свой номер телефона и мы свяжемся с Вами в ближайшее время</h4>
+                </div>
+                <br>
+                <div class="row text-center" style="margin-left: 0;">
+                    <input class="appleshop_questions_input text-center" placeholder="Как Вас зовут?" id="questionName">
+                </div>
+                <br>
+                <div class="row text-center" style="margin-left: 0;">
+                    <input class="appleshop_questions_input text-center" placeholder="Ваш номер телефона" id="questionPhone" type="text">
+                </div>
+                <br>
+                <br>
+                <div class="row text-center" style="margin-left: 0;">
+                    <button class="btn appleshop_btn appleshop_btn_call" id="questionSendBtn" onclick="sendQuestion()">ОТПРАВИТЬ</button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
     var canSendQuestion = false;
 

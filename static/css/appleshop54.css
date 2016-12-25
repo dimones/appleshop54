@@ -719,7 +719,16 @@ line-height: 1;
         display: block !important;
     }
     #question{
-        width: 300px !important;
+        /*width: 300px !important;*/
+    }
+    .appleshop_questions_input{
+        min-width: auto;
+    }
+    #question_mob{
+        display: block !important;
+    }
+    #question_pc{
+        display: none !important;
     }
     .header_logo{
         float: none !important;
