@@ -718,6 +718,19 @@ line-height: 1;
     #nav_mob{
         display: block !important;
     }
+    .modal-content{
+        margin-left: 0 !important;
+        margin-top: 100px !important;
+    }
+    #modal_order_content{
+        width: auto !important;
+    }
+    #comment_order{
+        margin-left: 5px !important;
+    }
+    #modal_order{
+        width: auto !important;
+    }
     #question{
         /*width: 300px !important;*/
     }

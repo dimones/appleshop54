@@ -164,11 +164,11 @@
 
    <div class="modal fade call_modal" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="myOrderLabel" >
       <div class="modal-dialog" role="document">
-        <div class="modal-content" style="width: 710px; margin-top: 200px;margin-left: -50px;">
+        <div class="modal-content" style="width: 710px; margin-top: 200px;margin-left: -50px;" id="modal_order_content">
 
           <div class="modal-body" style="background-color: #f7f7f7">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; margin-top: -50px; margin-right: -15px;"><span style="font-size: 14px;">Закрыть</span></button>
-            <div class="row" style="margin: auto; width: 550px">
+            <div class="row" style="margin: auto; width: 550px" id="modal_order">
                 <br>
                 <div class="row">
                     <div class="col-lg-12 text-center">
@@ -191,7 +191,7 @@
                     <input class="appleshop_questions_input text-center" placeholder="Ваша почта"  type="text" id="orderEmail">
                 </div>
                 <br>
-                <div class="row" >
+                <div class="row" id="comment_order">
                     <textarea class="appleshop_questions_input" placeholder="Ваш комментарий..."  type="text" id="orderComment" style="min-height: 145px;"></textarea>
                 </div>
                 <br>
