@@ -5,9 +5,6 @@
             <div class="" style="background: url(/static/img/products/tmp/{{ product['id'] }}/{{ product['image_id'] }});  height: 450px; background-size: contain;background-position: center;background-repeat: no-repeat;">
             </div>
         </div>
-{#        <div class="row" id="images">#}
-{##}
-{#        </div>#}
         <div class="row">
         </div>
     </div>
@@ -32,9 +29,27 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-left: 13px; margin-top: 10px;width: 400px;">
-            <div style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ product['description'] }}</div>
-        </div>
+        {% if product["type_product"] == 1 %}
+            {% if specs | length > 0 %}
+                <div class="row" style="margin-left: 13px; margin-top: 10px;width: auto;">
+                    <h4>Основные характеристики</h4>
+                    <table class="table table-responsive">
+                        <tbody>
+                            {% for spec in specs %}
+                                <tr>
+                                    <td>{{ spec["specName"] }}</td>
+                                    <td>{{ spec["specValue"] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="row" style="margin-left: 13px; margin-top: 10px;width: auto;">
+                <div style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ product['description'] }}</div>
+            </div>
+        {% endif %}
     </div>
     <div class="col-lg-5" id="cat_mob_det" style="display: none;">
         <div class="row " style="margin-left: 13px;">
@@ -57,18 +72,27 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="margin-left: 13px; margin-top: 10px;width: auto;">
-            <div style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ product['description'] }}</div>
-        </div>
+        {% if product["type_product"] == 1 %}
+            {% if specs | length > 0 %}
+                <div class="row" style="margin-left: 13px; margin-top: 10px;width: auto;">
+                    <h4>Основные характеристики</h4>
+                    <table class="table table-responsive">
+                        <tbody>
+                            {% for spec in specs %}
+                                <tr>
+                                    <td>{{ spec["specName"] }}</td>
+                                    <td>{{ spec["specValue"] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="row" style="margin-left: 13px; margin-top: 10px;width: auto;">
+                <div style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ product['description'] }}</div>
+            </div>
+        {% endif %}
         <br>
     </div>
 </div>
-{% if specs != None %}
-<div class="row" style="margin-left: 13px;">
-    <h4>Основные характеристики</h4>
-    <table>
-        <tbody>
-        </tbody>
-    </table>
-</div>
-{% endif %}

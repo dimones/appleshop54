@@ -540,7 +540,7 @@ def catalog_path_name_cat(path,name_cat=None):
                            "pr.main_image image_id FROM products pr WHERE pr.id = %s" % request.args.get(
                 'product_id'))
             data = cursor.fetchone()
-            cursor.execute('SELECT * FROM product_specs WHERE product_id = %s ' % data['id'])
+            cursor.execute('SELECT * FROM product_specs WHERE product_id = %s ' % request.args.get('product_id'))
             data_specs = cursor.fetchall()
             print(data_specs)
             connection.close()
@@ -550,7 +550,7 @@ def catalog_path_name_cat(path,name_cat=None):
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
                                                                                                     'product_detailed.html',
-                                                                                                    product=data),
+                                                                                                    product=data,specs=data_specs),
                                                                                                 name=data[
                                                                                                     'NAME'].upper(),
                                                                                                 name_top=data[
@@ -580,19 +580,23 @@ def catalog():
 def catalog_detail():
     connection = get_conn_1()
     data = None
+    specs = None
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
                            "pr.main_image image_id FROM products pr WHERE pr.id = %s" % request.args.get('product_id'))
-            connection.close()
             data = cursor.fetchone()
+            cursor.execute("SELECT * FROM product_specs WHERE product_id = %s" % request.args.get('product_id'))
+            specs = cursor.fetchall()
+            print(specs)
+            connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
                                                                                                     'product_detailed.html',
-                                                                                                    product=data),
+                                                                                                     product=data,specs=specs),
                                                                                                 name=data['NAME'].upper(),
                                                                                                 name_top=data['NAME'],
                                                                                                 types=product_getTypesFixed(), prices=cat_prices(-1))))
