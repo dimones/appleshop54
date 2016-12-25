@@ -700,6 +700,12 @@ line-height: 1;
     #cat_mob_det{
         display: block !important;
     }
+    #product_container_pc{
+        display: none !important;
+    }
+    #product_container_mob{
+        display: block !important;
+    }
     #nav_row{
         height: 82px;
     }
