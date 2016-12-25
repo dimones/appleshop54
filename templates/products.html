@@ -1,4 +1,9 @@
 <div class="row" id="products_cols" style="margin: 0;">
+    {%  if products | length == 0 %}
+        <div class="row text-center">
+            <h3>Ничего не найдено</h3>
+        </div>
+    {% endif %}
    {% if products | length > 9 %}
         <script>
             var products = {{ products|tojson|safe }};

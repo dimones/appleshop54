@@ -1,0 +1,29 @@
+<div class="row">
+    <ol class="breadcrumb" style="background: #f1f1f1;">
+      <li><a href="/">Главная</a></li>
+      <li class="active">Поиск</li>
+    </ol>
+    <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;">ПОИСК</h3>
+</div>
+<div class="row"  style="margin-left: 0; min-height: 75px;">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Искать по названинию" style="height: 50px;  font-size: 16px;" id="search_text">
+      <span class="input-group-btn">
+        <button class="btn btn-secondary" type="button" style="background: #399ae9; color: white; height: 50px; width: 100px; font-size: 16px;" onclick="searchProducts()">Искать</button>
+      </span>
+    </div>
+</div>
+<div class="row" id="catalog">
+
+</div>
+<script>
+    function searchProducts() {
+        $.get("/search_products", {"query": $("#search_text").val()})
+        .done(function (data) {
+            $("#catalog").html(data);
+        })
+        .fail(function (data) {
+            $("#catalog").html("ОДНАКО НИХЕРА НЕТ");
+        });
+    }
+</script>

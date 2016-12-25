@@ -13,6 +13,26 @@ import Auth
 UPLOAD_FOLDER = app.root_path
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
+dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты',
+                                      'cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все объемы'},
+             "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2},
+
+             "smart-часы": {"name": "SMART ЧАСЫ", "name_top": "Smart часы", "cat": 3},
+
+             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True,'cat_1_def': 'Все типы'},
+
+             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель',
+                                 'cat_2_name': None, 'cat2_color': True, 'cat1_vendor': True, 'cat_1_def': 'Все производители'},
+
+             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие', 'cat_1_def': 'Все типы', 'cat_2_def': 'Все покрытия' },
+
+             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7,
+                                   'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства'},
+
+             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип',
+                            'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все семейства', 'cat_1_def': 'Все типы'}}
+
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def crossdomain(origin=None, methods=None, headers=None,
                 max_age=21600, attach_to_all=True,
@@ -173,10 +193,27 @@ def how_tp_buys():
 def repair():
     return render_template('index.html',body=render_template('page.html',body=render_template('repair.html')))
 
+@app.route('/поиск')
+def search():
+    return render_template('index.html',body=render_template('page.html',body=render_template('search.html')))
+
 @app.route('/доставка-и-оплата')
 def delivery():
     return render_template('index.html',body=render_template('page.html',body=render_template('delivery.html')))
 
+@app.route('/search_products')
+def search_products():
+    conn = get_conn_1()
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+                           "pr.main_image image_id"
+                           " FROM products pr WHERE pr.NAME LIKE '%" + request.args.get('query') + "%'")
+            return render_template('products.html', products=cursor.fetchall(), types=product_getTypesFixed(), _path='телефоны-apple')
+    except Exception as e:
+        print(e)
+    finally:
+        conn.close()
 
 def cat(_id):
     connection = get_conn_1()
@@ -467,31 +504,16 @@ def getVendorsByType():
         return json.dumps({'succeed': False, "error": str(e)})
     return json.dumps(data,ensure_ascii=False)
 
+
+
+
+
 @app.route('/каталог/<string:path>/')
 @app.route('/каталог/<string:path>')
 def catalog_path(path):
     print(path)
     print('catalogue')
     #TODO ну это пиздец. Не смог нормально придумать
-    dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты',
-                                      'cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все объемы'},
-             "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2},
-
-             "smart-часы": {"name": "SMART ЧАСЫ", "name_top": "Smart часы", "cat": 3},
-
-             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True,'cat_1_def': 'Все типы'},
-
-             "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель',
-                                 'cat_2_name': None, 'cat2_color': True, 'cat1_vendor': True, 'cat_1_def': 'Все производители'},
-
-             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие', 'cat_1_def': 'Все типы', 'cat_2_def': 'Все покрытия' },
-
-             "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7,
-                                   'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства'},
-
-             "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип',
-                            'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все семейства', 'cat_1_def': 'Все типы'}}
-
 
     return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
