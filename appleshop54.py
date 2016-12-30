@@ -139,14 +139,14 @@ def main():
                             pr. NAME ,
                             pr.price ,
                             pr.main_image image_id ,
-                            (
+                            REPLACE((
                                 SELECT
-                                    LOWER(REPLACE(REPLACE(tp.type_name , ' ' , '-'),'/',',') link
+                                    LOWER(REPLACE(tp.type_name , ' ' , '-') link
                                 FROM
                                     type_products tp
                                 WHERE
                                     tp.id = pr.type_product
-                            ) tp
+                            ),'/',',') tp
                         FROM
                             products pr
                         WHERE
