@@ -141,7 +141,7 @@ def main():
                             pr.main_image image_id ,
                             (
                                 SELECT
-                                    LOWER(REPLACE(tp.type_name , ' ' , '-') link
+                                    LOWER(REPLACE(tp.type_name , ' ' , '-')) link
                                 FROM
                                     type_products tp
                                 WHERE
