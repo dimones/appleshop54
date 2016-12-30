@@ -136,7 +136,8 @@ def main():
                                     SELECT
                             pr.id ,
                             pr.type_product ,
-                            pr. NAME ,
+                            pr. NAME,
+                            REPLACE(pr. NAME,'/',',') NAME_LINK,
                             pr.price ,
                             pr.main_image image_id ,
                             (
