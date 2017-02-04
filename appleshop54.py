@@ -31,52 +31,10 @@ dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "nam
 
              "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип',
                             'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все семейства', 'cat_1_def': 'Все типы'}}
-
+print(json.dumps(dict_data,ensure_ascii=False))
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-def crossdomain(origin=None, methods=None, headers=None,
-                max_age=21600, attach_to_all=True,
-                automatic_options=True):
-    if methods is not None:
-        methods = ', '.join(sorted(x.upper() for x in methods))
-    if headers is not None and not isinstance(headers, basestring):
-        headers = ', '.join(x.upper() for x in headers)
-    if not isinstance(origin, basestring):
-        origin = ', '.join(origin)
-    if isinstance(max_age, timedelta):
-        max_age = max_age.total_seconds()
 
-    def get_methods():
-        if methods is not None:
-            return methods
-
-        options_resp = current_app.make_default_options_response()
-        return options_resp.headers['allow']
-
-    def decorator(f):
-        def wrapped_function(*args, **kwargs):
-            if automatic_options and request.method == 'OPTIONS':
-                resp = current_app.make_default_options_response()
-            else:
-                resp = make_response(f(*args, **kwargs))
-            if not attach_to_all and request.method != 'OPTIONS':
-                return resp
-
-            h = resp.headers
-            h['Access-Control-Allow-Origin'] = origin
-            h['Access-Control-Allow-Methods'] = get_methods()
-            h['Access-Control-Max-Age'] = str(max_age)
-            h['Access-Control-Allow-Credentials'] = 'true'
-            h['Access-Control-Allow-Headers'] = \
-                "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-            if headers is not None:
-                h['Access-Control-Allow-Headers'] = headers
-            return resp
-
-        f.provide_automatic_options = False
-        return update_wrapper(wrapped_function, f)
-
-    return decorator
 def flat_to_nest(data, keys):
     """Преобразование "плоских" данных во вложенные
     """
@@ -98,13 +56,13 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def get_conn():
-    return pymysql.connect(host='127.0.0.1',
+    return pymysql.connect(host='217.71.129.181',
                              user='root',
                              password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
                              charset='utf8')
 def get_conn_1():
-    return pymysql.connect(host='127.0.0.1',
+    return pymysql.connect(host='217.71.129.181',
                              user='root',
                              password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
@@ -164,7 +122,6 @@ def ad_auth():
     return render_template('login.html')
 
 @app.route('/admin/auth', methods=['POST'])
-@crossdomain(origin='*')
 def admin_auth():
     username = request.form["username"]
     password = request.form["password"]
@@ -344,6 +301,7 @@ def remove_call_request():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
+
 @app.route('/call_request', methods=['POST'])
 def call_request():
     connection = get_conn_1()
@@ -601,6 +559,9 @@ def catalog_detail():
                                                                                                 name=data['NAME'].upper(),
                                                                                                 name_top=data['NAME'],
                                                                                                 types=product_getTypesFixed(), prices=cat_prices(-1))))
+
+
+
 
 
 @app.route('/ad')
