@@ -67,13 +67,13 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def get_conn():
-    return pymysql.connect(host='217.71.129.181',
+    return pymysql.connect(host='82.146.41.220',
                              user='root',
                              password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
                              charset='utf8')
 def get_conn_1():
-    return pymysql.connect(host='217.71.129.181',
+    return pymysql.connect(host='82.146.41.220',
                              user='root',
                              password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
