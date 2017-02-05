@@ -93,6 +93,20 @@ class AdminHelper(AuthHelper):
         except Exception as e:
             print(str(e))
             return 'error happened'
+    def getRole(self):
+        try:
+            if self.connection.open != True:
+                self.connection = get_mysql_connection()
+            with self.connection.cursor() as cursor:
+                cursor.execute("SELECT role FROM MYNSTU_ADMIN_USERS WHERE id = (SELECT user_id FROM MYNSTU_ADMIN_TOKENS tok WHERE tok.device_id = '%s' "
+                               "AND tok.device_token = '%s' LIMIT 0,1)" % (self.device_id, self.device_token))
+                if cursor.rowcount > 0:
+                    return cursor.fetchone()[0]
+                else:
+                    return -1
+        except Exception as e:
+            print(str(e))
+            return 'error happened'
 class AdminAuther(Auther):
     def tokenExist(self, device_token):
         try:
@@ -163,9 +177,10 @@ if __name__ == '__main__':
     # sr_r_json = sr_r.json()
     # print(sr_r_json)
     a = AdminAuther('dimones','123qwe','test')
-    print(a.auth_user())
+    # print(a.auth_user())
     # pass
     # a = Auther('avt310_bogomolov','396sgx','test-device-id')
     #
-    # # a_h = AuthHelper('98e1f5996fe049d6a23cadaee83e814a','b8fdd4c9-eff4-8ebb-f399-20a7288e940f')
+    a_h = AdminHelper('e20d0e93430642d5843c022bb559ee73','test')
+    print(a_h.getRole())
     # print(a.auth_user())

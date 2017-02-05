@@ -31,9 +31,20 @@ dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "nam
 
              "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип',
                             'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все семейства', 'cat_1_def': 'Все типы'}}
+#Роли пользователей
+"""
+-1 - никто
+1 - админ
+2 - seo manager
+3 - добавлятор продуктов
+4 - продавец
+"""
 print(json.dumps(dict_data,ensure_ascii=False))
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def roleError():
+    return "HHHHUIIII"
 
 def flat_to_nest(data, keys):
     """Преобразование "плоских" данных во вложенные
@@ -146,19 +157,15 @@ def discount():
 @app.route('/как-купить')
 def how_tp_buys():
     return render_template('index.html',body=render_template('page.html',body=render_template('howtobuy.html')))
-
 @app.route('/ремонт')
 def repair():
     return render_template('index.html',body=render_template('page.html',body=render_template('repair.html')))
-
 @app.route('/поиск')
 def search():
     return render_template('index.html',body=render_template('page.html',body=render_template('search.html')))
-
 @app.route('/доставка-и-оплата')
 def delivery():
     return render_template('index.html',body=render_template('page.html',body=render_template('delivery.html')))
-
 @app.route('/search_products')
 def search_products():
     conn = get_conn_1()
@@ -301,7 +308,6 @@ def remove_call_request():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/call_request', methods=['POST'])
 def call_request():
     connection = get_conn_1()
@@ -485,8 +491,6 @@ def catalog_path(path):
                                                                                                 prices=cat_prices(dict_data[path]['cat']),data=dict_data[path],
                                                                                                 cat_data=getCatData(dict_data[path]['cat']), js_data = json.dumps(dict_data[path]))))
 
-
-
 @app.route('/каталог/<string:path>/<string:name_cat>/')
 @app.route('/каталог/<string:path>/<string:name_cat>')
 def catalog_path_name_cat(path,name_cat=None):
@@ -560,16 +564,13 @@ def catalog_detail():
                                                                                                 name_top=data['NAME'],
                                                                                                 types=product_getTypesFixed(), prices=cat_prices(-1))))
 
-
-
-
-
 @app.route('/ad')
 def admin():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
         print('cookie fail')
         return redirect(url_for('ad_auth'))
-    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
         print('token fail')
         return redirect(url_for('ad_auth'))
     connection = get_conn_1()
@@ -583,16 +584,20 @@ def admin():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('admin.html', product_list=render_template('product_list.html',products=data))
+    return render_template('admin.html', product_list=render_template('product_list.html',products=data), admin_level=a_h.getRole())
 @app.route('/ad/new')
 def admin_new():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
         print('cookie fail')
         return redirect(url_for('ad_auth'))
-    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
         print('token fail')
         return redirect(url_for('ad_auth'))
-    return render_template('admin_new_product.html')
+    if int(a_h.getRole()) not in [1,4]:
+        return roleError()
+    return render_template('admin_new_product.html',admin_level=a_h.getRole())
 
 @app.route('/ad/clients/get_data')
 def clients_getData():
@@ -617,9 +622,13 @@ def admin_calls():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
         print('cookie fail')
         return redirect(url_for('ad_auth'))
-    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
         print('token fail')
         return redirect(url_for('ad_auth'))
+
+    if int(a_h.getRole()) not in [1, 4]:
+        return roleError()
     connection = get_conn_1()
     data = None
     data_Orders = None
@@ -642,9 +651,12 @@ def admin_change_product(product_id):
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
         print('cookie fail')
         return redirect(url_for('ad_auth'))
-    if Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id']).isValid() != True:
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
         print('token fail')
         return redirect(url_for('ad_auth'))
+    if int(a_h.getRole()) not in [1,3]:
+        return roleError()
     connection = get_conn_1()
     data = None
     try:
@@ -886,7 +898,6 @@ def product_getTypes():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
 
-
 @app.route('/ad/product/add_colors', methods=['GET'])
 def product_addColors():
     connection = get_conn_1()
@@ -981,7 +992,6 @@ def product_update():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
 
-
 @app.route('/ad/product/remove',methods= ['GET'])
 def product_remove():
     connection = get_conn()
@@ -1042,7 +1052,6 @@ def product_next():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
 
-
 @app.route('/ad/img/setProductID', methods=['GET'])
 def img_setProductID():
     connection = get_conn()
@@ -1095,7 +1104,6 @@ def img_setMain():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
 
-
 @app.route('/ad/img/all')
 def img_all():
     connection = get_conn()
@@ -1125,7 +1133,6 @@ def img_all():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 
 def fixImages():
     connection = get_conn()
