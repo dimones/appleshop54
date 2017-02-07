@@ -44,7 +44,7 @@ print(json.dumps(dict_data,ensure_ascii=False))
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def roleError():
-    return "HHHHUIIII"
+    return "У Вас нет доступа в этот раздел!"
 
 def flat_to_nest(data, keys):
     """Преобразование "плоских" данных во вложенные
@@ -1275,4 +1275,15 @@ def f32d73dc8d1d():
 if __name__ == '__main__':
     # getCatData(1)
     # fixImages()
+    # from operator import *
+    # data = [{'c1': 1, 'c2': 10, 'c3': 4},
+    #         {'c1': 1, 'c2': 10, 'c3': 5},
+    #         {'c1': 2, 'c2': 20, 'c3': 6},
+    #         {'c1': 2, 'c2': 20, 'c3': 7},
+    #         ]
+    #
+    # grouper = itemgetter("c1", "c2")
+    # for key, group in itertools.groupby(data, itemgetter("c1", "c2")):
+    #     print(key)
+    #     print(list(group))
     app.run(host="0.0.0.0",port=5000, debug=True)
