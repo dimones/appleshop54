@@ -15,7 +15,6 @@
     <link href="/static/css/main.css" rel="stylesheet">
     <link href="/static/css/appleshop54.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/icomoon.css">
-    <script src="/static/js/js.cookie.min.js"></script>
     <link href="/static/css/animate-custom.css" rel="stylesheet">
 
 
@@ -24,6 +23,7 @@
     <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
 
     <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/js.cookie.min.js"></script>
 	<script type="text/javascript" src="/static/js/modernizr.custom.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -51,11 +51,11 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           {% if admin_level == 1 or admin_level == 3 %}
-            <li><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
+            <li class="active"><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
           {% endif %}
 
           {% if admin_level == 1 or admin_level == 2 %}
-            <li class="active"><a href="/ad/clients">Клиенты</a></li>
+            <li><a href="/ad/clients">Клиенты</a></li>
           {% endif %}
           {% if admin_level == 1 or admin_level == 2 %}
             <li><a href="/ad/seo">SEO</a></li>
@@ -67,66 +67,13 @@
         <ul class="nav navbar-nav navbar-right" id="loginPlace">
             <li class="pointmenu"><a href="#" data-toggle="modal" data-target="#login-modal" onclick="Cookies.set('device_token',null); window.location=location.protocol + '//' + location.host+'/ad/auth'">Выйти</a></li>
         </ul>
-    </div>
+    </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
     <div class="container" id="productList">
-        <div class="row">
-            <div class="col-sm-6">
 
-                <h3 id="productId">Запросы на звонки</h3>
-                <div class="list-group" id="calls">
-                    {{ calls | safe }}
-                </div>
-            </div>
-            <div class="col-sm-6">
-                <h3 id="productId">Заказы</h3>
-                <div class="list-group" id="orders">
-                    {{ orders | safe  }}
-                </div>
-            </div>
-        </div>
-        </div>
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script>
-        setInterval(function (data) {
-            $.get('/ad/clients/get_data')
-            .done(function (data) {
-                data = JSON.parse(data);
-                $("#calls").html(data.calls);
-                $("#orders").html(data.orders);
-            })
-            .fail(function (data) {
-
-            });
-        },2000);
-        function removeOrder(id){
-            $.post('/remove_order_request',{'id': id})
-            .done(function(data){
-                data = JSON.parse(data);
-                if(data.succeed == true)
-                    $("#o"+id.toString()).remove();
-            })
-            .fail(function (data) {
-
-            });
-
-        }
-        function removeCall(id){
-            $.post('/remove_call_request',{'id': id})
-            .done(function(data){
-                data = JSON.parse(data);
-                if(data.succeed == true)
-                    $("#c"+id.toString()).remove();
-            })
-            .fail(function (data) {
-
-            });
-
-        }
         function removeProduct(productId){
             $.get('/ad/product/remove',{'product_id': productId})
             .done(function (data) {

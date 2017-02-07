@@ -1,0 +1,74 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Имя пользователя</th>
+      <th>Пароль</th>
+      <th>Роль</th>
+      <th>Действие</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set i = 1 %}
+    {% for user in users %}
+        <tr>
+          <th>{{ user['id'] }}</th>
+          <td>{{ user['username'] }}</td>
+          <td>{{ user['password'] }}</td>
+          <td>
+            <select id="userRoles{{ user['id'] |safe }}">
+              {% if user['role'] == 1 %}
+                  <option selected="selected" value="1">Администратор</option>
+                  <option value="2">SEO-manager</option>
+                  <option value="3">Менеджер товаров</option>
+                  <option value="4">Продавец</option>
+              {% endif %}
+              {% if user['role'] == 2 %}
+                  <option value="1">Администратор</option>
+                  <option selected="selected" value="2">SEO-manager</option>
+                  <option value="3">Менеджер товаров</option>
+                  <option value="4">Продавец</option>
+              {% endif %}
+              {% if user['role'] == 3 %}
+                  <option value="1">Администратор</option>
+                  <option value="2">SEO-manager</option>
+                  <option selected="selected" value="3">Менеджер товаров</option>
+                  <option value="4">Продавец</option>
+              {% endif %}
+              {% if user['role'] == 4 %}
+                  <option value="1">Администратор</option>
+                  <option value="2">SEO-manager</option>
+                  <option value="3">Менеджер товаров</option>
+                  <option selected="selected" value="4">Продавец</option>
+              {% endif %}
+            </select>
+          </td>
+            <td>
+                <a type="button" href="#" class="btn btn-default" onclick="changeRole({{ user['id'] }})">Изменить роль</a>
+                <a type="button" href="#" class="btn btn-warning" onclick="changePasswordPre({{ user['id'] }})">Изменить пароль</a>
+                <a type="button" href="#" class="btn btn-danger" onclick="removeUserPre({{ user['id'] }})">Удалить пользователя</a>
+            </td>
+        </tr>
+        {% set i = i + 1 %}
+    {% endfor %}
+  </tbody>
+</table>
+<script>
+function changeRole(user_id){
+    $.get("/ad/users/set_role",{"role": $("#userRoles" + user_id).val(),"user_id":user_id})
+    .done(function (data) {
+        $.get('/ad/users/get_html')
+        .done(function (data) {
+            $("#usersList").html(data);
+            toastr["success"]("appleshop54.com", "Успешно изменена роль");
+        })
+        .fail(function(){
+            toastr["error"]("appleshop54.com", "Произошла ошибка");
+           alert('Произошла ошибка получения данных');
+        });
+    })
+    .fail(function () {
+        alert('Произошла ошибка');
+    });
+}
+</script>

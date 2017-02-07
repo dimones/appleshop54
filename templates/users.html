@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="APPLESHOP54 - Магазин трендовых товаров">
+    <link rel="shortcut icon" href="/static/ico/favicon.png">
+
+    <title>APPLESHOP54 - Магазин трендовых товаров</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/css/main.css" rel="stylesheet">
+    <link href="/static/css/material.css" rel="stylesheet">
+    <link href="/static/css/appleshop54.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/icomoon.css">
+    <link href="/static/css/animate-custom.css" rel="stylesheet">
+    <link href="/static/css/toastr.min.css" rel="stylesheet">
+
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/js.cookie.min.js"></script>
+	<script type="text/javascript" src="/static/js/modernizr.custom.js"></script>
+    <script src="/static/js/toastr.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="static/js/html5shiv.js"></script>
+      <script src="static/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body data-spy="scroll" data-offset="0" data-target="#navbar-main">
+   <nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">appleshop54.ru</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          {% if admin_level == 1 or admin_level == 3 %}
+            <li><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
+          {% endif %}
+
+          {% if admin_level == 1 or admin_level == 2 %}
+            <li><a href="/ad/clients">Клиенты</a></li>
+          {% endif %}
+          {% if admin_level == 1 or admin_level == 2 %}
+            <li><a href="/ad/seo">SEO</a></li>
+          {% endif %}
+          {% if admin_level == 1 %}
+            <li class="active"><a href="/ad/users">Пользователи системы</a></li>
+          {% endif %}
+        </ul>
+        <ul class="nav navbar-nav navbar-right" id="loginPlace">
+            <li class="pointmenu"><a href="#" data-toggle="modal" data-target="#login-modal" onclick="Cookies.set('device_token',null); window.location=location.protocol + '//' + location.host+'/ad/auth'">Выйти</a></li>
+        </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+   <div id="modalAddUser" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Добавить пользователя</h4>
+          </div>
+          <div class="modal-body">
+                <div class="input-group">
+                      <span class="input-group-addon" id="basic-addon1">Имя пользователя</span>
+                      <input type="text" class="form-control" placeholder="Имя пользователя" aria-describedby="basic-addon1" id="addUsername">
+                </div>
+                <br>
+                <div class="input-group">
+                      <span class="input-group-addon" id="basic-addon1">Пароль</span>
+                      <input type="text" class="form-control" placeholder="Пароль" aria-describedby="basic-addon1" id="addPass">
+                </div>
+                <br>
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">Роль пользователя</span>
+                    <select id="userAddRole">
+                        <option value="1">Администратор</option>
+                        <option value="2">SEO-manager</option>
+                        <option value="3">Менеджер товаров</option>
+                        <option value="4">Продавец</option>
+                    </select>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="addUser()">Добавить пользователя</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="modalRemoveUser" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Удалить пользователя</h4>
+          </div>
+
+          <div class="modal-body">
+              <label>Точно хотите удалить пользователя?</label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="removeUser()">Удалить пользователя?</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="modalChangePass" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Изменить пароль пользователя</h4>
+          </div>
+
+          <div class="modal-body">
+                <br>
+                <div class="input-group">
+                      <span class="input-group-addon" id="basic-addon1">Пароль</span>
+                      <input type="text" class="form-control" placeholder="Пароль" aria-describedby="basic-addon1" id="changePass">
+                </div>
+                <br>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="changePassword()">Изменить пароль?</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+
+
+    <div class="row">
+        <div class="container">
+            <a href="#" class="btn btn-info" onclick="$('#modalAddUser').modal('show');">Добавить пользователя</a>
+        </div>
+    </div>
+    <div class="container" id="usersList">
+        {{ users | safe }}
+    </div>
+    <script>
+        var idForRemove;
+        var idForChangePass;
+        toastr.options = {
+          "closeButton": false,
+          "debug": false,
+          "newestOnTop": false,
+          "progressBar": false,
+          "positionClass": "toast-top-right",
+          "preventDuplicates": false,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "5000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
+        };
+        function changePassword(){
+            $.post('/ad/users/change_password',{'user_id': idForChangePass, 'password':$("#changePass").val()})
+            .done(function (data) {
+                $("#modalChangePass").modal('hide');
+                toastr["success"]("appleshop54.com", "Успешно изменен пароль");
+                $.get('/ad/users/get_html')
+                .done(function (data) {
+                    $("#usersList").html(data);
+                })
+                .fail(function(){
+                    toastr["error"]("appleshop54.com", "Произошла ошибка получения списка пользователей");
+                });
+            })
+            .fail(function (data) {
+                $("#modalAddUser").modal('hide');
+                toastr["error"]("appleshop54.com", "Ошибка изменения пароля");
+            });
+        }
+        function changePasswordPre(user_id) {
+            idForChangePass = user_id;
+            $("#modalChangePass").modal('show');
+
+        }
+        function removeUser() {
+            $.get('/ad/users/remove',{'id': idForRemove})
+            .done(function (data) {
+                $("#modalRemoveUser").modal('hide');
+                toastr["success"]("appleshop54.com", "Успешно удален пользователь");
+                $.get('/ad/users/get_html')
+                .done(function (data) {
+                    $("#usersList").html(data);
+                })
+                .fail(function(){
+                    toastr["error"]("appleshop54.com", "Произошла ошибка получения списка пользователей");
+                });
+            })
+            .fail(function (data) {
+                $("#modalAddUser").modal('hide');
+                toastr["error"]("appleshop54.com", "Ошибка удаления пользователя");
+            });
+        }
+        function removeUserPre(user_id){
+            idForRemove = user_id;
+            $("#modalRemoveUser").modal('show');
+        }
+        function addUser(){
+            $.post('/ad/users/add', {'username': $("#addUsername").val(),
+                'password': $("#addPass").val(),'role':$("#userAddRole").val()})
+            .done(function (data) {
+                $("#modalAddUser").modal('hide');
+                toastr["success"]("appleshop54.com", "Успешно добавлен пользователь");
+                $.get('/ad/users/get_html')
+                .done(function (data) {
+                    $("#usersList").html(data);
+                })
+                .fail(function(){
+                    toastr["error"]("appleshop54.com", "Произошла ошибка получения списка пользователей");
+                });
+            })
+            .fail(function (data) {
+                $("#modalAddUser").modal('hide');
+                toastr["error"]("appleshop54.com", "Ошибка добавления пользователя");
+            });
+        }
+        function removeProduct(productId){
+            $.get('/ad/product/remove',{'product_id': productId})
+            .done(function (data) {
+                $.get('/ad/product/get_by_type')
+                .done(function (data) {
+                    $("#productList").html(data);
+                })
+                .fail(function (data) {
+                   alert(data.message);
+                });
+            })
+            .fail(function(data){
+                alert(data);
+            });
+        }
+
+    </script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/static/js/retina.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.easing.1.3.js"></script>
+    <script type="text/javascript" src="/static/js/smoothscroll.js"></script>
+  </body>
+</html>

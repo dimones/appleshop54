@@ -57,11 +57,24 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
-        <li><a href="/ad?specs">Спецпредложения</a></li>
+        <ul class="nav navbar-nav">
+          {% if admin_level == 1 or admin_level == 3 %}
+            <li class="active"><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
+          {% endif %}
 
-      </ul>
+          {% if admin_level == 1 or admin_level == 2 %}
+            <li><a href="/ad/clients">Клиенты</a></li>
+          {% endif %}
+          {% if admin_level == 1 or admin_level == 2 %}
+            <li><a href="/ad/seo">SEO</a></li>
+          {% endif %}
+          {% if admin_level == 1 %}
+            <li><a href="/ad/users">Пользователи системы</a></li>
+          {% endif %}
+        </ul>
+        <ul class="nav navbar-nav navbar-right" id="loginPlace">
+            <li class="pointmenu"><a href="#" data-toggle="modal" data-target="#login-modal" onclick="Cookies.set('device_token',null); window.location=location.protocol + '//' + location.host+'/ad/auth'">Выйти</a></li>
+        </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>

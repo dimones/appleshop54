@@ -584,20 +584,115 @@ def admin():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('admin.html', product_list=render_template('product_list.html',products=data), admin_level=a_h.getRole())
+    if int(a_h.getRole()) is 1:
+        return render_template('admin.html', product_list=render_template('product_list.html',products=data), admin_level=a_h.getRole())
+    elif int(a_h.getRole()) is 2:
+        return render_template('seo.html',admin_level = 2)
 @app.route('/ad/new')
 def admin_new():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
-        print('cookie fail')
         return redirect(url_for('ad_auth'))
-
     a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
     if a_h.isValid() != True:
-        print('token fail')
         return redirect(url_for('ad_auth'))
     if int(a_h.getRole()) not in [1,4]:
         return roleError()
     return render_template('admin_new_product.html',admin_level=a_h.getRole())
+@app.route('/ad/seo')
+def ad_seo():
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        return redirect(url_for('ad_auth'))
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
+        return redirect(url_for('ad_auth'))
+    if int(a_h.getRole()) not in [1, 2]:
+        return roleError()
+    return render_template('seo.html',admin_level = a_h.getRole())
+
+@app.route('/ad/users')
+def ad_users():
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        return redirect(url_for('ad_auth'))
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
+        return redirect(url_for('ad_auth'))
+    if int(a_h.getRole()) not in [1, 2]:
+        return roleError()
+    return render_template('users.html',admin_level = a_h.getRole(),users=ad_users_get_html())
+@app.route('/ad/users/get_html')
+def ad_users_get_html():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM MYNSTU_ADMIN_USERS")
+            data = cursor.fetchall()
+            return render_template('users_list.html',users=data)
+    except Exception as e:
+        print(e)
+#users
+@app.route('/ad/users/get',methods=['GET'])
+def ad_users_get():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM MYNSTU_ADMIN_USERS")
+            data = cursor.fetchall()
+            return json.dumps(data,ensure_ascii=False)
+    except Exception as e:
+        print(e)
+@app.route('/ad/users/add',methods=['POST'])
+def ad_users_add():
+    connection = get_conn_1()
+    print(request.form)
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT id FROM MYNSTU_ADMIN_USERS WHERE username = '%s'"
+                           % (request.form['username']))
+            if cursor.rowcount == 0:
+                cursor.execute("INSERT INTO MYNSTU_ADMIN_USERS(username,password,role) " +
+                               "VALUES ('%s','%s',%s)" % (request.form['username'],
+                                                          request.form['password'], request.form['role']))
+                connection.commit()
+                connection.close()
+                return json.dumps({"succeed": True})
+            else:
+                return json.dumps({"succeed": False })
+    except Exception as e:
+        print(e)
+@app.route('/ad/users/remove',methods=['GET'])
+def ad_users_remove():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("DELETE FROM MYNSTU_ADMIN_USERS WHERE id = %s"
+                           % (request.args.get('id')))
+            connection.commit()
+            connection.close()
+            return json.dumps({"succeed": True})
+    except Exception as e:
+        print(e)
+@app.route('/ad/users/set_role',methods=['GET'])
+def ad_users_set_role():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE MYNSTU_ADMIN_USERS SET role = %s WHERE id=%s" %
+                           (request.args.get('role'),request.args.get('user_id')))
+            connection.commit()
+            return json.dumps({"succeed":True},ensure_ascii=False)
+    except Exception as e:
+        print(e)
+@app.route('/ad/users/change_password',methods=['POST'])
+def ad_users_change_password():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("UPDATE MYNSTU_ADMIN_USERS SET password = '%s' WHERE id=%s" %
+                           (request.form['password'],request.form['user_id']))
+            connection.commit()
+            return json.dumps({"succeed":True },ensure_ascii=False)
+    except Exception as e:
+        print(e)
 
 @app.route('/ad/clients/get_data')
 def clients_getData():
@@ -627,7 +722,7 @@ def admin_calls():
         print('token fail')
         return redirect(url_for('ad_auth'))
 
-    if int(a_h.getRole()) not in [1, 4]:
+    if int(a_h.getRole()) not in [1, 2]:
         return roleError()
     connection = get_conn_1()
     data = None
@@ -644,7 +739,9 @@ def admin_calls():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('calls.html',calls=render_template('client/calls.html',calls=data),orders=render_template('client/orders.html',orders=data_Orders))
+    return render_template('calls.html',calls=render_template('client/calls.html',calls=data),
+                           orders=render_template('client/orders.html',orders=data_Orders),
+                           admin_level = a_h.getRole())
 
 @app.route('/ad/change/<product_id>')
 def admin_change_product(product_id):
@@ -666,11 +763,11 @@ def admin_change_product(product_id):
                            "( SELECT extension FROM product_images WHERE product_id = pr.id AND is_main = 1 LIMIT 0,1) extension FROM products pr WHERE pr.id = %s" % product_id)
             connection.close()
             data = cursor.fetchone()
-
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('change_product.html',product_id=product_id,data=data)
+    return render_template('change_product.html',product_id=product_id,data=data,
+                           admin_level=a_h.getRole())
 
 @app.route('/ad/change/special/set', methods=['GET'])
 def special_set():
@@ -749,7 +846,6 @@ def upload_file_2(_id):
                 # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 return 'good'
 
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -795,7 +891,6 @@ def upload_file():
                     return json.dumps({'succeed': False, "error": str(e)})
                 # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 return 'good'
-
 
 @app.route('/ad/product/data')
 def product_categLoad():

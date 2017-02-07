@@ -54,13 +54,13 @@
             <li class="active"><a href="/ad">Продукты <span class="sr-only">(current)</span></a></li>
           {% endif %}
 
-          {% if admin_level == 1 or admin_level == 4 %}
+          {% if admin_level == 1 or admin_level == 2 %}
             <li><a href="/ad/clients">Клиенты</a></li>
           {% endif %}
           {% if admin_level == 1 or admin_level == 2 %}
             <li><a href="/ad/seo">SEO</a></li>
           {% endif %}
-          {% if admin_level == 1 or admin_level == 2 %}
+          {% if admin_level == 1 %}
             <li><a href="/ad/users">Пользователи системы</a></li>
           {% endif %}
         </ul>
