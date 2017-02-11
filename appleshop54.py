@@ -67,13 +67,14 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def get_conn():
-    return pymysql.connect(host='82.146.41.220',
+    #82.146.41.220
+    return pymysql.connect(host='217.71.129.181',
                              user='root',
                              password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
                              charset='utf8')
 def get_conn_1():
-    return pymysql.connect(host='82.146.41.220',
+    return pymysql.connect(host='217.71.129.181',
                              user='root',
                              password='jmXQF97JqkeNxV5B%',
                              db='appleshop54',
@@ -121,12 +122,15 @@ def main():
                             products pr
                         WHERE
                             pr.is_special = 1""")
-            connection.close()
+
             data = cursor.fetchall()
+            cursor.execute("SELECT * FROM discounts")
+            dis_data = cursor.fetchall()
+            connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('index.html',body=render_template('main.html',data=data))
+    return render_template('index.html',body=render_template('main.html',data=data,discount=dis_data))
 
 @app.route('/ad/auth')
 def ad_auth():
@@ -585,9 +589,9 @@ def admin():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     if int(a_h.getRole()) is 1:
-        return render_template('admin.html', product_list=render_template('product_list.html',products=data), admin_level=a_h.getRole())
+        return render_template('admin.html', product_list=render_template('product_list.html',products=data), admin_level=a_h.getRole(),username=a_h.getUserName())
     elif int(a_h.getRole()) is 2:
-        return render_template('seo.html',admin_level = 2)
+        return render_template('seo.html',admin_level = 2,username=a_h.getUserName())
 @app.route('/ad/new')
 def admin_new():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
@@ -597,7 +601,7 @@ def admin_new():
         return redirect(url_for('ad_auth'))
     if int(a_h.getRole()) not in [1,4]:
         return roleError()
-    return render_template('admin_new_product.html',admin_level=a_h.getRole())
+    return render_template('admin_new_product.html',admin_level=a_h.getRole(),username=a_h.getUserName())
 @app.route('/ad/seo')
 def ad_seo():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
@@ -607,8 +611,162 @@ def ad_seo():
         return redirect(url_for('ad_auth'))
     if int(a_h.getRole()) not in [1, 2]:
         return roleError()
-    return render_template('seo.html',admin_level = a_h.getRole())
+    return render_template('seo.html',admin_level = a_h.getRole(),username=a_h.getUserName())
+#change pages
+@app.route('/ad/discount')
+def ad_discount():
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        return redirect(url_for('ad_auth'))
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
+        return redirect(url_for('ad_auth'))
+    if int(a_h.getRole()) not in [1, 4]:
+        return roleError()
+    return render_template('discounts_ad.html', admin_level=a_h.getRole(), username=a_h.getUserName(),discount=ad_discount_html())
+@app.route('/ad/discount/html')
+def ad_discount_html():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM discounts")
+            data = cursor.fetchall()
+            return render_template('discounts_ad_list.html',discount=data)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/discount/upload_image/<_id>', methods=['GET', 'POST'])
+def ad_discount_upload_image(_id):
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            next_id = -1
+            connection = get_conn()
 
+            if _id != -1:
+                _filename = str(uuid.uuid4().hex) + '.' +filename.rsplit('.', 1)[1]
+                mypath = app.config['UPLOAD_FOLDER'] + '/static/img/banners/' + str(_id) + "/"
+
+                print(_filename)
+                print(mypath)
+                if os.path.exists(mypath) != True:
+                    os.mkdir(mypath)
+                try:
+                    file.save(mypath + _filename)
+                except Exception as e:
+                    print(e)
+                    return json.dumps({"succeed":False})
+                # buffer = None
+                # try:
+                #     with connection.cursor() as cursor:
+                #         cursor.execute(
+                #             "INSERT INTO product_images(id,product_id,is_main,extension) VALUES (%s,%s,%s,'image/%s')" % (next_id,base64.b64encode(buffer).decode('utf8'),-1,0,filename.rsplit('.', 1)[1]))
+                #         connection.commit()
+                #         connection.close()
+                #         return json.dumps({'imgId': cursor.lastrowid})
+                # except Exception as e:
+                #     print(str(e), file=sys.stderr)
+                #     return json.dumps({'succeed': False, "error": str(e)})
+                # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return json.dumps({"succeed":True, "image_name": _filename})
+@app.route('/ad/discount/next_id')
+def ad_discount_next_id():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT AUTO_INCREMENT FROM information_schema. tables WHERE table_name = 'discounts' "
+                "AND table_schema = DATABASE();")
+            return json.dumps({'id': cursor.fetchone()[0]})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/discount/img/all')
+def ad_discount_img_all():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            mypath = app.config['UPLOAD_FOLDER'] + '/static/img/banners/' + str(
+                request.args.get('discountId')) + '/'
+            print(mypath)
+            onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+            if len(onlyfiles) > 0:
+                print(onlyfiles)
+                out_files = []
+                for file in onlyfiles:
+                    if allowed_file(file):
+                        out_files.append(file)
+                return json.dumps(out_files)
+            else:
+                return json.dumps([])
+            # if request.args.get('product_id') != None:
+            #     cursor.execute('SELECT id,image,extension,is_main FROM product_images WHERE product_id = %s' % request.args.get('product_id'))
+            # else:
+            #     cursor.execute(
+            #         "SELECT id,extension,is_main FROM product_images WHERE product_id = -1")
+            images = []
+            for data in cursor.fetchall():
+                images.append({'id': data[0], 'extension': data[1].split('/')[1], 'is_main': bool(data[2])})
+            connection.close()
+            return json.dumps(images)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/discount/add',methods=['POST'])
+def ad_discount_add():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            print(request.form)
+            cursor.execute(
+                "INSERT INTO discounts(name,description,image_name,name_color,description_color) "
+                "VALUES('%s','%s','%s','%s','%s')" %
+                (request.form['name'],request.form['description'],request.form['image_name'],
+                 request.form['name_color'],request.form['description_color']))
+            connection.commit()
+            return json.dumps({"succeed":True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/discount/delete', methods=['POST'])
+def ad_discount_delete():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "DELETE FROM discounts WHERE id=%s" % (request.form['id']))
+            connection.commit()
+            return json.dumps({"succeed": True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+
+@app.route('/ad/discount/change', methods=['POST'])
+def ad_discount_change():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "UPDATE  discounts SET name='%s', description='%s',image_name='%s',name_color='%s',description_color='%s'"
+                " WHERE id=%s" %
+                (request.form['name'],request.form['description'],request.form['image_name'],request.form['id'],
+                 request.form['name_color'], request.form['description_color']))
+            connection.commit()
+            return json.dumps({"succeed": True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+#users
 @app.route('/ad/users')
 def ad_users():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
@@ -618,7 +776,7 @@ def ad_users():
         return redirect(url_for('ad_auth'))
     if int(a_h.getRole()) not in [1, 2]:
         return roleError()
-    return render_template('users.html',admin_level = a_h.getRole(),users=ad_users_get_html())
+    return render_template('users.html',admin_level = a_h.getRole(),users=ad_users_get_html(),username=a_h.getUserName())
 @app.route('/ad/users/get_html')
 def ad_users_get_html():
     connection = get_conn_1()
@@ -629,7 +787,6 @@ def ad_users_get_html():
             return render_template('users_list.html',users=data)
     except Exception as e:
         print(e)
-#users
 @app.route('/ad/users/get',methods=['GET'])
 def ad_users_get():
     connection = get_conn_1()
@@ -693,7 +850,7 @@ def ad_users_change_password():
             return json.dumps({"succeed":True },ensure_ascii=False)
     except Exception as e:
         print(e)
-
+#clients
 @app.route('/ad/clients/get_data')
 def clients_getData():
     connection = get_conn_1()
@@ -741,8 +898,8 @@ def admin_calls():
         return json.dumps({'succeed': False, "error": str(e)})
     return render_template('calls.html',calls=render_template('client/calls.html',calls=data),
                            orders=render_template('client/orders.html',orders=data_Orders),
-                           admin_level = a_h.getRole())
-
+                           admin_level = a_h.getRole(),username=a_h.getUserName())
+#change product
 @app.route('/ad/change/<product_id>')
 def admin_change_product(product_id):
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
@@ -768,7 +925,6 @@ def admin_change_product(product_id):
         return json.dumps({'succeed': False, "error": str(e)})
     return render_template('change_product.html',product_id=product_id,data=data,
                            admin_level=a_h.getRole())
-
 @app.route('/ad/change/special/set', methods=['GET'])
 def special_set():
     connection = get_conn_1()
@@ -793,7 +949,6 @@ def special_set():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/ad/change/special/unset', methods=['GET'])
 def special_unset():
     connection = get_conn_1()
@@ -807,7 +962,6 @@ def special_unset():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/upload/<_id>', methods=['GET', 'POST'])
 def upload_file_2(_id):
     if request.method == 'POST':
@@ -845,7 +999,6 @@ def upload_file_2(_id):
                 #     return json.dumps({'succeed': False, "error": str(e)})
                 # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 return 'good'
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -891,7 +1044,6 @@ def upload_file():
                     return json.dumps({'succeed': False, "error": str(e)})
                 # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 return 'good'
-
 @app.route('/ad/product/data')
 def product_categLoad():
     connection = get_conn_1()

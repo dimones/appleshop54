@@ -1,55 +1,78 @@
- 
-    <!-- ==== КАРУСЕЛЬКА ==== -->
-    <div class="row" id="home" name="home" style="height: 500px; margin-top: -26px;">
-        <div id="myCarousel" class="carousel slide" data-ride="carousel">
-          <!-- Indicators -->
-          <ol class="carousel-indicators" style="">
-            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-            <li data-target="#myCarousel" data-slide-to="1"></li>
-          </ol>
+    {% if discount | length > 0 %}
+        <div class="row" id="home" name="home" style="height: 500px; margin-top: -26px;">
+            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+              <!-- Indicators -->
+              <ol class="carousel-indicators" style="">
+                  {% set dis_i = 0 %}
+                  {% for dis in discount %}
+                      {% if dis_i == 0 %}
+                        <li data-target="#myCarousel" data-slide-to="{{ dis_i }}" class="active"></li>
+                          {% set dis_i = dis_i + 1 %}
+                      {% else %}
+                        <li data-target="#myCarousel" data-slide-to="{{ dis_i }}"></li>
+                      {% endif %}
+                  {% endfor %}
+              </ol>
 
-          <!-- Wrapper for slides -->
-          <div class="carousel-inner" role="listbox">
-            <div class="item active back" style=" height: 500px; z-index: 1; ">
-                <div style="background-image: url(/static/img/bg/iphone6.png); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
-{#                <img src="/static/img/bg/iphone6.png">#}
-                <div class="images_carousel" style="text-shadow: none  !important;">
-                    <div class="container">
-                        <div class="row" style="margin-left: 10px; margin-top: 150px;">
-                            <div class="col-sm-5">
-                                <div class="row">
-                                    <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">iPhone 6 с большой скидкой!</label>
-                                </div>
-                                <br>
-                                <div class="row">
-                                    <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:black; margin-left: 0">Специальное предложение в нашем магазине iphone 6 по новогодней цене всего 23900 рублей</label>
-                                </div>
-                                <br>
-                                <div class="row">
-                                    <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+              <!-- Wrapper for slides -->
+              <div class="carousel-inner" role="listbox">
+                  {% set dis_i = 0 %}
+                  {% for dis in discount %}
+                      {% if dis_i == 0 %}
+                        <div class="item active back" style=" height: 500px; z-index: 1; ">
+                            <div style="background-image: url(/static/img/banners/{{ dis["id"] }}/{{ dis["image_name"] }}); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
+                            <div class="images_carousel" style="text-shadow: none  !important;">
+                                <div class="container">
+                                    <div class="row" style="margin-left: 10px; margin-top: 150px;">
+                                        <div class="col-sm-5">
+                                            <div class="row">
+                                                <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">{{ dis["name"] }}</label>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:black; margin-left: 0">{{ dis["description"] }}</label>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
-{#                        <span style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">Chania</span>#}
-{#                        <p>The atmosphere in Chania has a touch of Florence and Venice.</p>#}
-                    </div>
-                </div>
-            </div>
+                          {% set dis_i = dis_i + 1 %}
+                      {% else %}
+                        <div class="item back" style=" height: 500px; z-index: 1; ">
+                            <div style="background-image: url(/static/img/banners/{{ dis["id"] }}/{{ dis["image_name"] }}); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
+                            <div class="images_carousel" style="text-shadow: none  !important;">
+                                <div class="container">
+                                    <div class="row" style="margin-left: 10px; margin-top: 150px;">
+                                        <div class="col-sm-5">
+                                            <div class="row">
+                                                <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; margin-left: 0; color: {{ dis["name_color"] }} !important;">{{ dis["name"] }}</label>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; margin-left: 0; color: {{ dis["description_color"] }} !important;">{{ dis["description"] }}</label>
+                                            </div>
+                                            <br>
+                                            <div class="row">
+                                                <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      {% endif %}
+                  {% endfor %}
+              </div>
 
-            <div class="item back" style="background-image: url(/static/img/bg/iphone7.png); height: 500px;">
             </div>
-{##}
-{#            <div class="item back" style="background-image: url(/static/img/bg/divider2.jpg); height: 500px;">#}
-{#            </div>#}
-{##}
-{#            <div class="item back" style="background-image: url(/static/img/bg/divider3.jpg); height: 500px;">#}
-{#            </div>#}
-          </div>
-
         </div>
-    </div><!-- /headerwrap -->
-
+    {% endif %}
     <!-- ==== GREYWRAP ==== -->
     <div style="background-color: #e7e7e7;">
         <div class="row" style="margin-left: 0;">

@@ -65,6 +65,7 @@
           {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right" id="loginPlace">
+            <li><label style="margin-top: 15px; margin-right: 5px;">Ваш логин: {{ username }}</label></li>
             <li class="pointmenu"><a href="#" data-toggle="modal" data-target="#login-modal" onclick="Cookies.set('device_token',null); window.location=location.protocol + '//' + location.host+'/ad/auth'">Выйти</a></li>
         </ul>
     </div><!-- /.navbar-collapse -->

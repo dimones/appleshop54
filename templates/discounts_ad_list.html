@@ -1,0 +1,78 @@
+<br>
+{% if discount | length > 0 %}
+    <div class="row" id="home" name="home" style="height: 500px; margin-top: -26px;">
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+          <!-- Indicators -->
+          <ol class="carousel-indicators" style="">
+              {% set dis_i = 0 %}
+              {% for dis in discount %}
+                  {% if dis_i == 0 %}
+                    <li data-target="#myCarousel" data-slide-to="{{ dis_i }}" class="active"></li>
+                      {% set dis_i = dis_i + 1 %}
+                  {% else %}
+                    <li data-target="#myCarousel" data-slide-to="{{ dis_i }}"></li>
+                  {% endif %}
+              {% endfor %}
+          </ol>
+
+          <!-- Wrapper for slides -->
+          <div class="carousel-inner" role="listbox">
+              {% set dis_i = 0 %}
+              {% for dis in discount %}
+                  {% if dis_i == 0 %}
+                    <div class="item active back" style=" height: 500px; z-index: 1; ">
+                        <div style="background-image: url(/static/img/banners/{{ dis["id"] }}/{{ dis["image_name"] }}); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
+                        <div class="images_carousel" style="text-shadow: none  !important;">
+                            <div class="container">
+                                <div class="row" style="margin-left: 10px; margin-top: 150px;">
+                                    <div class="col-sm-5">
+                                        <div class="row">
+                                            <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">{{ dis["name"] }}</label>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:black; margin-left: 0">{{ dis["description"] }}</label>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                      {% set dis_i = dis_i + 1 %}
+                  {% else %}
+                    <div class="item back" style=" height: 500px; z-index: 1; ">
+                        <div style="background-image: url(/static/img/banners/{{ dis["id"] }}/{{ dis["image_name"] }}); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
+                        <div class="images_carousel" style="text-shadow: none  !important;">
+                            <div class="container">
+                                <div class="row" style="margin-left: 10px; margin-top: 150px;">
+                                    <div class="col-sm-5">
+                                        <div class="row">
+                                            <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; margin-left: 0; color: {{ dis["name_color"] }} !important;">{{ dis["name"] }}</label>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; margin-left: 0; color: {{ dis["description_color"] }} !important;">{{ dis["description"] }}</label>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  {% endif %}
+              {% endfor %}
+          </div>
+
+        </div>
+    </div>
+{% else %}
+    <h2>Акций нет</h2>
+{% endif %}
