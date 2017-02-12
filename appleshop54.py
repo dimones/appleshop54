@@ -15,7 +15,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты',
                                       'cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все объемы','cat_1_need': True,'cat_1_model':True,'needPrice':True},
-             "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2, 'cat_1_name':'По модели','cat_1_def': 'Все модели', 'cat_2_name':None, 'cat_2_color': False,'cat_1_model':True,'needPrice':False},
+             "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2, 'cat_1_name':'Гигабайты','cat_1_def': 'Все объемы', 'cat_1_need':True, 'cat_2_name':None, 'cat_2_color': False,'cat_1_model':True,'needPrice':False},
 
              "applewatch": {"name": "APPLE WATCH", "name_top": "Apple Watch", "cat": 3, 'cat_1_name':'По модели','cat_1_def': 'Все модели', 'cat_2_name': None, 'cat_2_color': False, 'cat_1_model':True, 'cat1_vendor': False,'needPrice':False},
 
