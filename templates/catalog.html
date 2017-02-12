@@ -6,8 +6,12 @@
     </ol>
     <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;" id="nameCatalogPart">{{ name }}</h3>
 </div>
-
 <script>
+    {% if data['needPrice'] == True %}
+        var needPrice = 0;
+    {% else %}
+        var needPrice = 1;
+    {% endif %}
     {% if data is defined %}
         var data = {{ js_data | safe}};
     {% endif %}
@@ -19,46 +23,62 @@
 <div class="row" id="settings" style="margin-left: 0px;">
     <div class="settings">
         <div class="row">
-            {% if prices['min'] != prices['max'] %}
-            <div class="col-lg-5">
-                <label style="margin-left: 20px;margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цена:</label>
-                <div class="row" style="margin-left: 20px;">
-                    <div style="border: 1px solid #d9d9d9; height: 60px;">
-                        <div style="margin-left: 10px; margin-top: 18px;">
-                            <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px; width: 75px;">{{ prices['min'] }}</span>
-                            <input id="priceValue" type="text" class="span2" value="" data-slider-min="{{ prices['min'] }}" data-slider-max="{{ prices['max'] }}" data-slider-step="5" data-slider-value="[{{ prices['min'] }},{{ prices['max'] }}]"/>
-                            <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;  width: 100px; padding-left: 10px;">{{ prices['max'] }}</span>
+            {% if cat != 1  %}
+                {% if prices['min'] != prices['max'] %}
+                <div class="col-lg-5">
+                    <label style="margin-left: 20px;margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цена:</label>
+                    <div class="row" style="margin-left: 20px;">
+                        <div style="border: 1px solid #d9d9d9; height: 60px;">
+                            <div style="margin-left: 10px; margin-top: 18px;">
+                                <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px; width: 75px;">{{ prices['min'] }}</span>
+                                <input id="priceValue" type="text" class="span2" value="" data-slider-min="{{ prices['min'] }}" data-slider-max="{{ prices['max'] }}" data-slider-step="5" data-slider-value="[{{ prices['min'] }},{{ prices['max'] }}]"/>
+                                <span style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 500; padding-right: 10px;  width: 100px; padding-left: 10px;">{{ prices['max'] }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                {% endif %}
+                {% if prices['min'] == prices['max'] %}
+                <div class="col-lg-5">
+                    <label style="margin-left: 20px;margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цена:</label>
+                    <div class="row" style="margin-left: 20px;">
+                        <div style="border: 1px solid #d9d9d9; height: 60px;">
+                            <div style="margin-left: 10px; margin-top: 18px;">
+                                <label style="margin-left: 10%;margin-right: 10%; padding-left: 35px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">Фильтр недоступен</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             {% endif %}
-            {% if prices['min'] == prices['max'] %}
-            <div class="col-lg-5">
-                <label style="margin-left: 20px;margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Цена:</label>
-                <div class="row" style="margin-left: 20px;">
-                    <div style="border: 1px solid #d9d9d9; height: 60px;">
-                        <div style="margin-left: 10px; margin-top: 18px;">
-                            <label style="margin-left: 10%;margin-right: 10%; padding-left: 35px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">Фильтр недоступен</label>
-                        </div>
+            {% if data['cat_1_model'] == True %}
+                <div class="col-lg-4" id="cat_1_model" type="model">
+                    <label style="margin-left:20px;margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">Модели:</label>
+                    <div style="border: 1px solid #d9d9d9; height: 60px; margin-left: 20px;">
+                        <a class="dropdown-toggle" type="button" data-toggle="dropdown"
+                             style="height: 100%; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;" href="#">
+                              <span style="margin-left: 30px;" id="cat1_model_text">Все модели:</span>
+                          <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px;  text-align: center;"></span></a>
+                          <ul class="test dropdown-menu" style="margin-top: -15px;width: 90%; margin-left: 15px;" id="cat1_model_data">
+
+                          </ul>
                     </div>
                 </div>
-            </div>
             {% endif %}
             {% if data['cat1_vendor'] == True %}
-            <div class="col-lg-4" id="cat_1" type="vendor">
-                <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_1_name'] }}:</label>
-                <div style="border: 1px solid #d9d9d9; height: 60px; margin-left: 20px;">
-                    <a class="dropdown-toggle" type="button" data-toggle="dropdown"
-                         style="height: 100%; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;" href="#">
-                          <span style="margin-left: 15px;" id="cat1_text">{{ data['cat_1_def'] }}</span>
-                      <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px;  text-align: center;"></span></a>
-                      <ul class="test dropdown-menu" style="margin-top: -15px;width: 90%; margin-left: 15px;" id="cat1_data">
+                <div class="col-lg-4" id="cat_1" type="vendor">
+                    <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px; margin-left: 20px;">{{ data['cat_1_name'] }}:</label>
+                    <div style="border: 1px solid #d9d9d9; height: 60px; margin-left: 20px;">
+                        <a class="dropdown-toggle" type="button" data-toggle="dropdown"
+                             style="height: 100%; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-style: italic; font-weight: 300; color:black; float:right; width: 100%; margin-top: 17px;" href="#">
+                              <span style="margin-left: 15px;" id="cat1_text">{{ data['cat_1_def'] }}</span>
+                          <span class="caret" style="float: right; margin-right: 12px; margin-top: 10px;  text-align: center;"></span></a>
+                          <ul class="test dropdown-menu" style="margin-top: -15px;width: 90%; margin-left: 15px;" id="cat1_data">
 
-                      </ul>
+                          </ul>
+                    </div>
                 </div>
-            </div>
-            {% else %}
+            {% elif data['cat_1_need'] == True %}
             <div class="col-lg-4" id="cat_1">
                 <div class="row" style="margin-left: 20px;">
                     <label style="margin-top: 20px; font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500; padding-right: 10px;">{{ data['cat_1_name'] }}:</label>
@@ -151,6 +171,7 @@
     var cat1Id = null;
     var cat2Id = null;
     var vendorId = null;
+    var modelId = null;
     var priceMin = null;
     var priceMax = null;
     $(document).ready(function (data) {
@@ -181,14 +202,13 @@
     });
     function filterProducts(){
         console.log({'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId,
-            'priceMin': priceMin, 'priceMax': priceMax});
+            'priceMin': priceMin, 'priceMax': priceMax, 'model':modelId,'needPrice':needPrice});
         $.get('/getProductsBy',{'cat':cat1Id,'subcat':cat2Id,'color':colorId, 'type':data.cat,'vendor': vendorId,
-            'priceMin': priceMin, 'priceMax': priceMax })
+            'priceMin': priceMin, 'priceMax': priceMax, 'model':modelId ,'needPrice':needPrice})
         .done(function (data) {
             $("#products").html(data);
         })
         .fail(function (data) {
-
         });
     }
     function changeSubCategory(key) {
@@ -245,7 +265,6 @@
                     var temp = cat_data[key].data[i];
                     console.log(temp);
                     if (i == 0) {
-
                         html += '<li><a id="t0" onclick="changeColor(null);" class="category" sid="null" value="null">' + data.cat_2_def + ' </a></li><li class="divider"></li>';
                         html += '<li><a id="t' + temp['sid'] + '" onclick="changeSubCategory(' + temp['sid'] + ');" class="category" sid="' + temp['sid'] + '" value="' + temp.subcateg_name + ' ">' + temp.subcateg_name + '</a></li>';
                     }
@@ -273,6 +292,22 @@
             console.log(color);
             console.log("#t" + color);
             $("#cat2_text").text($("#t" + color).attr('value'));
+            filterProducts();
+        }
+    }
+    function changeModel(model){
+        if(model == null){
+            modelId = null;
+            $("#cat1_model_text").text('Все модели');
+            filterProducts();
+        }
+        else {
+            var key = model;
+            console.log($("#m" + key.toString()).text());
+            modelId = $("#m" + key.toString()).text();
+            console.log(modelId);
+            console.log("#m" + key);
+            $("#cat1_model_text").text(modelId);
             filterProducts();
         }
     }
@@ -323,7 +358,30 @@
 
             });
         }
+        if($("#cat_1_model").attr('type') == "model"){
+            $.get('/getModelsByType',{'id':data.cat})
+            .done(function (data) {
+                data = JSON.parse(data);
+                console.log(data);
+                var html = "";
+                for (var i = 0; i < data.length; i++) {
+                    var temp = data[i];
+                    if(i==0) {
+                        html += '<li><a id="m00" onclick="changeModel(null);" class="category" sid="null" value="null">Все модели</a></li><li class="divider"></li>';
+                        html += '<li><a id="m' + i + '" onclick="changeModel(' + i + ');" class="category" sid="' + i + '" value="' + temp.name
+                                + ' ">' + temp.name + '</a></li>';
+                    }
+                    else
+                        html += '<li class="divider"><li><a id="m' + i + '" onclick="changeModel('
+                                + i + ');" class="category" sid="' + i + '" value="' + temp.vendor
+                                + ' ">' + temp.name + '</a></li>';
+                }
+                $("#cat1_model_data").html(html);
+            })
+            .fail(function (data) {
 
+            });
+        }
         if($("#cat_2").attr('type') == "color"){
             $.get('/getColorsByType',{'id':data.cat})
             .done(function (data) {

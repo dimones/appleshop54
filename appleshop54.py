@@ -14,23 +14,23 @@ UPLOAD_FOLDER = app.root_path
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 dict_data = { "телефоны-apple" : {"name": "ТЕЛЕФОНЫ APPLE", "name_top": "Телефоны Apple","cat" : 1, 'cat_1_name': 'Гигабайты',
-                                      'cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все объемы'},
-             "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2},
+                                      'cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все объемы','cat_1_need': True,'cat_1_model':True,'needPrice':True},
+             "планшеты": {"name": "ПЛАНШЕТЫ", "name_top": "Планшеты", "cat": 2, 'cat_1_name':'По модели','cat_1_def': 'Все модели', 'cat_2_name':None, 'cat_2_color': False,'cat_1_model':True,'needPrice':False},
 
-             "smart-часы": {"name": "SMART ЧАСЫ", "name_top": "Smart часы", "cat": 3},
+             "applewatch": {"name": "APPLE WATCH", "name_top": "Apple Watch", "cat": 3, 'cat_1_name':'По модели','cat_1_def': 'Все модели', 'cat_2_name': None, 'cat_2_color': False, 'cat_1_model':True, 'cat1_vendor': False,'needPrice':False},
 
-             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True,'cat_1_def': 'Все типы'},
+             "чехлы": {"name": "ЧЕХЛЫ", "name_top": "Чехлы", "cat": 4, 'cat_1_name': 'Тип чехла', 'cat_2_name': None, 'cat2_color': True,'cat_1_def': 'Все типы','cat_1_need':True,'needPrice':False},
 
              "фитнес-браслеты": {"name": "ФИТНЕС БРАСЛЕТЫ", "name_top": "Фитнес браслеты", "cat": 5, 'cat_1_name': 'Производитель',
-                                 'cat_2_name': None, 'cat2_color': True, 'cat1_vendor': True, 'cat_1_def': 'Все производители'},
+                                 'cat_2_name': None, 'cat2_color': True, 'cat1_vendor': True, 'cat_1_def': 'Все производители','cat_1_need':True,'needPrice':False},
 
-             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие', 'cat_1_def': 'Все типы', 'cat_2_def': 'Все покрытия' },
+             "защита-экрана": {"name": "ЗАЩИТА ЭКРАНА", "name_top": "Защита экрана", "cat": 6, 'cat_1_name': 'Тип защиты', 'cat_2_name': 'Покрытие', 'cat_1_def': 'Все типы', 'cat_2_def': 'Все покрытия','cat_1_need':True ,'needPrice':False},
 
              "другие-устройства": {"name": "ДРУГИЕ УСТРОЙСТВА", "name_top": "Другие устройства", "cat": 7,
-                                   'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства'},
+                                   'cat_1_name': 'Тип устройства','cat_2_name': None, 'cat2_color': True, 'cat_1_def': 'Все устройства','cat_1_need':True,'needPrice':False},
 
              "аксессуары": {"name": "АКСЕССУАРЫ", "name_top": "Аксессуары", "cat": 8, 'cat_1_name': 'Тип',
-                            'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все семейства', 'cat_1_def': 'Все типы'}}
+                            'cat_2_name': 'Семейство','availible':'Зарядные устройства', 'cat2_color': None, 'cat_2_def': 'Все семейства', 'cat_1_def': 'Все типы','cat_1_need':True,'needPrice':False}}
 #Роли пользователей
 """
 -1 - никто
@@ -210,7 +210,6 @@ def search_products():
         print(e)
     finally:
         conn.close()
-
 def cat(_id):
     connection = get_conn_1()
     data = None
@@ -225,7 +224,6 @@ def cat(_id):
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return data
-
 def cat_prices(_id):
     connection = get_conn_1()
     data = None
@@ -251,7 +249,6 @@ def cat_prices(_id):
     ret_data.update({'pr_min':int(data['min'] * 1.2)})
     ret_data.update({'pr_max':int(data['max'] * 0.88)})
     return ret_data
-
 def getCatData(_id):
     connection = get_conn_1()
     data = None
@@ -280,8 +277,6 @@ def getCatData(_id):
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
-
 @app.route('/remove_order_request', methods=['POST'])
 def remove_order_request():
     connection = get_conn_1()
@@ -390,79 +385,154 @@ def getProductsBy():
             type_id = request.args.get('type')
             path = request.args.get('path')
             vendor = request.args.get('vendor')
+            model = request.args.get('model')
             priceMin = request.args.get('priceMin')
             priceMax = request.args.get('priceMax')
-            print(priceMax)
+            needPrice = int(request.args.get('needPrice'))
             if priceMin == '':
                 priceMin = 0
             if priceMax == '':
                 priceMax = 0
-            if cat != '' and subcat != '' and color != '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
-                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
-            elif cat!= '' and color != '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               cat, color,priceMax,priceMin))
-                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               cat, color,priceMax,priceMin))
-            elif cat!= '' and subcat != '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id "
-                               "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               cat, subcat,priceMax,priceMin))
-                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id "
-                               "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               cat, subcat,priceMax,priceMin))
-            elif cat!= '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               cat,priceMax,priceMin))
-                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               cat,priceMax,priceMin))
-            elif color!= '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               color,priceMax,priceMin))
-                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               color,priceMax,priceMin))
-            elif subcat!= '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               subcat,priceMax,priceMin))
-                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
-                               subcat,priceMax,priceMin))
-            elif vendor!= '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.vendor = '%s'  AND ( price <= %s AND price >= %s)" % (
-                               vendor,priceMax,priceMin))
-            elif type_id!= '':
-                cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
-                               type_id,priceMax,priceMin))
-                print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
-                               "pr.main_image image_id"
-                               " FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
-                               type_id,priceMax,priceMin))
+            sql = "SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.main_image image_id" \
+                  " FROM products pr WHERE "
+            if cat!= '':
+                sql += 'pr.categ_id = %s AND ' % cat
+            if subcat != '':
+                sql += 'pr.subcateg_id = %s AND ' % subcat
+            if color != '':
+                sql += 'pr.color_id = %s AND ' % color
+            if vendor != '':
+                sql += "pr.vendor = '%s' AND " % vendor
+            if model != '':
+                sql += "pr.name = '%s' AND " % model
+            if type_id != '':
+                sql += "pr.type_product = %s AND " % type_id
+            print(needPrice)
+            if needPrice == 1:
+                sql += "( price <= %s AND price >= %s) AND " % (priceMax,priceMin)
+            sql = sql[0:-4]
+            print(sql)
+            cursor.execute(sql)
+            # if cat != '' and subcat != '' and color != '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s" % (
+            #                        cat, color, subcat))
+            #     print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                    "pr.main_image image_id"
+            #                    " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s AND pr.subcateg_id = %s AND ( price <= %s AND price >= %s)" % (cat,color,subcat,priceMax,priceMin))
+            # elif cat!= '' and color != '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                        cat, color,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s" % (
+            #                            cat, color))
+            #     print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                    "pr.main_image image_id"
+            #                    " FROM products pr WHERE pr.categ_id = %s AND pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                    cat, color,priceMax,priceMin))
+            # elif cat!= '' and subcat != '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id "
+            #                        "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                        cat, subcat,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id "
+            #                        "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s " % (
+            #                            cat, subcat, priceMax, priceMin))
+            #     print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                    "pr.main_image image_id "
+            #                    "FROM products pr WHERE pr.categ_id = %s AND pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                    cat, subcat,priceMax,priceMin))
+            # elif cat!= '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                        cat,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.categ_id = %s" % (
+            #                            cat))
+            #     print("SELECT pr.id,pr.type_product , pr. NAME , pr.price,"
+            #                    "pr.main_image image_id"
+            #                    " FROM products pr WHERE pr.categ_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                    cat,priceMax,priceMin))
+            # elif color!= '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                        color,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.color_id = %s" % (color))
+            #     print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                    "pr.main_image image_id"
+            #                    " FROM products pr WHERE pr.color_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                    color,priceMax,priceMin))
+            # elif subcat!= '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                        subcat,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.subcateg_id = %s " % (subcat))
+            #     print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                    "pr.main_image image_id"
+            #                    " FROM products pr WHERE pr.subcateg_id = %s  AND ( price <= %s AND price >= %s)" % (
+            #                    subcat,priceMax,priceMin))
+            # elif vendor!= '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.vendor = '%s'  AND ( price <= %s AND price >= %s)" % (
+            #                        vendor,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.vendor = '%s'" % (vendor))
+            # elif model != '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.name = '%s'  AND ( price <= %s AND price >= %s)" % (
+            #                            model, priceMax, priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.name = '%s'" % (model))
+            # elif type_id!= '':
+            #     if needPrice == 1:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
+            #                        type_id,priceMax,priceMin))
+            #     else:
+            #         cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                        "pr.main_image image_id"
+            #                        " FROM products pr WHERE pr.type_product = %s " % (type_id))
+            #     print("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,"
+            #                    "pr.main_image image_id"
+            #                    " FROM products pr WHERE pr.type_product = %s AND ( price <= %s AND price >= %s)" % (
+            #                    type_id,priceMax,priceMin))
             connection.close()
             data = cursor.fetchall()
     except Exception as e:
@@ -496,6 +566,19 @@ def getVendorsByType():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return json.dumps(data,ensure_ascii=False)
+@app.route('/getModelsByType', methods=['GET'])
+def getModelByType():
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT(pr.name) FROM products pr WHERE pr.type_product = %s" % request.args.get('id'))
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return json.dumps(data,ensure_ascii=False)
 @app.route('/каталог/<string:path>/')
 @app.route('/каталог/<string:path>')
 def catalog_path(path):
@@ -512,7 +595,7 @@ def catalog_path(path):
                                                                                                 name=dict_data[path]['name'],
                                                                                                 name_top=dict_data[path]['name_top'],
                                                                                                 prices=cat_prices(dict_data[path]['cat']),data=dict_data[path],
-                                                                                                cat_data=getCatData(dict_data[path]['cat']), js_data = json.dumps(dict_data[path]))))
+                                                                                                cat_data=getCatData(dict_data[path]['cat']), js_data = json.dumps(dict_data[path]),cat=dict_data[path]['cat'])))
 @app.route('/каталог/<string:path>/<string:name_cat>/')
 @app.route('/каталог/<string:path>/<string:name_cat>')
 def catalog_path_name_cat(path,name_cat=None):
