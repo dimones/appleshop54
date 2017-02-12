@@ -1008,14 +1008,14 @@ def ad_clients_export(_type):
     connection = get_conn_1()
     try:
         with connection.cursor() as cursor:
-            if _type == 'calls.csv':
+            if _type == 'calls':
                 cursor.execute("SELECT * FROM call_requests WHERE is_call = 0")
-            elif _type == 'calls_called.csv':
+            elif _type == 'calls_called':
                 cursor.execute("SELECT * FROM call_requests WHERE is_call = 1")
-            elif _type == 'orders.csv':
+            elif _type == 'orders':
                 cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
                                "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 0")
-            elif _type == 'orders_called.csv':
+            elif _type == 'orders_called':
                 cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
                                "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 1")
             else:
@@ -1034,8 +1034,21 @@ def ad_clients_export(_type):
                     for key in keys:
                         csv_string += '"%s";' % dat[key]
                     csv_string = csv_string[0:-1] + '\n'
-                r = Response(csv_string, mimetype='application/csv')
-                r.headers["Content-Type"] = "application/csv; charset=utf-8;"
+                with open(app.config['UPLOAD_FOLDER'] + '/static/' + _type,'w',encoding='cp1251') as f:
+                    f.write(csv_string)
+                    f.close()
+                return send_file("static/"+_type,mimetype='text/csv',attachment_filename=_type+'.csv',
+                     as_attachment=True)
+                cs = None
+                with open(app.config['UPLOAD_FOLDER'] + '/static/' + _type,'w',encoding='cp1251') as f:
+                    cs = f.read()
+                    f.close()
+
+                r = Response(cs , mimetype='text/csv',headers={"Content-disposition":
+                 "attachment; filename=" + _type})
+                r.headers["Content-Type"] = "application/csv; charset=cp1251;"
+
+                return r
                 return r
             return json.dumps(cursor.fetchall(), ensure_ascii=False)
     except Exception as e:

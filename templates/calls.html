@@ -82,14 +82,29 @@
             <div id="home" class="tab-pane fade in active">
                 <div class="row">
                     <div class="col-sm-6">
-
-                        <h3 id="productId">Запросы на звонки</h3>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3 id="productId">Запросы на звонки</h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <a class="btn btn-success" href="/ad/clients/export/calls" target="_blank" style="margin-top: 15px;">Скачать</a>
+                            </div>
+                        </div>
+                        <br>
                         <div class="list-group" id="calls">
                             {{ calls | safe }}
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <h3 id="productId">Заказы</h3>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3 id="productId">Заказы</h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <a class="btn btn-success" href="/ad/clients/export/orders" target="_blank" style="margin-top: 15px;">Скачать</a>
+                            </div>
+                        </div>
+                        <br>
                         <div class="list-group" id="orders">
                             {{ orders | safe  }}
                         </div>
@@ -99,13 +114,28 @@
               <div id="menu1" class="tab-pane fade ">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 id="productId">Запросы на звонки</h3>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3 id="productId">Запросы на звонки</h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <a class="btn btn-success" href="/ad/clients/export/calls_called" target="_blank" style="margin-top: 15px;">Скачать</a>
+                            </div>
+                        </div>
                         <div class="list-group" id="calls_called">
                             {{ calls_called | safe }}
                         </div>
                     </div>
                     <div class="col-sm-6">
-                        <h3 id="productId">Заказы</h3>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h3 id="productId">Заказы</h3>
+                            </div>
+                            <div class="col-lg-6">
+                                <a class="btn btn-success" href="/ad/clients/export/orders_called" target="_blank" style="margin-top: 15px;">Скачать</a>
+                            </div>
+                        </div>
+                        <br>
                         <div class="list-group" id="orders_called">
                             {{ orders_called | safe  }}
                         </div>
