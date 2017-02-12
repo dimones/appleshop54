@@ -69,6 +69,7 @@
           {% if admin_level == 1 %}
             <li><a href="/ad/users">Пользователи системы</a></li>
             <li class="active"><a href="/ad/discount">Акции</a></li>
+            <li><a href="/ad/pages">Страницы</a></li>
           {% endif %}
 
         </ul>
@@ -142,7 +143,89 @@
 
       </div>
     </div>
+   <div id="modalChangeDiscount" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Изменить акцию акцию</h4>
+          </div>
+          <div class="modal-body">
+                <div class="form-horizontal">
+                  <div class="form-group">
+                      <div class="row">
+                          <h3 id="discountIdChange" class=" control-label" style="float: left; margin-left: 20px;"></h3>
+                      </div>
+                      <br>
+                      <div class="row">
+                          <div class="col-lg-9">
+                              <input type="text" class="form-control" id="discountNameChange" placeholder="Название акции">
+                          </div>
+                          <div class="col-lg-3">
+                                <div id="nameColorChange" data-format="alias" class="input-group colorpicker-component">
+                                    <input type="text" value="primary" class="form-control" />
+                                    <span class="input-group-addon"><i></i></span>
+                                </div>
+                          </div>
+                      </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-lg-9">
+                            <textarea rows="10" cols="45" name="text" class="form-control" placeholder="Описание акции" id="discountDescriptionChange"></textarea>
+                        </div>
+                        <div class="col-lg-3">
+                            <div id="descriptionColorChange" data-format="alias" class="input-group colorpicker-component">
+                                <input type="text" value="primary" class="form-control" />
+                                <span class="input-group-addon"><i></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <form id="upload-file-change" method="post" enctype="multipart/form-data">
+                        <fieldset>
+                            <label for="file">Выберите файл для загрузки</label>
+                            <input name="file" type="file">
+                        </fieldset>
+                        <fieldset>
+                            <button id="upload-file-btn-change" type="button" class="btn btn-default btn-info">Загрузить</button>
+                        </fieldset>
+                    </form>
+                      <br>
+                    <div class="row" id="imagesProductChange">
 
+                    </div>
+                  </div>
+                </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="changeDiscount()">Изменить акцию</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div id="modalRemoveDis" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Удаление акции</h4>
+          </div>
+
+          <div class="modal-body">
+              <label>Точно хотите удалить акцию?</label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" onclick="removeDis()">Удалить акцию?</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     <div class="container" id="productList">
         <div class="row">
@@ -152,7 +235,7 @@
                 Акции appleshop54.com</h2>
             </div>
             <div class="col-lg-3">
-                <button class="btn btn-success" style="margin-top: 15px;" onclick="$('#modalAddDiscount').modal('show');">Добавить акцию</button>
+                <button class="btn btn-success" style="margin-top: 15px;" onclick="modeChange = false; loadDisctountNextId(); $('#modalAddDiscount').modal('show'); ">Добавить акцию</button>
             </div>
         </div>
         <br>
@@ -166,6 +249,86 @@
 
         var discountId = null;
         var imageIDs = [];
+        var changeId = null;
+        var removeId = null;
+        var modeChange = false;
+        function removeImage(image_id){
+            $.get('/ad/discount/remove_image?image_id='+imageIDs[0].toString() + "&id=" + discountId.toString())
+            .done(function (data) {
+                console.log(data);
+                loadAllImages();
+            })
+            .fail(function(data){
+                alert(data.message);
+            });
+        }
+        function changeDisPre(dis_id) {
+            changeId = dis_id;
+            discountId = changeId;
+            loadAllImages();
+            $("#discountIdChange").text('Изменяемая акция: №' + changeId.toString());
+            $.get('/ad/discount/get',{'id':changeId})
+            .done(function (data) {
+                data = JSON.parse(data);
+                console.log(data);
+                $("#discountNameChange").val(data['name']);
+                $("#discountDescriptionChange").val(data['description']);
+                $("#nameColorChange").colorpicker('setValue',data["name_color"]);
+                $("#descriptionColorChange").colorpicker('setValue',data["description_color"]);
+                discountId = data["id"];
+                modeChange = true;
+                $("#modalChangeDiscount").modal("show");
+                loadAllImages();
+            })
+            .fail(function () {
+                toastr["error"]("appleshop54.com", "Ошибка изменения акции");
+            });
+
+        }
+        function changeDiscount() {
+            $.post('/ad/discount/change',{"name":$("#discountNameChange").val(),"description":$("#discountDescriptionChange").val(),
+                                        "image_name":imageIDs[0],"name_color": $("#nameColorChange").colorpicker('getValue'),
+                                        "description_color": $("#descriptionColorChange").colorpicker('getValue'), "id": discountId.toString()})
+            .done(function (data) {
+                console.log(data);
+                $("#modalChangeDiscount").modal("hide");
+                toastr["success"]("appleshop54.com", "Успешно изменена акция");
+                $.get('/ad/discount/html')
+                .done(function (data) {
+                    $("#discounts").html(data);
+                })
+                .fail(function (data) {
+                    toastr["error"]("appleshop54.com", "Ошибка загрузки акций");
+                });
+                loadDisctountNextId();
+            })
+            .fail(function (data) {
+                toastr["error"]("appleshop54.com", "Ошибка изменения акции");
+            });
+        }
+        function removeDisPre(dis_id) {
+            removeId = dis_id;
+            $('#modalRemoveDis').modal("show");
+        }
+        function removeDis() {
+            $.post('/ad/discount/delete',{'id':removeId})
+            .done(function (data) {
+                toastr["success"]("appleshop54.com", "Успешно удалена акция");
+                $('#modalRemoveDis').modal("hide");
+                $.get('/ad/discount/html')
+                .done(function (data) {
+                    $("#discounts").html(data);
+                })
+                .fail(function (data) {
+                    toastr["error"]("appleshop54.com", "Ошибка загрузки акций");
+                });
+                loadDisctountNextId();
+            })
+            .fail(function () {
+                toastr["error"]("appleshop54.com", "Ошибка удаления акции");
+
+            });
+        }
         function addDiscount() {
             $.post('/ad/discount/add',{"name":$("#discountName").val(),"description":$("#discountDescription").val(),
                                         "image_name":imageIDs[0],"name_color": $("#nameColor").colorpicker('getValue'),
@@ -195,9 +358,15 @@
                 console.log(data);
                 var html = "";
                 imageIDs = [];
-                $("#imagesProduct").html("");
+                if(modeChange == true)
+                    $("#imagesProductChange").html('');
+                else
+                    $("#imagesProduct").html("");
                 if(data.length > 0) {
-                    $("#upload-file-btn").addClass('disabled');
+                    if(modeChange == true)
+                        $("#upload-file-btn-change").addClass('disabled');
+                    else
+                        $("#upload-file-btn").addClass('disabled');
                     for(var i = 0; i< 1; i++){
                         imageIDs.push(data[i]);
                         html += '<div class="col-xs-12"> <div class="thumbnail">';
@@ -206,16 +375,20 @@
                                 '<p><a onclick="removeImage(\''+ data[i] +'\');" class="btn btn-primary" role="button">Удалить изображение</a> ';
                         html += '</div></div></div>';
                     }
-                    $("#imagesProduct").html(html);
+                    if(modeChange == true)
+                        $("#imagesProductChange").html(html);
+                    else
+                        $("#imagesProduct").html(html);
+
                 }
                 else{
-                    $("#upload-file-btn").removeClass('disabled');
+                    if(modeChange == true)
+                        $("#upload-file-btn-change").removeClass('disabled');
+                    else
+                        $("#upload-file-btn").removeClass('disabled');
                 }
-
-
             })
             .fail(function (data) {
-
                 toastr["error"]("appleshop54.com", "Ошибка загрузки изображения");
             });
         }
@@ -235,8 +408,33 @@
             });
         }
         $(function() {
-            $('#upload-file-btn').click(function() {
-                var form_data = new FormData($('#upload-file')[0]);
+            var formbtn = "#upload-file-btn";
+            var formname = "#upload-file";
+            if(modeChange == true)
+            {
+                formbtn = "#upload-file-btn-change";
+                formname = "#upload-file-change";
+            }
+            $("#upload-file-btn").click(function() {
+                var form_data = new FormData($("#upload-file")[0]);
+                $.ajax({
+                    type: 'POST',
+                    url: '/ad/discount/upload_image/' + discountId.toString(),
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    async: false,
+                    success: function(data) {
+                        console.log('Success!');
+
+
+                        loadAllImages();
+                    }
+                });
+            });
+            $("#upload-file-btn-change").click(function() {
+                var form_data = new FormData($("#upload-file-change")[0]);
                 $.ajax({
                     type: 'POST',
                     url: '/ad/discount/upload_image/' + discountId.toString(),
@@ -271,6 +469,32 @@
                     }
                 });
                 $('#descriptionColor').colorpicker({
+                    colorSelectors: {
+                        '#000000': '#000000',
+                        '#ffffff': '#ffffff',
+                        '#FF0000': '#FF0000',
+                        '#777777': '#777777',
+                        '#337ab7': '#337ab7',
+                        '#5cb85c': '#5cb85c',
+                        '#5bc0de': '#5bc0de',
+                        '#f0ad4e': '#f0ad4e',
+                        '#d9534f': '#d9534f'
+                    }
+                });
+                $('#nameColorChange').colorpicker({
+                    colorSelectors: {
+                        '#000000': '#000000',
+                        '#ffffff': '#ffffff',
+                        '#FF0000': '#FF0000',
+                        '#777777': '#777777',
+                        '#337ab7': '#337ab7',
+                        '#5cb85c': '#5cb85c',
+                        '#5bc0de': '#5bc0de',
+                        '#f0ad4e': '#f0ad4e',
+                        '#d9534f': '#d9534f'
+                    }
+                });
+                $('#descriptionColorChange').colorpicker({
                     colorSelectors: {
                         '#000000': '#000000',
                         '#ffffff': '#ffffff',

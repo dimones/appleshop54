@@ -24,6 +24,8 @@
 
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/js.cookie.min.js"></script>
+    <link href="/static/css/toastr.min.css" rel="stylesheet">
+    <script src="/static/js/toastr.min.js"></script>
 	<script type="text/javascript" src="/static/js/modernizr.custom.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -58,10 +60,12 @@
             <li><a href="/ad/clients">Клиенты</a></li>
           {% endif %}
           {% if admin_level == 1 or admin_level == 2 %}
-            <li class="active"><a href="/ad/seo">SEO</a></li>
+            <li><a href="/ad/seo">SEO</a></li>
           {% endif %}
           {% if admin_level == 1 %}
             <li><a href="/ad/users">Пользователи системы</a></li>
+            <li><a href="/ad/discount">Акции</a></li>
+            <li class="active"><a href="/ad/pages">Страницы</a></li>
           {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right" id="loginPlace">
@@ -72,9 +76,47 @@
   </div><!-- /.container-fluid -->
 </nav>
     <div class="container" id="productList">
-
+        <div class="row">
+            <div class="col-lg-3">
+                <h3>Текст для страницы: ремонт</h3>
+                <button class="btn btn-success" onclick="changeTextFor(0);">Применить изменения</button>
+            </div>
+            <div class="col-lg-9">
+                <textarea rows="10" cols="45" name="text" class="form-control" placeholder="Описание акции" id="text0">{{ pages[0]["text"] }}</textarea>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-3">
+                <h3>Текст для страницы: доставка и оплата</h3>
+                <button class="btn btn-success" onclick="changeTextFor(1);">Применить изменения</button>
+            </div>
+            <div class="col-lg-9">
+                <textarea rows="10" cols="45" name="text" class="form-control" placeholder="{{ pages[1]["text"] }}" id="text1">{{ pages[1]["text"] }}</textarea>
+            </div>
+        </div>
     </div>
     <script>
+        function changeTextFor(page_id) {
+            $.post('/ad/pages/change/' + page_id.toString(),{'text': $("#text"+page_id.toString()).val()})
+            .done(function (data) {
+                toastr["success"]("appleshop54.com", "Успешно изменен текст");
+                $.get('/ad/pages/get')
+                .done(function (data) {
+                    data = JSON.parse(data);
+                    console.log(data);
+                    $("#text0").val(data[0].text);
+                    $("#text1").val(data[1].text);
+                    toastr["success"]("appleshop54.com", "Успешно получены новые данные");
+                })
+                .fail(function () {
+                    toastr["error"]("appleshop54.com", "Ошибка ");
+                });
+            })
+            .fail(function () {
+                toastr["error"]("appleshop54.com", "Ошибка изменения текста");
+            });
+        }
         function removeProduct(productId){
             $.get('/ad/product/remove',{'product_id': productId})
             .done(function (data) {

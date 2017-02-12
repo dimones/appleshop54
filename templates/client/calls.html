@@ -9,9 +9,11 @@
                 <h4 class="list-group-item-heading">Дата</h4>
                 <p class="list-group-item-text">{{ call['date'] }}</p>
           </div>
-          <div class="col-lg-3" style="text-align: right;">
-              <button class="btn btn-success" onclick="removeCall({{ call['id'] }});">Уже позвонили</button>
-          </div>
+          {% if is_call == 0 %}
+              <div class="col-lg-3" style="text-align: right;">
+                  <button class="btn btn-success" onclick="removeCall({{ call['id'] }});">Уже позвонили</button>
+              </div>
+          {% endif %}
       </div>
   </a>
 {% endfor %}

@@ -26,15 +26,15 @@
                                     <div class="row" style="margin-left: 10px; margin-top: 150px;">
                                         <div class="col-sm-5">
                                             <div class="row">
-                                                <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">{{ dis["name"] }}</label>
+                                                <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:{{ dis["name_color"] }}; margin-left: 0">{{ dis["name"] }}</label>
                                             </div>
                                             <br>
                                             <div class="row">
-                                                <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:black; margin-left: 0">{{ dis["description"] }}</label>
+                                                <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:{{ dis["description_color"] }}; margin-left: 0">{{ dis["description"] }}</label>
                                             </div>
                                             <br>
                                             <div class="row">
-                                                <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+                                                <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции#dis{{ dis["id"] }}';">ПОДРОБНЕЕ</button>
                                             </div>
                                         </div>
 
@@ -59,7 +59,7 @@
                                             </div>
                                             <br>
                                             <div class="row">
-                                                <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции';">ПОДРОБНЕЕ</button>
+                                                <button class="btn appleshop_btn appleshop_btn_call" onclick="window.top.location.href='/акции#dis{{ dis["id"] }}';">ПОДРОБНЕЕ</button>
                                             </div>
                                         </div>
                                     </div>
@@ -69,7 +69,6 @@
                       {% endif %}
                   {% endfor %}
               </div>
-
             </div>
         </div>
     {% endif %}

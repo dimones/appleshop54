@@ -5,10 +5,15 @@
     </ol>
     <h3 class="section-heading" style="margin-left:13px; margin-top: -10px; font-weight: bold;">АКЦИИ</h3>
 </div>
-<div class="row"  style="margin-left: 0; min-height: 330px; background-image: url(/static/img/bg/iphone6.png); background-size: cover; background-repeat: no-repeat; background-position: center;">
-</div>
-<br>
-<div class="row" style="margin: 0;">
-    <h3 style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 18px;">iPhone 6 с большой скидкой!</h3>
-    <label style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">Специальное предложение в нашем магазине iphone 6 по новогодней цене всего 23900 рублей</label>
-</div>
+
+{% for dis in discount %}
+    <div class="row" name="dis{{ dis["id"] }}" style="margin-left: 0;">
+        <div class="row"  style="margin-left: 0; min-height: 330px; background-image: url(/static/img/banners/{{ dis["id"] }}/{{ dis["image_name"] }}); background-size: cover; background-repeat: no-repeat; background-position: center;">
+        </div>
+        <br>
+        <div class="row" style="margin: 0;">
+            <h3 style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 18px;">{{ dis["name"] }}</h3>
+            <label style="font-family: 'Roboto Light', sans-serif; font-size: 16px; font-weight: 500;">{{ dis["description"] }}</label>
+        </div>
+    </div>
+{% endfor %}

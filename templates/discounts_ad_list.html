@@ -24,14 +24,18 @@
                         <div style="background-image: url(/static/img/banners/{{ dis["id"] }}/{{ dis["image_name"] }}); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
                         <div class="images_carousel" style="text-shadow: none  !important;">
                             <div class="container">
+                                <div class="row" style="display: inline-block; z-index: 100;float: right;">
+                                    <button class="btn btn-success" onclick="changeDisPre({{ dis["id"] }});">Изменить акцию</button>
+                                    <button class="btn btn-danger" onclick="removeDisPre({{ dis["id"] }});">Удалить акцию</button>
+                                </div>
                                 <div class="row" style="margin-left: 10px; margin-top: 150px;">
                                     <div class="col-sm-5">
                                         <div class="row">
-                                            <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:black; margin-left: 0">{{ dis["name"] }}</label>
+                                            <label style="font-family: 'Roboto', sans-serif; font-weight: bold; font-size: 25px; color:{{ dis["name_color"] }}; margin-left: 0">{{ dis["name"] }}</label>
                                         </div>
                                         <br>
                                         <div class="row">
-                                            <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:black; margin-left: 0">{{ dis["description"] }}</label>
+                                            <label style="font-family: 'Roboto', sans-serif;  font-weight: 500; font-size: 19px; color:{{ dis["description_color"] }}; margin-left: 0">{{ dis["description"] }}</label>
                                         </div>
                                         <br>
                                         <div class="row">
@@ -49,6 +53,10 @@
                         <div style="background-image: url(/static/img/banners/{{ dis["id"] }}/{{ dis["image_name"] }}); min-height: 500px; background-repeat: no-repeat; background-position: center;"></div>
                         <div class="images_carousel" style="text-shadow: none  !important;">
                             <div class="container">
+                                <div class="row" style="display: inline-block; z-index: 100;float: right;">
+                                    <button class="btn btn-success" onclick="changeDisPre({{ dis["id"] }});">Изменить акцию</button>
+                                    <button class="btn btn-danger" onclick="removeDisPre({{ dis["id"] }});">Удалить акцию</button>
+                                </div>
                                 <div class="row" style="margin-left: 10px; margin-top: 150px;">
                                     <div class="col-sm-5">
                                         <div class="row">

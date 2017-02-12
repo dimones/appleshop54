@@ -14,7 +14,9 @@
                 <p class="list-group-item-text">{{ call['date'] }}</p>
           </div>
           <div class="col-lg-3" style="text-align: right;">
-              <button class="btn btn-success" onclick="removeOrder({{ call['id'] }});">Уже позвонили</button>
+              {% if is_call == 0 %}
+                <button class="btn btn-success" onclick="removeOrder({{ call['id'] }});">Уже позвонили</button>
+              {% endif %}
           </div>
       </div>
         <br>

@@ -9,7 +9,7 @@ from requests.compat import basestring
 from datetime import timedelta
 from flask import make_response, request, current_app
 from functools import update_wrapper
-import Auth
+import Auth,csv
 UPLOAD_FOLDER = app.root_path
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
@@ -157,19 +157,46 @@ def contacts():
     return render_template('index.html',body=render_template('page.html',body=render_template('contacts.html')))
 @app.route('/акции')
 def discount():
-    return render_template('index.html',body=render_template('page.html',body=render_template('discount.html')))
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM discounts")
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return render_template('index.html',body=render_template('page.html',body=render_template('discount.html',discount=data)))
 @app.route('/как-купить')
 def how_tp_buys():
     return render_template('index.html',body=render_template('page.html',body=render_template('howtobuy.html')))
 @app.route('/ремонт')
 def repair():
-    return render_template('index.html',body=render_template('page.html',body=render_template('repair.html')))
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM pages WHERE id=1")
+            return render_template('index.html', body=render_template('page.html',
+                                                                      body=render_template('repair.html',data=cursor.fetchone())))
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/поиск')
 def search():
     return render_template('index.html',body=render_template('page.html',body=render_template('search.html')))
 @app.route('/доставка-и-оплата')
 def delivery():
-    return render_template('index.html',body=render_template('page.html',body=render_template('delivery.html')))
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM pages WHERE id=2")
+            return render_template('index.html', body=render_template('page.html',
+                                                                      body=render_template('delivery.html',
+                                                                                           data=cursor.fetchone())))
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 @app.route('/search_products')
 def search_products():
     conn = get_conn_1()
@@ -261,7 +288,7 @@ def remove_order_request():
     data = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM orders WHERE id = %s" % request.form['id'])
+            cursor.execute("UPDATE orders SET is_call = 1 WHERE id = %s" % request.form['id'])
             connection.commit()
             connection.close()
             return json.dumps({'succeed': True})
@@ -305,7 +332,7 @@ def remove_call_request():
     data = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("DELETE FROM call_requests WHERE id = %s" % (request.form['id']))
+            cursor.execute("UPDATE call_requests SET is_call = 1 WHERE id = %s" % (request.form['id']))
             connection.commit()
             connection.close()
             return json.dumps({'succeed':True})
@@ -351,7 +378,6 @@ def get_image(id):
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/getProductsBy',methods=['GET'])
 def getProductsBy():
     connection = get_conn_1()
@@ -443,7 +469,6 @@ def getProductsBy():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return render_template('products.html', products=data,types=product_getTypesFixed(),_path = 'телефоны-apple')
-
 @app.route('/getColorsByType', methods=['GET'])
 def getColorByType():
     connection = get_conn_1()
@@ -458,7 +483,6 @@ def getColorByType():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return json.dumps(data,ensure_ascii=False)
-
 @app.route('/getVendorsByType', methods=['GET'])
 def getVendorsByType():
     connection = get_conn_1()
@@ -472,11 +496,6 @@ def getVendorsByType():
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
     return json.dumps(data,ensure_ascii=False)
-
-
-
-
-
 @app.route('/каталог/<string:path>/')
 @app.route('/каталог/<string:path>')
 def catalog_path(path):
@@ -494,7 +513,6 @@ def catalog_path(path):
                                                                                                 name_top=dict_data[path]['name_top'],
                                                                                                 prices=cat_prices(dict_data[path]['cat']),data=dict_data[path],
                                                                                                 cat_data=getCatData(dict_data[path]['cat']), js_data = json.dumps(dict_data[path]))))
-
 @app.route('/каталог/<string:path>/<string:name_cat>/')
 @app.route('/каталог/<string:path>/<string:name_cat>')
 def catalog_path_name_cat(path,name_cat=None):
@@ -567,7 +585,6 @@ def catalog_detail():
                                                                                                 name=data['NAME'].upper(),
                                                                                                 name_top=data['NAME'],
                                                                                                 types=product_getTypesFixed(), prices=cat_prices(-1))))
-
 @app.route('/ad')
 def admin():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
@@ -620,7 +637,7 @@ def ad_discount():
     a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
     if a_h.isValid() != True:
         return redirect(url_for('ad_auth'))
-    if int(a_h.getRole()) not in [1, 4]:
+    if int(a_h.getRole()) not in [1]:
         return roleError()
     return render_template('discounts_ad.html', admin_level=a_h.getRole(), username=a_h.getUserName(),discount=ad_discount_html())
 @app.route('/ad/discount/html')
@@ -737,7 +754,6 @@ def ad_discount_add():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/ad/discount/delete', methods=['POST'])
 def ad_discount_delete():
     connection = get_conn()
@@ -750,7 +766,15 @@ def ad_discount_delete():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
+@app.route('/ad/discount/get',methods=['GET'])
+def ad_discount_get():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM discounts WHERE id=%s", request.args.get('id'))
+            return json.dumps(cursor.fetchone(), ensure_ascii=False)
+    except Exception as e:
+        print(e)
 @app.route('/ad/discount/change', methods=['POST'])
 def ad_discount_change():
     connection = get_conn()
@@ -759,10 +783,71 @@ def ad_discount_change():
             cursor.execute(
                 "UPDATE  discounts SET name='%s', description='%s',image_name='%s',name_color='%s',description_color='%s'"
                 " WHERE id=%s" %
-                (request.form['name'],request.form['description'],request.form['image_name'],request.form['id'],
-                 request.form['name_color'], request.form['description_color']))
+                (request.form['name'],request.form['description'],request.form['image_name'],
+                 request.form['name_color'], request.form['description_color'],request.form['id']))
             connection.commit()
             return json.dumps({"succeed": True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/discount/remove_image', methods=['GET'])
+def ad_discount_remove_image():
+    connection = get_conn()
+    try:
+        with connection.cursor() as cursor:
+            print(app.config['UPLOAD_FOLDER'] + '/static/img/banners/' + str(
+                request.args.get('id')) + '/' + request.args.get('image_id'))
+            if isfile(app.config['UPLOAD_FOLDER'] + '/static/img/banners/' + str(
+                    request.args.get('id')) + '/' + request.args.get('image_id')):
+                os.remove(app.config['UPLOAD_FOLDER'] + '/static/img/banners/' + str(
+                    request.args.get('id')) + '/' + request.args.get('image_id'))
+            return json.dumps({'succeed': True})
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+#pages
+@app.route('/ad/pages')
+def ad_pages():
+    if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
+        return redirect(url_for('ad_auth'))
+    a_h = Auth.AdminHelper(request.cookies['device_token'], request.cookies['device_id'])
+    if a_h.isValid() != True:
+        return redirect(url_for('ad_auth'))
+    if int(a_h.getRole()) not in [1]:
+        return roleError()
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM pages")
+            data = cursor.fetchall()
+            return render_template('pages.html', admin_level=a_h.getRole(), users=ad_users_get_html(),
+                                   username=a_h.getUserName(),pages=data)
+
+            # return render_template('discounts_ad_list.html', discount=data)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/pages/change/<string:_id>',methods=['POST'])
+def ad_pages_change(_id):
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            print(request.form)
+            cursor.execute("UPDATE pages SET text = '%s' WHERE id = %s" % (request.form['text'],str(int(_id) + 1)))
+            connection.commit()
+            return json.dumps({'succeed':True})
+            # return render_template('discounts_ad_list.html', discount=data)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+@app.route('/ad/pages/get')
+def ad_pages_get():
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM pages")
+            data = cursor.fetchall()
+            return json.dumps(data,ensure_ascii=False)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
@@ -859,16 +944,24 @@ def clients_getData():
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT * FROM call_requests")
+                "SELECT * FROM call_requests WHERE is_call = 0")
             data = cursor.fetchall()
             cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
-                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o")
+                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 0")
             data_Orders = cursor.fetchall()
+
+            cursor.execute("SELECT * FROM call_requests WHERE is_call = 1")
+            data_called = cursor.fetchall()
+            cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
+                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 1")
+            data_Orders_called = cursor.fetchall()
             connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return json.dumps({'calls': render_template('client/calls.html',calls=data),'orders': render_template('client/orders.html',orders=data_Orders)},ensure_ascii=False)
+    return json.dumps({'calls': render_template('client/calls.html',calls=data,is_call=0),'orders': render_template('client/orders.html',orders=data_Orders,is_call=0),
+                       'calls_called': render_template('client/calls.html', calls=data_called, is_call=1),
+                       'orders_called': render_template('client/orders.html', orders=data_Orders_called, is_call=1)},ensure_ascii=False)
 @app.route('/ad/clients')
 def admin_calls():
     if 'device_token' not in request.cookies or 'device_id' not in request.cookies:
@@ -884,21 +977,70 @@ def admin_calls():
     connection = get_conn_1()
     data = None
     data_Orders = None
+    data_called=None
+    data_Orders_called = None
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                "SELECT * FROM call_requests")
+                "SELECT * FROM call_requests WHERE is_call = 0")
             data = cursor.fetchall()
             cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
-                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o")
+                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 0")
             data_Orders = cursor.fetchall()
+
+            cursor.execute(
+                "SELECT * FROM call_requests WHERE is_call = 1")
+            data_called = cursor.fetchall()
+            cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
+                           "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 1")
+            data_Orders_called = cursor.fetchall()
             connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('calls.html',calls=render_template('client/calls.html',calls=data),
-                           orders=render_template('client/orders.html',orders=data_Orders),
+    return render_template('calls.html',calls=render_template('client/calls.html',calls=data,is_call=0),
+                           orders=render_template('client/orders.html',orders=data_Orders,is_call=0),
+                           calls_called = render_template('client/calls.html',calls=data_called,is_call=1),
+                           orders_called=render_template('client/orders.html', orders=data_Orders_called,is_call=1),
                            admin_level = a_h.getRole(),username=a_h.getUserName())
+@app.route('/ad/clients/export/<string:_type>')
+def ad_clients_export(_type):
+    connection = get_conn_1()
+    try:
+        with connection.cursor() as cursor:
+            if _type == 'calls.csv':
+                cursor.execute("SELECT * FROM call_requests WHERE is_call = 0")
+            elif _type == 'calls_called.csv':
+                cursor.execute("SELECT * FROM call_requests WHERE is_call = 1")
+            elif _type == 'orders.csv':
+                cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
+                               "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 0")
+            elif _type == 'orders_called.csv':
+                cursor.execute("SELECT o.id,o.name,o.phone,o.email,o.comment, o.date,"
+                               "(SELECT name FROM products WHERE id = o.product_id) product FROM orders o WHERE o.is_call = 1")
+            else:
+                return 'null export'
+            data = cursor.fetchall()
+            if len(data) > 0:
+                csv_string = """"""
+                #headers
+                keys = []
+                for key in data[0].keys():
+                    csv_string += '"%s";' % key
+                    keys.append(key)
+                #fix string and add new line
+                csv_string = csv_string[0:-1] + '\n'
+                for dat in data:
+                    for key in keys:
+                        csv_string += '"%s";' % dat[key]
+                    csv_string = csv_string[0:-1] + '\n'
+                r = Response(csv_string, mimetype='application/csv')
+                r.headers["Content-Type"] = "application/csv; charset=utf-8;"
+                return r
+            return json.dumps(cursor.fetchall(), ensure_ascii=False)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
 #change product
 @app.route('/ad/change/<product_id>')
 def admin_change_product(product_id):
@@ -1069,7 +1211,6 @@ def product_categAll():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/ad/product/categ/add')
 def product_categAdd():
     connection = get_conn_1()
@@ -1083,7 +1224,6 @@ def product_categAdd():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/ad/product/sub_categ/all')
 def product_sub_categAll():
     connection = get_conn_1()
@@ -1097,7 +1237,6 @@ def product_sub_categAll():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/ad/product/sub_categ/add')
 def product_sup_categAdd():
     connection = get_conn_1()
@@ -1144,7 +1283,6 @@ def product_getTypes():
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-
 @app.route('/ad/product/add_colors', methods=['GET'])
 def product_addColors():
     connection = get_conn_1()
