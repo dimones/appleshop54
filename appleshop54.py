@@ -623,7 +623,7 @@ def catalog_path_name_cat(path,name_cat=None):
                                                                                                     'NAME'].upper(),
                                                                                                 name_top=data[
                                                                                                     'NAME'],
-                                                                                                types=product_getTypesFixed(), specs=data_specs)))
+                                                                                                types=product_getTypesFixed(), specs=data_specs,data=dict_data[path])))
 @app.route('/каталог')
 def catalog():
     connection = get_conn_1()

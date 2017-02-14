@@ -749,6 +749,9 @@ line-height: 1;
         margin-top: 12px !important;
 
     }
+    .list-inline{
+        display: none;
+    }
     #ap_menu{
         display: none !important;
     }
