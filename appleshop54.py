@@ -281,9 +281,17 @@ def getCatData(_id):
 def remove_order_request():
     connection = get_conn_1()
     data = None
+    forever = None
+    try:
+        forever = int(request.form['forever'])
+    except Exception as e:
+        forever = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE orders SET is_call = 1 WHERE id = %s" % request.form['id'])
+            if forever == 1:
+                cursor.execute("DELETE FROM orders WHERE id = %s" % request.form['id'])
+            else:
+                cursor.execute("UPDATE orders SET is_call = 1 WHERE id = %s" % request.form['id'])
             connection.commit()
             connection.close()
             return json.dumps({'succeed': True})
@@ -325,9 +333,17 @@ def order_request():
 def remove_call_request():
     connection = get_conn_1()
     data = None
+    forever = None
+    try:
+        forever = int(request.form['forever'])
+    except Exception as e:
+        forever = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute("UPDATE call_requests SET is_call = 1 WHERE id = %s" % (request.form['id']))
+            if forever == 1:
+                cursor.execute("DELETE FROM call_requests WHERE id = %s" % request.form['id'])
+            else:
+                cursor.execute("UPDATE call_requests SET is_call = 1 WHERE id = %s" % (request.form['id']))
             connection.commit()
             connection.close()
             return json.dumps({'succeed':True})

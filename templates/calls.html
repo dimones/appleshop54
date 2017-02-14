@@ -164,6 +164,30 @@
 
             });
         },2000);
+        function removeOrderForever(id){
+            $.post('/remove_order_request',{'id': id,'forever':1})
+            .done(function(data){
+                data = JSON.parse(data);
+                if(data.succeed == true)
+                    $("#o"+id.toString()).remove();
+            })
+            .fail(function (data) {
+
+            });
+
+        }
+        function removeCallForever(id){
+            $.post('/remove_call_request',{'id': id,'forever':1})
+            .done(function(data){
+                data = JSON.parse(data);
+                if(data.succeed == true)
+                    $("#c"+id.toString()).remove();
+            })
+            .fail(function (data) {
+
+            });
+
+        }
         function removeOrder(id){
             $.post('/remove_order_request',{'id': id})
             .done(function(data){

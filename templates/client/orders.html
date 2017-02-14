@@ -17,6 +17,9 @@
               {% if is_call == 0 %}
                 <button class="btn btn-success" onclick="removeOrder({{ call['id'] }});">Уже позвонили</button>
               {% endif %}
+              {% if is_call == 1 %}
+                <button class="btn btn-danger" onclick="removeOrderForever({{ call['id'] }});">Удалить из базы</button>
+              {% endif %}
           </div>
       </div>
         <br>
