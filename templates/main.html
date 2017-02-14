@@ -101,9 +101,8 @@
                         <div class="row">
 
                             <div class="col-lg-6 product_container " id="tabletsCont">
-                                <h3 class="noneCat" id="noneCattabl">Пока отсутствует</h3>
-                                <div class="appleshop_product_jumb ">
-                                    <div class="row none_cat">
+                                <div class="appleshop_product_jumb " onclick="window.top.location.href='/каталог/планшеты';">
+                                    <div class="row">
 
                                         <div class="col-lg-7 center-block  text-center">
 
@@ -114,13 +113,12 @@
                                 </div>
                             </div>
                             <div class="col-lg-6 product_container " id="watchesCont">
-                                <h3 class="noneCat" id="noneCatwatches">Пока отсутствует</h3>
-                               <div class="appleshop_product_jumb ">
-                                    <div class="row none_cat">
+                               <div class="appleshop_product_jumb "  onclick="window.top.location.href='/каталог/applewatch';">
+                                    <div class="row">
                                         <div class="col-lg-7 center-block  text-center">
                                             <div class="product_icon icon_watches"></div>
                                         </div>
-                                        <div class="col-lg-5 text-center"><label  style="padding-top: 70px;margin-left: -20px;  text-align: right;">SMART ЧАСЫ</label></div>
+                                        <div class="col-lg-5 text-center"><label  style="padding-top: 70px;margin-left: -20px;  text-align: right;">APPLE WATCH</label></div>
                                     </div>
                                 </div>
                             </div>
@@ -635,19 +633,19 @@
             })(jQuery);
 
 
-            $("#tabletsCont").hover(function (data) {
-                        $("#noneCattabl").css('display', 'inline');
-                    },
-                    function (data) {
-
-                        $("#noneCattabl").css('display', 'none');
-                    });
-            $("#watchesCont").hover(function (data) {
-                        $("#noneCatwatches").css('display', 'inline');
-                    },
-                    function (data) {
-
-                        $("#noneCatwatches").css('display', 'none');
-                    });
+{#            $("#tabletsCont").hover(function (data) {#}
+{#                        $("#noneCattabl").css('display', 'inline');#}
+{#                    },#}
+{#                    function (data) {#}
+{##}
+{#                        $("#noneCattabl").css('display', 'none');#}
+{#                    });#}
+{#            $("#watchesCont").hover(function (data) {#}
+{#                        $("#noneCatwatches").css('display', 'inline');#}
+{#                    },#}
+{#                    function (data) {#}
+{##}
+{#                        $("#noneCatwatches").css('display', 'none');#}
+{#                    });#}
         });
 </script>
