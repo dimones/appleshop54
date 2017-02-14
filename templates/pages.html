@@ -95,6 +95,74 @@
                 <textarea rows="10" cols="45" name="text" class="form-control" placeholder="{{ pages[1]["text"] }}" id="text1">{{ pages[1]["text"] }}</textarea>
             </div>
         </div>
+        <br>
+        <div class="row">
+            <div class="col-lg-3">
+                <h3>Текст для страницы: контакты</h3>
+            </div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="input-group">
+                          <span class="input-group-addon" id="basic-addon1">Консультация:</span>
+                          <input type="text" class="form-control" placeholder="Номер телефона" aria-describedby="basic-addon1" id="text2" value="{{ pages[2]["text"] }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-success" onclick="changeTextFor(2);">Применить изменения</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="input-group">
+                          <span class="input-group-addon" id="basic-addon1">Адрес</span>
+                          <input type="text" class="form-control" placeholder="Номер телефона" aria-describedby="basic-addon1" id="text3" value="{{ pages[3]["text"] }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-success" onclick="changeTextFor(3);">Применить изменения</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="input-group">
+                          <span class="input-group-addon" id="basic-addon1">E-mail:</span>
+                          <input type="text" class="form-control" placeholder="E-mail" aria-describedby="basic-addon1" id="text4" value="{{ pages[4]["text"] }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-success" onclick="changeTextFor(4);">Применить изменения</button>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="input-group">
+                          <span class="input-group-addon" id="basic-addon1">Координаты</span>
+                          <input type="text" class="form-control" placeholder="Координаты в формате 55.022869,82.912369" aria-describedby="basic-addon1" id="text5" value="{{ pages[5]["text"] }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-success" onclick="changeTextFor(5);">Применить изменения</button>
+                    </div>
+
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="input-group">
+                          <span class="input-group-addon" id="basic-addon1">Текст на карте:</span>
+                          <input type="text" class="form-control" placeholder="Текст на карте" aria-describedby="basic-addon1" id="text6" value="{{ pages[6]["text"] }}">
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-success" onclick="changeTextFor(6);">Применить изменения</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
         function changeTextFor(page_id) {

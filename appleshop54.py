@@ -53,13 +53,10 @@ def flat_to_nest(data, keys):
     for key, group in itertools.groupby(data, lambda x: x[keys[0]]):
         group =  map(lambda x: dict((i, x[i]) for i in x if i != keys[0]), list(group))
         name = ""
-        temp = flat_to_nest(group, keys[1:]) if keys[1:] else list(group)
-        # print(temp)
-        if isinstance(temp, list):
-            print(temp[0]['category_name'])
-            name = temp[0]['category_name']
-            # pass
+        temp = flat_to_nest(group, keys[1:]) if keys[1:] else list(group)[0]
+
         new_data.update( {key:temp,'name': name} )
+    print(new_data)
     return new_data
 
 def allowed_file(filename):
@@ -154,7 +151,17 @@ def admin_auth():
 
 @app.route('/контакты')
 def contacts():
-    return render_template('index.html',body=render_template('page.html',body=render_template('contacts.html')))
+    connection = get_conn_1()
+    data = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM pages WHERE id NOT IN (1,2)")
+            connection.close()
+            data = cursor.fetchall()
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return json.dumps({'succeed': False, "error": str(e)})
+    return render_template('index.html',body=render_template('page.html',body=render_template('contacts.html',data=flat_to_nest(data,["id"]))))
 @app.route('/акции')
 def discount():
     connection = get_conn_1()

@@ -11,19 +11,19 @@
             <div class="col-lg-3" style="margin-top: -25px;">
                 <div class="row" style="margin: auto; margin-top: 50px; margin-left: 30px;">
                     <div class="row"><label>Консультация:</label></div>
-                    <div class="row"><label>358-00-48</label></div>
+                    <div class="row"><label>{{ data[3]["text"] }}</label></div>
                 </div>
             </div>
             <div class="col-lg-5" style="margin-top: -25px;">
                  <div class="row" style="margin: auto; margin-top: 50px; margin-left: 30px;">
                     <div class="row"><label>Адрес:</label></div>
-                    <div class="row"><label>г.Новосибирск, ул.Коммунистическая 7</label></div>
+                    <div class="row"><label>{{ data[4]["text"] }}</label></div>
                 </div>
             </div>
             <div class="col-lg-4" style="margin-top: -25px;">
                  <div class="row" style="margin: auto; margin-top: 50px; margin-left: 30px;">
                     <div class="row"><label>E-mail:</label></div>
-                    <div class="row"><a href="mailto:direct@appleshop54.com">direct@appleshop54.com</a></div>
+                    <div class="row"><a href="mailto:{{ data[5]["text"] }}">{{ data[5]["text"] }}</a></div>
                 </div>
             </div>
         </div>
@@ -41,10 +41,10 @@
 
     DG.then(function () {
         map = DG.map('map', {
-            center: [55.022846, 82.912348],
+            center: [{{ data[6]["text"] | safe}}],
             zoom: 16
         });
 
-        DG.marker([55.022846, 82.912348]).addTo(map).bindPopup('APPLESHOP54<br>Время работы:<br>08:00-20:00');
+        DG.marker([{{ data[6]["text"] | safe}}]).addTo(map).bindPopup('{{ data[7]["text"] | safe}}');
     });
 </script>
