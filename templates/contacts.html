@@ -44,7 +44,6 @@
             center: [{{ data[6]["text"] | safe}}],
             zoom: 16
         });
-
         DG.marker([{{ data[6]["text"] | safe}}]).addTo(map).bindPopup('{{ data[7]["text"] | safe}}');
     });
 </script>

@@ -677,7 +677,9 @@ line-height: 1;
     color: #fff;
     text-shadow: none;
 }
-
+.mob_soc{
+    display: none !important;
+}
 @media (max-width: 767px) {
     #navbar{
         height: 82px;
@@ -749,8 +751,14 @@ line-height: 1;
         margin-top: 12px !important;
 
     }
-    .list-inline{
+    .desk_soc{
         display: none;
+    }
+    .mob_soc{
+        margin-top: -58px !important;;
+        position: absolute !important;;
+        display: inline-block !important;;
+        left:10px !important;
     }
     #ap_menu{
         display: none !important;
