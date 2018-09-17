@@ -2,17 +2,17 @@ import json,threading,requests,uuid,pymysql,sys,datetime
 
 
 def get_mysql_connection() -> pymysql.cursors.DictCursor:
-    return pymysql.connect(host='217.71.129.181',
+    return pymysql.connect(host='localhost',
                            user='root',
-                           password='jmXQF97JqkeNxV5B%',
+                           password='jmXQF97J',
                            db='appleshop54',
                            charset='utf8')
 
 
 def get_mysql_connection_1() -> pymysql.cursors.DictCursor:
-    return pymysql.connect(host='217.71.129.181',
+    return pymysql.connect(host='localhost',
                            user='root',
-                           password='jmXQF97JqkeNxV5B%',
+                           password='jmXQF97J',
                            db='appleshop54',
                            charset='utf8',
                            cursorclass=pymysql.cursors.DictCursor)

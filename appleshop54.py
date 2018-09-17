@@ -65,15 +65,15 @@ def allowed_file(filename):
 
 def get_conn():
     #82.146.41.220
-    return pymysql.connect(host='82.146.41.220',
+    return pymysql.connect(host='localhost',
                              user='root',
-                             password='jmXQF97JqkeNxV5B%',
+                             password='jmXQF97J',
                              db='appleshop54',
                              charset='utf8')
 def get_conn_1():
-    return pymysql.connect(host='82.146.41.220',
+    return pymysql.connect(host='localhost',
                              user='root',
-                             password='jmXQF97JqkeNxV5B%',
+                             password='jmXQF97J',
                              db='appleshop54',
                              charset='utf8',
                              cursorclass=pymysql.cursors.DictCursor)
@@ -121,13 +121,14 @@ def main():
                             pr.is_special = 1""")
 
             data = cursor.fetchall()
-            cursor.execute("SELECT * FROM discounts")
-            dis_data = cursor.fetchall()
+            # cursor.execute("SELECT * FROM discounts")
+            dis_data = []
             connection.close()
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
-    return render_template('index.html',body=render_template('main.html',data=data,discount=dis_data))
+    # return render_template("landing.html")
+    return render_template('base.html',body=render_template('land.html',data=data,discount=dis_data))
 
 @app.route('/ad/auth')
 def ad_auth():
@@ -199,8 +200,8 @@ def delivery():
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM pages WHERE id=2")
             return render_template('index.html', body=render_template('page.html',
-                                                                      body=render_template('delivery.html',
-                                                                                           data=cursor.fetchone())))
+                                                 body=render_template('delivery.html',
+                                                 data=cursor.fetchone())))
     except Exception as e:
         print(str(e), file=sys.stderr)
         return json.dumps({'succeed': False, "error": str(e)})
@@ -605,11 +606,16 @@ def getModelByType():
 @app.route('/каталог/<string:path>/')
 @app.route('/каталог/<string:path>')
 def catalog_path(path):
+    print("path: ")
+    print(path)
+    if path is None or path == "":
+        path = list(dict_data.keys())[0]
+        print("CATALOG NULL: " + path)
     print(path)
     print('catalogue')
     #TODO ну это пиздец. Не смог нормально придумать
 
-    return render_template('index.html', body=render_template('page.html', body=render_template('catalog.html',
+    return render_template('base.html', body=render_template('page.html', body=render_template('catalog.html',
                                                                                                 products=render_template(
                                                                                                     'products.html',
                                                                                                     products=cat(dict_data[path]['cat']),
@@ -617,14 +623,20 @@ def catalog_path(path):
                                                                                                     _path = path),
                                                                                                 name=dict_data[path]['name'],
                                                                                                 name_top=dict_data[path]['name_top'],
-                                                                                                prices=cat_prices(dict_data[path]['cat']),data=dict_data[path],
-                                                                                                cat_data=getCatData(dict_data[path]['cat']), js_data = json.dumps(dict_data[path]),cat=dict_data[path]['cat'])))
+                                                                                                prices=cat_prices(dict_data[path]['cat']),data=dict_data[path],                                                                                           cat_data=getCatData(dict_data[path]['cat']), js_data = json.dumps(dict_data[path]),cat=dict_data[path]['cat'])))
+
+@app.route('/каталог')
+def def_catalog():
+    return catalog_path(None)
 @app.route('/каталог/<string:path>/<string:name_cat>/')
 @app.route('/каталог/<string:path>/<string:name_cat>')
 def catalog_path_name_cat(path,name_cat=None):
     connection = get_conn_1()
     data = None
     data_specs = None
+    if path is None or path == "":
+        # print(list(dict_data.keys())[0])
+        path = list(dict_data.keys())[0]
     try:
         with connection.cursor() as cursor:
             cursor.execute("SELECT pr.id,pr.type_product , pr. NAME , pr.price ,pr.description,pr.type_product,"
@@ -647,7 +659,7 @@ def catalog_path_name_cat(path,name_cat=None):
                                                                                                 name_top=data[
                                                                                                     'NAME'],
                                                                                                 types=product_getTypesFixed(), specs=data_specs,data=dict_data[path])))
-@app.route('/каталог')
+@app.route('/каталог1')
 def catalog():
     connection = get_conn_1()
     data = None
@@ -665,8 +677,11 @@ def catalog():
                                                                                                 products=render_template(
                                                                                                     'products.html',
                                                                                                     products=data),
-                                                                                                name='КАТАЛОГ ПРОДУКЦИИ',
-                                                                                                name_top='Все',types=product_getTypesFixed(), prices=cat_prices(-1))))
+                                                                                                    name='КАТАЛОГ ПРОДУКЦИИ',
+                                                                                                    name_top='Все',types=product_getTypesFixed(), prices=cat_prices(-1))))
+
+
+
 @app.route('/каталог/подробнее')
 def catalog_detail():
     connection = get_conn_1()
